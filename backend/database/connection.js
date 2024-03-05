@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
 
 const connection = async (url) => {
-
     try {
         
-        await mongoose.connection(url);
+        await mongoose.connect(url);
 
         console.log("conexion exitosa");
     } catch(error) {
@@ -12,4 +11,4 @@ const connection = async (url) => {
     }
 } 
 
-export default connection;
+module.exports = connection;
