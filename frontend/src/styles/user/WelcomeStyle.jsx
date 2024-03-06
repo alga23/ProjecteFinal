@@ -1,6 +1,6 @@
 import { themeColors } from "../../theme/index"
 
-export const welcomeStyles = {
+export const WelcomeStyle = {
     container: {
         flex: 1,
         backgroundColor: themeColors.azulFondo,

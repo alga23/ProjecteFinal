@@ -1,6 +1,6 @@
 import { themeColors } from "../../theme/index"
 
-export const loginStyles = {
+export const LoginStyle = {
     container: {
         flex: 1,
         backgroundColor: themeColors.azulFondo,

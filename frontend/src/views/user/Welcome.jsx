@@ -3,34 +3,34 @@ import { StatusBar } from 'expo-status-bar'
 import { Text, View, Image, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
-import { welcomeStyles } from '../../styles/user/welcomeStyles'
+import { WelcomeStyle } from '../../styles/user/WelcomeStyle'
 
 export default function Welcome() {
     const navigation = useNavigation()
 
     return (
-        <SafeAreaView style={welcomeStyles.container}>
+        <SafeAreaView style={WelcomeStyle.container}>
             <StatusBar style="auto" />
-            <View style={welcomeStyles.contentContainer}>
-                <Text style={welcomeStyles.title}>¡Bienvenido!</Text>
-                <View style={welcomeStyles.imageContainer}>
+            <View style={WelcomeStyle.contentContainer}>
+                <Text style={WelcomeStyle.title}>¡Bienvenido!</Text>
+                <View style={WelcomeStyle.imageContainer}>
                     <Image
                         source={require("../../../assets/images/welcome.png")}
-                        style={welcomeStyles.image}
+                        style={WelcomeStyle.image}
                     />
                 </View>
-                <View style={welcomeStyles.buttonContainer}>
+                <View style={WelcomeStyle.buttonContainer}>
                     <TouchableOpacity
                         onPress={() => {
                             navigation.navigate('SignUp')
                         }}
-                        style={welcomeStyles.signUpButton}>
-                        <Text style={welcomeStyles.signUpButtonText}>Regístrate</Text>
+                        style={WelcomeStyle.signUpButton}>
+                        <Text style={WelcomeStyle.signUpButtonText}>Regístrate</Text>
                     </TouchableOpacity>
-                    <View style={welcomeStyles.alreadyHaveAccount}>
-                        <Text style={welcomeStyles.alreadyHaveAccountText}>Tienes una cuenta?</Text>
+                    <View style={WelcomeStyle.alreadyHaveAccount}>
+                        <Text style={WelcomeStyle.alreadyHaveAccountText}>Tienes una cuenta?</Text>
                         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                            <Text style={welcomeStyles.logInButton}> Inicia sesión</Text>
+                            <Text style={WelcomeStyle.logInButton}> Inicia sesión</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
