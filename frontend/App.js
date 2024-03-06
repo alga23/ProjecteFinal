@@ -1,7 +1,5 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import Welcome from './src/views/user/welcome';
-import Login from './src/views/user/login';
+import Welcome from './src/views/user/Welcome';
+import Login from './src/views/user/Login';
 import { NavigationContainer } from '@react-navigation/native';
 
 
