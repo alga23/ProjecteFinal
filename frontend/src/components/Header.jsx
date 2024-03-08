@@ -7,7 +7,10 @@ const Header = () => {
 
     return (
         <View style={HeaderStyle.container}>
+            <View style={HeaderStyle.containerLogo}>
+                
             <Image style={HeaderStyle.imagenLogo} source={logo} />
+            </View>
             <Image style={HeaderStyle.imagenPerfil} source={perfil} />
         </View>
     )
