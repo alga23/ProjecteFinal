@@ -1,7 +1,7 @@
 import { View, Animated, TouchableWithoutFeedback } from 'react-native';
 import { BottomMenuStyle } from '../styles/BottomMenuStyle';
-import IconButton from './icons/IconButton';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const BottomMenu = () => {
 
@@ -68,10 +68,10 @@ const BottomMenu = () => {
             </View>
 
             <View style={BottomMenuStyle.menuBottom}>
-                <IconButton name='home' />
-                <IconButton name='search' />
-                <IconButton name='mail' />
-                <IconButton name='person' />
+                <Icon name='home' size={30} />
+                <Icon name='search' size={30} />
+                <Icon name='mail' size={30} />
+                <Icon name='person' size={30} />
             </View>
         </View>
     )
@@ -80,7 +80,7 @@ const BottomMenu = () => {
 const AddCircleWithCross = ({ name, size = 70, iconSize = 30}) => {
     return (
         <View style={{ position: 'relative' }}>
-            <IconButton icon={FontAwesome} name='circle' size={size} color='#0074B4' />
+            <FontAwesome name='circle' size={size} color='#0074B4' />
             <FontAwesome name={name} size={iconSize} color='white' style={{ position: 'absolute', top: '28%', left: '30%' }} />
         </View>
     );

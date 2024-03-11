@@ -1,3 +1,4 @@
+import { themeColors } from "../../theme/index"
 
 export const FeedStyle = {
  
