@@ -19,7 +19,7 @@ export const FeedStyle = {
         marginHorizontal: 15,
         marginVertical: 15,
         borderBottomWidth: 1,
-        borderColor: '#ccc',
+        borderColor: themeColors.lineBorderGray,
         paddingBottom: 10
     },
     postInfo: {
@@ -50,19 +50,19 @@ export const FeedStyle = {
         gap: 5
     },
     textSiguiendo: {
-        color: 'blue'
+        color: themeColors.azulFondo
     },
     textPopulares: {
-        color: 'blue'
+        color: themeColors.azulFondo
     },
     line: {
         borderBottomWidth: 1,
-        borderColor: '#ccc'
+        borderColor: themeColors.lineBorderGray
     },
     mainLine: {
         width: '30%',
         borderBottomWidth: 2,
-        borderColor: 'blue'
+        borderColor: themeColors.azulFondo
     },
     lineSelectSiguiendo: {
         marginLeft: 30,

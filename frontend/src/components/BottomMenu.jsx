@@ -80,8 +80,8 @@ const BottomMenu = () => {
 const AddCircleWithCross = ({ name, size = 70, iconSize = 30}) => {
     return (
         <View style={{ position: 'relative' }}>
-            <FontAwesome name='circle' size={size} color='#0074B4' />
-            <FontAwesome name={name} size={iconSize} color='white' style={{ position: 'absolute', top: '28%', left: '30%' }} />
+            <FontAwesome style={BottomMenuStyle.circleColor} name='circle' size={size} />
+            <FontAwesome style={BottomMenuStyle.iconColor} name={name} size={iconSize} color='white'/>
         </View>
     );
 };

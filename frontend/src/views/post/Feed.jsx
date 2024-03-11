@@ -14,15 +14,6 @@ const Feed = () => {
 
     const [selectPage, setSelectPage] = useState('Siguiendo');
 
-    const scrollPage = (event) => {
-
-        const y = event.nativeEvent.contentOffset.y;
-        const height = Dimensions.get('window').height;
-        console.log(height);
-        console.log(y);
-
-    }
-
     const nextPage = () => {
 
         if (cards.length <= 50) {
@@ -35,7 +26,6 @@ const Feed = () => {
                 }
 
                 setCards(newCards);
-                console.log(newCards);
             }, 500);
         }
     }

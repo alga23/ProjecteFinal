@@ -1,3 +1,5 @@
+import { themeColors } from "../theme";
+
 export const BottomMenuStyle = {
 
     container: {
@@ -17,7 +19,12 @@ export const BottomMenuStyle = {
         bottom: 50
     },
     circleColor: {
-        color: '#0074B4'
+        color: themeColors.azulFondo
+    },
+    iconColor: {
+        position: 'absolute', 
+        top: '28%', 
+        left: '30%'
     },
     menuBottom: {
         marginTop: 10,
