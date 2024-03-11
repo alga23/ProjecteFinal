@@ -7,6 +7,7 @@ export const themeColors = {
     inputGray: "#EDEDED",
     postBackgroundLight: "#ebebeb",
     postBorderLight: "#cfcfcf",
+    lineBorderGray: "#CCCCCC",
 
     //Dark theme
     bg_dark: "#0f0f0f",
