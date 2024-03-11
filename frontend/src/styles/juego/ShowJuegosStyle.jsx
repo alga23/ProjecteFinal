@@ -46,5 +46,9 @@ export const ShowJuegosStyle = {
         width: 120,
         height: 250,
         borderRadius: 10,
+    },
+    noResult: {
+        marginVertical: 20,
+        marginHorizontal: 5
     }
 }
