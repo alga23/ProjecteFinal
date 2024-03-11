@@ -18,7 +18,6 @@ const ShowJuegos = () => {
         let filtroJuego = card.filter(juego => juego == form.text);
 
         setCard(filtroJuego);
-
     }
 
     return (
