@@ -10,8 +10,9 @@ import BottomMenu from '../../components/BottomMenu';
 
 const Feed = () => {
 
+    const [cards, setCards] = useState([...Array(10).keys()]);
+
     const [selectPage, setSelectPage] = useState('Siguiendo');
-    const [cards, setCards] = useState([...Array(1).keys()]);
 
     const scrollPage = (event) => {
 
@@ -28,11 +29,11 @@ const Feed = () => {
             setTimeout(() => {
 
                 let newCards = [...cards];
-    
+
                 for (let i = 0; i < 10; i++) {
                     newCards.push(cards.length + i);
                 }
-    
+
                 setCards(newCards);
                 console.log(newCards);
             }, 500);
@@ -40,70 +41,75 @@ const Feed = () => {
     }
 
     return (
-        <View>
+        <View style={FeedStyle.containerPrincipal}>
             <Header />
-            <ScrollView style={FeedStyle.scroll}>
-                <View style={FeedStyle.container}>
-                    <TouchableOpacity onPress={() => setSelectPage('Siguiendo')}>
-                        <Text style={[FeedStyle.text, selectPage === 'Siguiendo' && FeedStyle.textSiguiendo]}>Siguiendo</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setSelectPage('Populares')}>
-                        <Text style={[FeedStyle.text, selectPage === 'Populares' && FeedStyle.textPopulares]}>Populares</Text>
-                    </TouchableOpacity>
-                </View>
+            <View style={FeedStyle.container}>
+                <TouchableOpacity onPress={() => setSelectPage('Siguiendo')}>
+                    <Text style={[FeedStyle.text, selectPage === 'Siguiendo' && FeedStyle.textSiguiendo]}>Siguiendo</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setSelectPage('Populares')}>
+                    <Text style={[FeedStyle.text, selectPage === 'Populares' && FeedStyle.textPopulares]}>Populares</Text>
+                </TouchableOpacity>
+            </View>
+            <View style={FeedStyle.line} />
+            <View style={[FeedStyle.mainLine, selectPage === 'Siguiendo' ? FeedStyle.lineSelectSiguiendo : FeedStyle.lineSelectPopulares]} />
+            <ScrollView style={FeedStyle.scroll} onScroll={nextPage}>
+                {selectPage === 'Siguiendo' &&
+                    cards.map((_, index) => {
+                        return (
+                            <View style={FeedStyle.cardPost} key={index}>
 
-                <View style={FeedStyle.line} />
-                <View style={[FeedStyle.mainLine, selectPage === 'Siguiendo' ? FeedStyle.lineSelectSiguiendo : FeedStyle.lineSelectPopulares]} />
+                                <Image style={FeedStyle.imageUsuario} source={perfil} />
+                                <View style={FeedStyle.postInfo}>
+                                    <View style={FeedStyle.infoUsuario}>
+                                        <Text>Pablo51</Text>
+                                        <Text>@pablo...</Text>
+                                        <Text>· 2h</Text>
+                                    </View>
+                                    <Text>Hola a todos</Text>
+                                    <Image style={FeedStyle.imagenPost} source={cristiano} />
+                                    <View style={FeedStyle.containerIcons}>
+                                        <View style={FeedStyle.containerIconElement}>
 
-                {cards.map((_, index) => {
-                    return (
-                        <View style={FeedStyle.cardPost} key={index}>
+                                            <TouchableOpacity>
+                                                <Icon name='comment-o' size={20} />
+                                            </TouchableOpacity>
+                                            <Text>0</Text>
+                                        </View>
+                                        <View style={FeedStyle.containerIconElement}>
 
-                            <Image style={FeedStyle.imageUsuario} source={perfil} />
-                            <View style={FeedStyle.postInfo}>
-                                <View style={FeedStyle.infoUsuario}>
-                                    <Text>Pablo51</Text>
-                                    <Text>@pablo...</Text>
-                                    <Text>· 2h</Text>
-                                </View>
-                                <Text>Hola a todos</Text>
-                                <Image style={FeedStyle.imagenPost} source={cristiano} />
-                                <View style={FeedStyle.containerIcons}>
-                                    <TouchableOpacity>
-                                    <View style={FeedStyle.containerIconElement}>
-                                        <Icon name='comment-o' size={20} />
-                                        <Text>0</Text>
+                                            <TouchableOpacity>
+                                                <Icon name='retweet' size={20} />
+                                            </TouchableOpacity>
+                                            <Text>0</Text>
+                                        </View>
+                                        <View style={FeedStyle.containerIconElement}>
+
+                                            <TouchableOpacity>
+                                                <Icon name='heart-o' size={20} />
+                                            </TouchableOpacity>
+                                            <Text>0</Text>
+                                        </View>
+                                        <View style={FeedStyle.containerIconElement}>
+
+                                            <TouchableOpacity>
+                                                <Icon name='bar-chart' size={20} />
+                                            </TouchableOpacity>
+                                            <Text>0</Text>
+                                        </View>
+                                        <View style={FeedStyle.containerIconElement}>
+
+                                            <TouchableOpacity>
+                                                <Icon name='bookmark-o' size={20} />
+                                            </TouchableOpacity>
+                                            <Text>0</Text>
+                                        </View>
                                     </View>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity>
-                                    <View style={FeedStyle.containerIconElement}>
-                                        <Icon name='retweet' size={20} />
-                                        <Text>0</Text>
-                                    </View>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity>
-                                    <View style={FeedStyle.containerIconElement}>
-                                        <Icon name='heart-o' size={20} />
-                                        <Text>0</Text>
-                                    </View>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity>
-                                    <View style={FeedStyle.containerIconElement}>
-                                        <Icon name='bar-chart' size={20} />
-                                        <Text>0</Text>
-                                    </View>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity>
-                                    <View style={FeedStyle.containerIconElement}>
-                                        <Icon name='bookmark-o' size={20} />
-                                        <Text>0</Text>
-                                    </View>
-                                    </TouchableOpacity>
                                 </View>
                             </View>
-                        </View>
-                    )
-                })}
+                        )
+                    })}
+
             </ScrollView>
             <BottomMenu />
         </View>

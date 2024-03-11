@@ -1,9 +1,9 @@
 
 export const FeedStyle = {
-
-    scroll: {
-        marginBottom: 100
-    },  
+ 
+    containerPrincipal: {   
+        flex: 1
+    },
     container: {
         flexDirection: 'row',
         justifyContent: 'space-around',

@@ -1,13 +1,20 @@
 export const BottomMenuStyle = {
 
     container: {
+        marginBottom: 10
     },
-
+    button: {
+        position: 'absolute',
+        bottom: 5,
+        right: 5,
+    },
+    secondary: {
+        marginRight: 5
+    },
     addCircle: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        marginTop: 0,
-        marginRight: 20
+        position: 'absolute',
+        right: 10,
+        bottom: 50
     },
     circleColor: {
         color: '#0074B4'
@@ -18,7 +25,7 @@ export const BottomMenuStyle = {
         borderColor: '#ccc',
         paddingTop: 15,
         flexDirection: 'row',
-        justifyContent: 'space-around'
+        justifyContent: 'space-around',
     }
 
 }
