@@ -7,7 +7,7 @@ import Registro from './src/views/user/Registro';
 export default function App() {
   return (
     <NavigationContainer>
-      <Registro/>
+      <Mensajes/>
     </NavigationContainer>
   );
 }
