@@ -48,7 +48,9 @@ const ShowJuegos = () => {
                     <View style={ShowJuegosStyle.containerJuego}>
                         <View style={ShowJuegosStyle.containerGeneroView}>
                             <Text style={ShowJuegosStyle.textCategoria}>Mejor valorados</Text>
-                            <Text>Todo</Text>
+                            <TouchableOpacity>
+                                <Text>Todo</Text>
+                            </TouchableOpacity>
                         </View>
                         <ScrollView style={ShowJuegosStyle.scroll} horizontal={true} showsHorizontalScrollIndicator={false}>
                             <View style={ShowJuegosStyle.cardJuegos}>
@@ -64,7 +66,9 @@ const ShowJuegos = () => {
 
                         <View style={ShowJuegosStyle.containerGeneroView}>
                             <Text style={ShowJuegosStyle.textCategoria}>Mejor valorados</Text>
-                            <Text>Todo</Text>
+                            <TouchableOpacity>
+                                <Text>Todo</Text>
+                            </TouchableOpacity>
                         </View>
                         <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
                             <View style={ShowJuegosStyle.cardJuegos}>
