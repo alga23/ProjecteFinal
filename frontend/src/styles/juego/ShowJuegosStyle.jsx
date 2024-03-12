@@ -6,7 +6,7 @@ export const ShowJuegosStyle = {
         flex: 1
     },
     container: {
-        marginHorizontal: 30,
+        marginHorizontal: 30
     },
     lineTop: {
         borderTopWidth: 1,
@@ -17,6 +17,9 @@ export const ShowJuegosStyle = {
         width: '100%',
         borderWidth: 1,
         borderRadius: 50,
+    },
+    containerJuego: {
+        marginLeft: 30
     },
     inputFiltro: {
         position: 'relative'
@@ -36,19 +39,20 @@ export const ShowJuegosStyle = {
     containerGeneroView: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        marginRight: 30
     },
     cardJuegos: {
         flexDirection: 'row',
-        gap: 10
+        gap: 10,
     },
     juegoImg: {
-        width: 120,
+        width: 150,
         height: 250,
         borderRadius: 10,
     },
     noResult: {
         marginVertical: 20,
-        marginHorizontal: 5
-    }
+        marginHorizontal: 35
+    },
 }

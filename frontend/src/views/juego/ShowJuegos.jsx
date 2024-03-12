@@ -43,41 +43,43 @@ const ShowJuegos = () => {
                             <Icon style={ShowJuegosStyle.lupaIcon} name="search" size={25} />
                         </View>
                     </TouchableOpacity>
-
-
-                    {card.length > 0 ? (
-                        <>
-                            <View style={ShowJuegosStyle.containerGeneroView}>
-                                <Text style={ShowJuegosStyle.textCategoria}>Mejor valorados</Text>
-                                <Text>Todo</Text>
-                            </View>
-                            <View style={ShowJuegosStyle.cardJuegos}>
-                                {card.map((_, index) => {
-                                    return (
-                                        <View style={ShowJuegosStyle.juegos} key={index}>
-                                            <Image style={ShowJuegosStyle.juegoImg} source={Videojuego} />
-                                        </View>
-                                    )
-                                })}
-                            </View>
-
-                            <View style={ShowJuegosStyle.containerGeneroView}>
-                                <Text style={ShowJuegosStyle.textCategoria}>Mejor valorados</Text>
-                                <Text>Todo</Text>
-                            </View>
-                            <View style={ShowJuegosStyle.cardJuegos}>
-                                {card.map((_, index) => {
-                                    return (
-                                        <View style={ShowJuegosStyle.juegos} key={index}>
-                                            <Image style={ShowJuegosStyle.juegoImg} source={Videojuego} />
-                                        </View>
-                                    )
-                                })}
-
-                            </View>
-                        </>
-                    ) : <Text style={ShowJuegosStyle.noResult}>No se encontraron resultados...</Text>}
                 </View>
+                {card.length > 0 ? (
+                    <View style={ShowJuegosStyle.containerJuego}>
+                        <View style={ShowJuegosStyle.containerGeneroView}>
+                            <Text style={ShowJuegosStyle.textCategoria}>Mejor valorados</Text>
+                            <Text>Todo</Text>
+                        </View>
+                        <ScrollView style={ShowJuegosStyle.scroll} horizontal={true} showsHorizontalScrollIndicator={false}>
+                            <View style={ShowJuegosStyle.cardJuegos}>
+                                {card.map((_, index) => {
+                                    return (
+                                        <View style={ShowJuegosStyle.juegos} key={index}>
+                                            <Image style={ShowJuegosStyle.juegoImg} source={Videojuego} />
+                                        </View>
+                                    )
+                                })}
+                            </View>
+                        </ScrollView>
+
+                        <View style={ShowJuegosStyle.containerGeneroView}>
+                            <Text style={ShowJuegosStyle.textCategoria}>Mejor valorados</Text>
+                            <Text>Todo</Text>
+                        </View>
+                        <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+                            <View style={ShowJuegosStyle.cardJuegos}>
+                                {card.map((_, index) => {
+                                    return (
+                                        <View style={ShowJuegosStyle.juegos} key={index}>
+                                            <Image style={ShowJuegosStyle.juegoImg} source={Videojuego} />
+                                        </View>
+                                    )
+                                })}
+
+                            </View>
+                        </ScrollView>
+                    </View>
+                ) : <Text style={ShowJuegosStyle.noResult}>No se encontraron resultados...</Text>}
             </ScrollView>
             <BottomMenu />
         </View>
