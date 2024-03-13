@@ -5,12 +5,13 @@ import { SafeAreaView } from 'react-native';
 import { VistaStyle } from './src/styles/VistaStyle';
 import Feed from './src/views/post/Feed';
 import ShowJuegos from './src/views/juego/ShowJuegos';
+import VisualizarJuego from './src/views/juego/VisualizarJuego';
 
 export default function App() {
   return (
     <SafeAreaView style={VistaStyle.container}>
       <NavigationContainer>
-        <ShowJuegos />
+        <VisualizarJuego />
       </NavigationContainer>
     </SafeAreaView>
   );
