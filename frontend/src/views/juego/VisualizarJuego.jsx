@@ -4,14 +4,11 @@ import GTA5 from '../../../assets/images/gta5.jpg';
 import Icon from "react-native-vector-icons/FontAwesome";
 import Perfil from '../../../assets/images/perfil.png';
 import { useState } from "react";
-import { useNavigation } from "@react-navigation/native";
 
 const VisualizarJuego = () => {
 
     const [active, setActive] = useState(false);
     const [card, setCard] = useState([...Array(6).fill(0)]);
-
-    const navigate = useNavigation();
 
     const cambioCorazon = () => {
         setActive(!active);
