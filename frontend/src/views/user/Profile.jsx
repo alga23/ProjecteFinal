@@ -1,13 +1,11 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ProfileStyle } from '../../styles/user/ProfileStyle'
-import { Touchable, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import { View, Image, Text } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
-
-
-
 export default function Profile() {
+
     return (
         <SafeAreaView>
             <View style={ProfileStyle.profileInfoContainer}>
@@ -65,9 +63,24 @@ export default function Profile() {
                             </TouchableOpacity>
                         </View>
                     </View>
-                </View>
+                    <View style={ProfileStyle.bottomContainer}>
+                        <View style={ProfileStyle.bottomElementsContainer}>
+                            <View style={ProfileStyle.bottomElements1}>
+                                <TouchableOpacity>
+                                    <Text style={ProfileStyle.bottomTextPublicaciones}>16 publicaciones</Text>
+                                </TouchableOpacity>
+                                <View style={ProfileStyle.element1} />
 
+                            </View>
+                            <TouchableOpacity>
+                                <Text style={ProfileStyle.bottomTextLikes}>65 me gusta</Text>
+
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
             </View>
+            <View style={ProfileStyle.bottomLine}></View>
         </SafeAreaView>
     )
 }

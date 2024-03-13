@@ -2,9 +2,9 @@ import { themeColors } from "../../theme"
 
 export const ProfileStyle = {
     profileInfoContainer: {
-        padding: 16,
-        borderBottomWidth: 1,
-        borderColor: themeColors.postBorderLight,
+        paddingHorizontal: 16,
+        paddingTop: 16,
+
 
     },
     topPartContainer: {
@@ -84,6 +84,38 @@ export const ProfileStyle = {
         fontWeight: "300",
         color: "white",
         marginLeft: 6,
+    },
+    bottomContainer: {
+
+    },
+    bottomElementsContainer: {
+        marginHorizontal: 15,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: 20,
+
+    },
+    bottomElements1: {
+
+    },
+    element1: {
+        backgroundColor: themeColors.azulFondo,
+        height: 4,
+
+    },
+
+    bottomLine: {
+        borderBottomWidth: 1,
+        borderColor: themeColors.postBorderLight,
+    },
+    bottomTextPublicaciones: {
+        fontWeight: "600",
+        fontSize: 18,
+    },
+    bottonTextLikes: {
+        fontSize: 18,
+        fontWeight: "500"
     }
+
 }
 

@@ -1,4 +1,6 @@
-export const themeColors = {
+import { StyleSheet } from "react-native"
+
+export const themeColors = StyleSheet.create({
     azulFondo: "#0074B4",
     amarilloBoton: "#FFD41F",
 
@@ -16,5 +18,5 @@ export const themeColors = {
     postButtonBlue: "#0074B4",
     postButtonBlueDisabled: "#59A5CE",
     gamertagBlue: "#73B3D6"
-}
+})
 
