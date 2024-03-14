@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity, Image, ScrollView, Dimensions } from 'react-native';
 import Header from '../../components/Header';
 import { FeedStyle } from '../../styles/post/FeedStyle';
-import perfil from '../../../assets/images/perfil.png';
+import perfil from '../../../assets/images/default_profile_picture.jpg';
 import cristiano from '../../../assets/images/cristiano.jpg';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useEffect, useState } from 'react';

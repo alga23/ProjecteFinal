@@ -34,5 +34,4 @@ export const BottomMenuStyle = {
         flexDirection: 'row',
         justifyContent: 'space-around',
     }
-
 }

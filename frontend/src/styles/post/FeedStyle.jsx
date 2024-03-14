@@ -3,7 +3,8 @@ import { themeColors } from "../../theme/index"
 export const FeedStyle = {
  
     containerPrincipal: {   
-        flex: 1
+        flex: 1,
+        backgroundColor: '#fff'
     },
     container: {
         flexDirection: 'row',
@@ -29,8 +30,11 @@ export const FeedStyle = {
         gap: 15
     },
     imageUsuario: {
-        width: 60,
-        height: 60
+        width: 50,
+        height: 50,
+        borderRadius: 50,
+        marginTop: 10,
+        marginRight: 15
     },
     infoUsuario: {
         flexDirection: 'row',

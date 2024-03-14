@@ -1,9 +1,10 @@
 import { themeColors } from "../../theme";
 
-export const ShowJuegosStyle = {
+export const SearchStyle = {
 
     containerPrincipal: {
-        flex: 1
+        flex: 1,
+        backgroundColor: '#fff'
     },
     container: {
         marginHorizontal: 30

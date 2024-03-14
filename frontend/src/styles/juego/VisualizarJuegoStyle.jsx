@@ -4,6 +4,7 @@ export const VisualizarJuegoStyle = {
 
     containerPrincipal: {
         flex: 1,
+        backgroundColor: '#fff'
     },
     lineTop: {
         borderTopWidth: 1,
@@ -23,7 +24,7 @@ export const VisualizarJuegoStyle = {
     containerImg: {
         position: 'relative',
     },
-    imgPokemon: {
+    imgGta: {
         width: '100%',
         height: 240,
     },
@@ -86,7 +87,8 @@ export const VisualizarJuegoStyle = {
     },
     imgPerfil: {
         width: 70,
-        height: 70
+        height: 70,
+        borderRadius: 50
     },
     cardOpiniones: {
         flexDirection: 'row',

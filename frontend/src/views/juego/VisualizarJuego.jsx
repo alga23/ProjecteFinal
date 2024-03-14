@@ -1,17 +1,20 @@
-import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, Image, TouchableOpacity, ScrollView, TextInput } from "react-native";
 import { VisualizarJuegoStyle } from "../../styles/juego/VisualizarJuegoStyle";
 import GTA5 from '../../../assets/images/gta5.jpg';
 import Icon from "react-native-vector-icons/FontAwesome";
 import Perfil from '../../../assets/images/perfil.png';
 import { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
 
 const VisualizarJuego = () => {
 
     const [active, setActive] = useState(false);
     const [card, setCard] = useState([...Array(6).fill(0)]);
+    const navigation = useNavigation();
 
     const cambioCorazon = () => {
         setActive(!active);
+
     }
 
     return (
@@ -19,12 +22,11 @@ const VisualizarJuego = () => {
             <ScrollView>
             <View style={VisualizarJuegoStyle.containerImg}>
                 <View style={VisualizarJuegoStyle.fondoNegro} />
-                <Image style={VisualizarJuegoStyle.imgPokemon} source={GTA5} />
+                <Image style={VisualizarJuegoStyle.imgGta} source={GTA5} />
             </View>
 
-
             <View style={VisualizarJuegoStyle.arrowContainer}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.goBack()}>
                 <Icon style={VisualizarJuegoStyle.iconArrow} name="long-arrow-left" size={22} />
             </TouchableOpacity>
             </View>
