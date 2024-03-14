@@ -3,8 +3,11 @@ import { ProfileStyle } from '../../styles/user/ProfileStyle'
 import { TouchableOpacity } from "react-native";
 import { View, Image, Text } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { useState } from "react";
 
 export default function Profile() {
+
+    const [active, setActive] = useState("publicaciones")
 
     return (
         <SafeAreaView>
@@ -66,15 +69,16 @@ export default function Profile() {
                     <View style={ProfileStyle.bottomContainer}>
                         <View style={ProfileStyle.bottomElementsContainer}>
                             <View style={ProfileStyle.bottomElements1}>
-                                <TouchableOpacity>
-                                    <Text style={ProfileStyle.bottomTextPublicaciones}>16 publicaciones</Text>
+                                <TouchableOpacity
+                                    onPress={() => setActive("publicaciones")}>
+                                    <Text style={[active == "publicaciones" ? ProfileStyle.bottomTextFocused : ProfileStyle.bottomTextUnfocused]}>16 publicaciones</Text>
                                 </TouchableOpacity>
-                                <View style={ProfileStyle.element1} />
-
+                                {active == "publicaciones" && (<View style={ProfileStyle.elementActive} />)}
                             </View>
-                            <TouchableOpacity>
-                                <Text style={ProfileStyle.bottomTextLikes}>65 me gusta</Text>
-
+                            <TouchableOpacity
+                                onPress={() => setActive("likes")}>
+                                <Text style={[active == "likes" ? ProfileStyle.bottomTextFocused : ProfileStyle.bottomTextUnfocused]}>65 me gusta</Text>
+                                {active == "likes" && (<View style={ProfileStyle.elementActive} />)}
                             </TouchableOpacity>
                         </View>
                     </View>

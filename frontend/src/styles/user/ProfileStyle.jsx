@@ -98,19 +98,26 @@ export const ProfileStyle = {
     bottomElements1: {
 
     },
-    element1: {
+    elementActive: {
         backgroundColor: themeColors.azulFondo,
         height: 4,
 
+    },
+    elementUnactive: {
+        height: 0,
     },
 
     bottomLine: {
         borderBottomWidth: 1,
         borderColor: themeColors.postBorderLight,
     },
-    bottomTextPublicaciones: {
+    bottomTextFocused: {
         fontWeight: "600",
-        fontSize: 18,
+        fontSize: 17,
+    },
+    bottomTextUnfocused: {
+        fontWeight: "400",
+        fontSize: 17,
     },
     bottonTextLikes: {
         fontSize: 18,
