@@ -1,15 +1,13 @@
-import Welcome from './src/views/user/Welcome';
-import Login from './src/views/user/Login';
 import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native';
-import Mensajes from './src/views/user/Mensajes';
-import MensajesEscritos from './src/views/user/MensajesEscritos';
+import { VistaStyle } from './src/styles/VistaStyle';
+import Router from './src/router/Router';
 
 export default function App() {
   return (
-    <SafeAreaView>
+    <SafeAreaView style={VistaStyle.container}>
       <NavigationContainer>
-        <MensajesEscritos/>
+        <Router />
       </NavigationContainer>
     </SafeAreaView>
   );
