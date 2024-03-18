@@ -21,7 +21,7 @@ export default function Login() {
                     <TouchableOpacity
                         style={LoginStyle.arrowButton}
                         onPress={() => navigation.goBack()}>
-                        <ArrowLeftIcon size={20} color="black"></ArrowLeftIcon>
+                        <ArrowLeftIcon size={30} color="black"></ArrowLeftIcon>
                     </TouchableOpacity>
                 </View>
                 <View style={LoginStyle.imageContainer}>
