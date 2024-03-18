@@ -10,6 +10,7 @@ export const themeColors = StyleSheet.create({
     inputGray: "#EDEDED",
     postBackgroundLight: "#ebebeb",
     postBorderLight: "#cfcfcf",
+    lineBorderGray: "#CCCCCC",
 
     //Dark theme
     bg_dark: "#0f0f0f",
