@@ -1,13 +1,19 @@
-import { View, Animated, TouchableWithoutFeedback } from 'react-native';
+import { View, Animated, TouchableWithoutFeedback, TouchableOpacity } from 'react-native';
 import { BottomMenuStyle } from '../styles/BottomMenuStyle';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useNavigation } from '@react-navigation/native';
 
 const BottomMenu = () => {
 
     animation = new Animated.Value(0);
+    const navigation = useNavigation();
 
+    const handleRouter = (route) => {
+        return navigation.navigate(route);
+    }
     toggleMenu = () => {
+
         const toValue = this.open ? 0 : 1
 
         Animated.spring(this.animation, {
@@ -68,8 +74,12 @@ const BottomMenu = () => {
             </View>
 
             <View style={BottomMenuStyle.menuBottom}>
-                <Icon name='home' size={30} />
-                <Icon name='search' size={30} />
+                <TouchableOpacity onPress={() => handleRouter("Feed")}>
+                    <Icon name='home' size={30} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleRouter("Search") }>
+                    <Icon name='search' size={30} />
+                </TouchableOpacity>
                 <Icon name='mail' size={30} />
                 <Icon name='person' size={30} />
             </View>
