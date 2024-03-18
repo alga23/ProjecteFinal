@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, Button, Touchable, TouchableOpacity, Image, TextInput, ScrollView } from 'react-native';
 import { MensajeStyle } from '../../styles/post/MensajeStyle';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Cristiano from '../../../assets/images/cristiano.jpg'
+import Cristiano from '../../../assets/images/cristiano.png'
 
 
 const MensajesEscritos = () => {
