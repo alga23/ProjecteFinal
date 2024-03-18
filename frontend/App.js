@@ -1,14 +1,16 @@
 import Welcome from './src/views/user/Welcome';
 import Login from './src/views/user/Login';
 import { NavigationContainer } from '@react-navigation/native';
-import Registro from './src/views/user/Registro';
-
+import { SafeAreaView } from 'react-native';
+import Mensajes from './src/views/user/Mensajes';
+import MensajesEscritos from './src/views/user/MensajesEscritos';
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Mensajes/>
-    </NavigationContainer>
+    <SafeAreaView>
+      <NavigationContainer>
+        <MensajesEscritos/>
+      </NavigationContainer>
+    </SafeAreaView>
   );
 }
-
