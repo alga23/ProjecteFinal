@@ -1,4 +1,4 @@
-const { Schema, model} = require('mongoose');
+const { Schema, model } = require('mongoose');
 
 const UserSchema = Schema({
 
@@ -32,4 +32,4 @@ const UserSchema = Schema({
     }
 })
 
-module.exports= model('InteraccionPublicacion', UserSchema, 'user');
+module.exports = model('InteraccionPublicacion', UserSchema, 'user');
