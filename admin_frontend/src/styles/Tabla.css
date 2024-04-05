@@ -1,0 +1,97 @@
+
+.table {
+    width: 100%;
+    padding-bottom: 10px;
+    margin-top: 16px;
+}
+.table th,
+.table td {
+    width: 25%;
+    text-align: left;
+    vertical-align: top;
+}
+.table th {
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ccc;
+}
+.table td {
+    padding: 20px 0;
+    border-bottom: 1px solid #ccc;
+}
+.table td:nth-child(2) {
+    max-width: 50px;
+    overflow: hidden;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+}
+.table th:nth-child(4) {
+    max-width: 10px;
+}
+.table tbody .icons{
+    width: 100%;
+    display: flex;
+    justify-content: left;
+    gap: 30px;
+}
+.table tbody td button {
+    border: none;
+    background-color: transparent !important;
+    cursor: pointer;
+    font-size: 18px;
+}
+.table tbody td button:nth-child(1) {
+    color: #ffbf00;
+}
+.table tbody td button:nth-child(2) {
+    color: #f80000;
+}
+.table tbody .name {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: flex-start;
+    gap: 10px;
+}
+.table tbody input[type=checkbox] {
+    background-color: red;
+    color: red;
+}
+.table tbody .name img {
+    width: 40px;
+    height: 40px;
+    margin-top: -12px;
+    margin-bottom: -12px;
+    object-fit: cover;
+}
+.paginacion {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+.paginacion ul li {
+    display: inline;
+    margin: 0 10px;
+}
+.paginacion ul li a {
+    padding: 5px 10px;
+    cursor: pointer;
+}
+.paginacion ul li a:hover {
+    background-color: #0074B4;
+    color: #fff;
+}
+.paginacion .page-active a {
+    background-color: #0074B4;
+    color: #fff;
+}
+.paginacion .break a {
+    cursor: auto;
+}
+.paginacion .break a:hover {
+    background-color: transparent !important;
+    color: #000;
+}

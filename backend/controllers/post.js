@@ -1,5 +1,8 @@
 const Post = require('../models/post');
 const User = require('../models/user')
+const pagination = require('mongoose-pagination');
+const path = require('path');
+const fs = require('fs');
 
 const createPost = async (req, res) => {
     //Check for content
@@ -23,6 +26,106 @@ const createPost = async (req, res) => {
     }
 }
 
+// Listar todas las publicación de ese usuario
+const user = async (req, res) => {
+
+    try {
+        
+        const userId = req.params.id;
+
+        let page = 1;
+        if(req.params.page) page = req.params.page;
+
+        const itemsPerPage = 3;
+
+        const publications = await Post.find({user_id: userId})
+                                        .sort('-createdAt')
+                                        .populate('user_id', '-password -__v -email')
+                                        .paginate(page, itemsPerPage);
+
+        if(!publications) {
+            return res.status(404).send({
+                status: "error",
+                message: "No hay publicaciones de ese usuario"
+            })
+        }
+
+        const total = await Post.countDocuments();
+ 
+        return res.status(200).send({
+            status: "success",
+            page,
+            total,
+            pages: Math.ceil(total / itemsPerPage),
+            publications
+        })
+
+    }catch(error) {
+        console.log(error);
+        return res.status(500).send({
+            status: "error",
+            message: "Error en el servidor al listar las publicaciones de ese usuario"
+        })
+    }
+}
+
+// Subir una imagen a una publicación
+const upload = async(req, res) => {
+    try {
+
+        let publicationId = req.params.id;
+
+        if(!req.file) {
+            return res.status(404).send({
+                status: "error",
+                message: "Petición no incluye una imagen"
+            })
+        }
+
+        const imagen = req.file.originalname;
+        const extension = path.extname(imagen);
+
+        const extensiones = ['.png', '.jpg', '.jpeg'];
+
+        if (!extensiones.includes(extension)) {
+            
+            const filePath = req.file.path;
+            fs.unlinkSync(filePath);
+
+            return res.status(404).send({
+                status: "error",
+                message: "Esa extension no es valida"
+            })
+
+        }
+
+        const publicationUpdated = await Post.findByIdAndUpdate({"user_id": req.user.id, "_id": publicationId}, {file: req.file.filename}, {new: true});
+
+        if (!publicationUpdated ) {
+            return res.status(404).send({
+                status: "error",
+                message: "No se ha podido encontrar esa publicación para añadir una imagen"
+            })
+        }
+
+        return res.status(200).send({
+            status: "success",
+            publicationUpdated,
+            file: req.file
+        })
+        
+
+    }catch(error) {
+        console.log(error);
+        return res.status(500).send({
+            status: "error",
+            message: "Error en el servidor al actualizar una imagen de un post"
+        })
+    }
+}
+
 module.exports = {
     createPost,
+    user,
+    upload
 }
