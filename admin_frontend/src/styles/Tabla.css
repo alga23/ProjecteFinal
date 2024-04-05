@@ -18,6 +18,15 @@
     padding: 20px 0;
     border-bottom: 1px solid #ccc;
 }
+.table td:nth-child(2) {
+    max-width: 50px;
+    overflow: hidden;
+    text-wrap: nowrap;
+    text-overflow: ellipsis;
+}
+.table th:nth-child(4) {
+    max-width: 10px;
+}
 .table tbody .icons{
     width: 100%;
     display: flex;

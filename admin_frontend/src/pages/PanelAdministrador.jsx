@@ -2,6 +2,7 @@ import { useState } from 'react';
 import TablaUsuarios from './TablaUsuarios';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import TablaPosts from './TablaPosts';
 
 export default function PanelAdministrador() {
 
@@ -25,8 +26,10 @@ export default function PanelAdministrador() {
                 {active == 'usuarios' ?
                     <div className='line-active'></div> : <div className='line-active post'></div>}
 
-                {active == 'usuarios' && (
+                {active == 'usuarios' ? (
                     <TablaUsuarios />
+                ) : active == 'post' && (
+                    <TablaPosts />
                 )}
             </main>
         </div>

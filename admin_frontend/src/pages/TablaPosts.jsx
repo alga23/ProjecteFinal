@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faMinus, faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
 import profile from '../assets/default_profile_picture.png';
 
-export default function TablaUsuarios() {
+export default function TablaPosts() {
 
     const [data, setData] = useState([...Array(40).fill(0)]);
     const [selectedItems, setSelectedItems] = useState([]);
@@ -32,23 +32,23 @@ export default function TablaUsuarios() {
         <section className='interaccion-table'>
             <header className='cabecera-interaccion'>
                 <div className='buscador'>
-                    <input type='search' name='buscador' placeholder='Buscar por el nombre' />
+                    <input type='search' name='buscador' placeholder='Buscar por post' />
                 </div>
                 <div className="button-table">
                 {selectedItems.length >= 2 && (
-                    <button className='eliminar-icon'><FontAwesomeIcon icon={faMinus} /> Eliminar usuario</button>
+                    <button className='eliminar-icon'><FontAwesomeIcon icon={faMinus} /> Eliminar post</button>
                 )}
-                <button className='añadir-icon'><FontAwesomeIcon icon={faPlus} /> Añadir usuario</button>
+                <button className='añadir-icon'><FontAwesomeIcon icon={faPlus} /> Añadir Post</button>
                 </div>
 
             </header>
             <table className="table">
                 <thead>
                     <tr>
-                        <th>Nombre</th>
-                        <th>Username</th>
-                        <th>Biografia</th>
-                        <th>Rol</th>
+                        <th>Nombre Usuario</th>
+                        <th>Contenido</th>
+                        <th>Fecha Publicación</th>
+                        <th>likes</th>
                         <th>Acción</th>
                     </tr>
                 </thead>
@@ -60,9 +60,9 @@ export default function TablaUsuarios() {
                                 <img src={profile} alt="Imagen de perfil del administrador" />
                                 Juanito Perez
                             </td>
-                            <td>_Juanito_WW</td>
-                            <td className="bio">Me llamo juanito</td>
-                            <td>User</td>
+                            <td>Esto solo es una publicjojojojojjojojación</td>
+                            <td className="bio">01 de abril</td>
+                            <td>112</td>
                             <td className="icons">
 
                                 <button><FontAwesomeIcon icon={faPencil} /></button>

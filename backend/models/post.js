@@ -9,6 +9,9 @@ const postSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User'
     },
+    file: {
+        type: String,
+    },
     likes: {
         type: Number,
         default: 0
