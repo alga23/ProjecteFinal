@@ -39,7 +39,13 @@ const UserSchema = Schema({
     created_at: {
         type: Date,
         default: Date.now
-    }
+    },
+    fav_posts_id: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Post'
+        }
+    ]
 })
 
 module.exports = model('User', UserSchema, 'user');
