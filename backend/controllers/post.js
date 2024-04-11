@@ -1,14 +1,14 @@
 const Post = require('../models/post');
 const User = require('../models/user')
-const pagination = require('mongoose-pagination');
 const path = require('path');
 const fs = require('fs');
+const followService = require('../services/followService');
 
 const createPost = async (req, res) => {
     //Check for content
     try {
         if (!req.body.content) {
-            return res.status(400).send("No content found.")
+            return res.status(400).send("No hay texto para añadir")
         }
         const user = req.user
 
@@ -27,31 +27,35 @@ const createPost = async (req, res) => {
 }
 
 // Listar todas las publicación de ese usuario
-const user = async (req, res) => {
+const userPosts = async (req, res) => {
 
     try {
-
+        
+        // Obtener id del usuario
         const userId = req.params.id;
 
         let page = 1;
-        if (req.params.page) page = req.params.page;
+        if(req.params.page) page = req.params.page;
 
-        const itemsPerPage = 3;
+        const itemsPerPage = 10;
 
-        const publications = await Post.find({ user_id: userId })
-            .sort('-createdAt')
-            .populate('user_id', '-password -__v -email')
-            .paginate(page, itemsPerPage);
+        // Obtener publicaciones de ese usuario
+        const publications = await Post.find({user_id: userId})
+                                        .sort('-createdAt')
+                                        .populate('user_id', '-password -__v -email')
+                                        .paginate(page, itemsPerPage);
 
-        if (!publications) {
+        if(!publications) {
             return res.status(404).send({
                 status: "error",
                 message: "No hay publicaciones de ese usuario"
             })
         }
 
-        const total = await Post.countDocuments();
-
+        // COntar todos los Posts que tiene el usuario
+        const total = await Post.countDocuments({user_id: userId});
+ 
+        // Retornar publicacion y paginación
         return res.status(200).send({
             status: "success",
             page,
@@ -60,8 +64,8 @@ const user = async (req, res) => {
             publications
         })
 
-    } catch (error) {
-        console.log(error);
+    }catch(error) {
+
         return res.status(500).send({
             status: "error",
             message: "Error en el servidor al listar las publicaciones de ese usuario"
@@ -70,25 +74,30 @@ const user = async (req, res) => {
 }
 
 // Subir una imagen a una publicación
-const upload = async (req, res) => {
+const upload = async(req, res) => {
     try {
 
+        // Obtener ip de publicacion
         let publicationId = req.params.id;
 
-        if (!req.file) {
+        if(!req.file) {
             return res.status(404).send({
                 status: "error",
                 message: "Petición no incluye una imagen"
             })
         }
 
+        // Obtener nombre de archivo a enviar
         const imagen = req.file.originalname;
+        // Extraer la extensión del archivo
         const extension = path.extname(imagen);
 
         const extensiones = ['.png', '.jpg', '.jpeg'];
 
+        // Verificar que no envien un archivo con una extension invalida
         if (!extensiones.includes(extension)) {
-
+            
+            // Borrar archivo en caso de ser incorrecta
             const filePath = req.file.path;
             fs.unlinkSync(filePath);
 
@@ -99,9 +108,10 @@ const upload = async (req, res) => {
 
         }
 
-        const publicationUpdated = await Post.findByIdAndUpdate({ "user_id": req.user.id, "_id": publicationId }, { file: req.file.filename }, { new: true });
+        // Actualizar publicación añadiendo el archivo enviado en el Post del usuario
+        const publicationUpdated = await Post.findByIdAndUpdate({"user_id": req.user.id, "_id": publicationId}, {file: req.file.filename}, {new: true});
 
-        if (!publicationUpdated) {
+        if (!publicationUpdated ) {
             return res.status(404).send({
                 status: "error",
                 message: "No se ha podido encontrar esa publicación para añadir una imagen"
@@ -113,13 +123,59 @@ const upload = async (req, res) => {
             publicationUpdated,
             file: req.file
         })
+        
 
-
-    } catch (error) {
-        console.log(error);
+    }catch(error) {
+        
         return res.status(500).send({
             status: "error",
             message: "Error en el servidor al actualizar una imagen de un post"
+        })
+    }
+}
+
+// Listar publicación de los usuarios que sigues
+const feedFollows = async (req, res) => {
+
+    try {
+        const userId = req.user.id;
+
+        // Servicio para obtener un array de ids de usuarios que sigues y los que te siguen
+        const follows = await followService.followindUserIds(userId);
+
+        // Pagina actual
+        let page = 1;
+        if(req.params.page) page = req.params.page;
+
+        const itemsPerPage = 10; // Items por pagina
+        // Mostrar los posts de los usuarios que sigues y hacer paginación
+        const posts = await Post.find({"user_id": {$in: follows.following}})
+                                .sort('-createdAt')
+                                .select({"likes_users_id": 0, "__v": 0})
+                                .paginate(page, itemsPerPage);
+        
+        if(!posts) {
+            return res.status(404).send({
+                status: "error",
+                message: "No hay publicación de usuarios que sigues"
+            })
+        }
+        // Contar los posts que hay de los usuarios que sigues
+        const total = await Post.countDocuments({"user_id": {$in: follows.following}});
+        return res.status(200).send({
+            status: "success",
+            page,
+            total,
+            pages: Math.ceil(total / itemsPerPage),
+            posts,
+            following: follows.following,
+            follower: follows.follower,
+        })
+
+    }catch(error) {
+        return res.status(500).send({
+            status: "error",
+            message: "Error en el servidor: ", error
         })
     }
 }
@@ -216,13 +272,11 @@ const favPostsUser = async (req, res) => {
     }
 }
 
-
-
-
 module.exports = {
     createPost,
-    user,
+    userPosts,
     upload,
+    feedFollows,
     likePost,
     favPost,
     favPostsUser
