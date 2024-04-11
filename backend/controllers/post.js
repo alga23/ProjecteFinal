@@ -1,10 +1,8 @@
 const Post = require('../models/post');
 const User = require('../models/user')
-const pagination = require('mongoose-pagination');
 const path = require('path');
 const fs = require('fs');
 const followService = require('../services/followService');
-const Follow = require('../models/follow');
 
 const createPost = async (req, res) => {
     //Check for content
@@ -182,9 +180,104 @@ const feedFollows = async (req, res) => {
     }
 }
 
+//Like posts or remove like from already liked posts
+const likePost = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.postId).select()
+        if (!post) {
+            return res.status(404).send("Post no encontrado");
+        }
+        //Check if the post is not already liked by the user
+        let message = ""
+        if (!post.likes_users_id.includes(req.user.id)) {
+            post.likes++
+            post.likes_users_id.push(req.user.id)
+            message = "Like añadido al post"
+        } else {
+            post.likes--
+            post.likes_users_id = post.likes_users_id.filter(id => id.toString() !== req.user.id.toString());
+            message = "Like borrado del post"
+        }
+        await post.save()
+        res.status(201).json({
+            message: message,
+            post: post,
+            user: req.user.id
+        })
+    } catch (error) {
+        console.error("Error añadiendo/borrando like: ", error)
+        res.status(500).send("Error interno del servidor. " + error)
+    }
+}
+
+//Fav a post with authenticated user
+const favPost = async (req, res) => {
+    try {
+        // Verificar si el usuario está autenticado
+        if (!req.user) {
+            return res.status(401).send("Usuario no autenticado");
+        }
+
+        // Buscar el post por su ID
+        const post = await Post.findById(req.params.postId);
+        const user = await User.findById(req.user.id);
+        if (!post) {
+            return res.status(404).send("Post no encontrado");
+        }
+
+        // Verificar si el post ya está en favoritos del usuario
+        const alreadyFavorited = user.fav_posts_id.includes(post._id);
+        let message = "";
+
+        if (!alreadyFavorited) {
+            // Si no está en favoritos, lo añadimos
+            user.fav_posts_id.push(post._id);
+            message = "Post añadido a favoritos";
+        } else {
+            // Si ya está en favoritos, lo eliminamos
+            user.fav_posts_id = user.fav_posts_id.filter(favPostId => !favPostId.equals(post._id));
+            message = "Post borrado de favoritos";
+        }
+
+        // Guardamos los cambios en el usuario
+        await user.save();
+
+        // Respondemos con el mensaje y la información del post y el usuario
+        res.status(201).json({
+            message: message,
+            post: post,
+            user: user.id
+        });
+    } catch (error) {
+        console.error("Error añadiendo/borrando el post de favoritos: ", error);
+        res.status(500).send("Error interno del servidor. " + error);
+    }
+}
+
+
+//Method to get all posts faved by a user
+const favPostsUser = async (req, res) => {
+    try {
+        const user = await User.findById(req.user.id).populate('fav_posts_id');
+        if (!user) {
+            return res.status(404).send("Usuario no encontrado");
+        }
+        res.status(200).json({
+            message: "Posts favoritos del usuario",
+            posts: user.fav_posts_id
+        });
+    } catch (error) {
+        console.error("Error al obtener los posts favoritos del usuario: ", error);
+        res.status(500).send("Error interno del servidor. " + error);
+    }
+}
+
 module.exports = {
     createPost,
     userPosts,
     upload,
-    feedFollows
+    feedFollows,
+    likePost,
+    favPost,
+    favPostsUser
 }
