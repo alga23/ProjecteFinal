@@ -20,6 +20,9 @@ router.post("/create", auth, postController.createPost)
 router.get('/user/:id/:page?', auth, postController.user)
 router.post('/upload/:id', [auth, uploads.single('file0')], postController.upload);
 router.put('/like/:postId', auth, postController.likePost)
+router.post('/fav/:postId', auth, postController.favPost)
+router.get('/fav/user', auth, postController.favPostsUser)
+
 
 //Exportar todas las rutas
 module.exports = router;
