@@ -216,6 +216,50 @@ const favPostsUser = async (req, res) => {
     }
 }
 
+const respondPost = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.postId).select()
+        if (!post) {
+            return res.status(404).send("Post no encontrado")
+        }
+        const responsePost = new Post({
+            content: req.body.content,
+            user_id: user.id,
+            posts_parents: [...post.posts_parents, post._id]
+        })
+        post.posts_responses.push(responsePost)
+        await post.save()
+        await responsePost.save()
+        res.status(201).json({
+            message: "Respuesta creada con éxito.",
+            respondPost: respondPost
+        })
+
+    } catch (error) {
+        console.error("Error al obtener el post: ", error);
+        res.status(500).send("Error interno del servidor. " + error);
+    }
+}
+
+const retrievePost = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.postId).select()
+        if (!post) {
+            console.log("No se ha encontrado el post")
+            res.status(400).send("No se ha encontrado el post")
+        }
+        res.status(200).json({
+            message: "Post encontrado",
+            post: post
+        })
+
+    } catch (error) {
+        console.log("There was an error: " + error)
+        res.status(500).send("There was an error: " + error)
+    }
+
+}
+
 
 
 
@@ -225,5 +269,7 @@ module.exports = {
     upload,
     likePost,
     favPost,
-    favPostsUser
+    favPostsUser,
+    respondPost,
+    retrievePost
 }

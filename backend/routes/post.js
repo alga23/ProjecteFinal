@@ -22,6 +22,9 @@ router.post('/upload/:id', [auth, uploads.single('file0')], postController.uploa
 router.put('/like/:postId', auth, postController.likePost)
 router.post('/fav/:postId', auth, postController.favPost)
 router.get('/fav/user', auth, postController.favPostsUser)
+router.post('/respond/:postId', auth, postController.respondPost)
+router.get('/:postId', auth, postController.retrievePost)
+
 
 
 //Exportar todas las rutas
