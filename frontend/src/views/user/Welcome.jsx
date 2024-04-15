@@ -8,6 +8,7 @@ import { WelcomeStyle } from '../../styles/user/WelcomeStyle'
 export default function Welcome() {
     const navigation = useNavigation()
 
+
     return (
         <SafeAreaView style={WelcomeStyle.container}>
             <StatusBar style="auto" />

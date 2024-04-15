@@ -1,4 +1,4 @@
-const { Schema, model} = require('mongoose');
+const { Schema, model } = require('mongoose');
 
 const UserSchema = Schema({
 
@@ -31,14 +31,21 @@ const UserSchema = Schema({
         type: String,
         default: 'default.png'
     },
+
     rol: {
         type: String,
-        enum: ['user','administrador']
+        enum: ['user', 'administrador']
     },
     created_at: {
         type: Date,
         default: Date.now
-    }
+    },
+    fav_posts_id: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Post'
+        }
+    ]
 })
 
-module.exports= model('User', UserSchema, 'user');
+module.exports = model('User', UserSchema, 'user');

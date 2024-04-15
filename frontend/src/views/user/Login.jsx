@@ -4,9 +4,15 @@ import { LoginStyle } from '../../styles/user/LoginStyle'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ArrowLeftIcon } from "react-native-heroicons/solid"
 import { themeColors } from "../../theme/index"
+import { useNavigation } from '@react-navigation/native'
 
 export default function Login() {
 
+    const navigation = useNavigation();
+
+    const handleLogin = () => {
+        navigation.navigate("Feed");
+    }
     return (
         <SafeAreaView style={LoginStyle.container}>
             <StatusBar style="auto" />
@@ -15,7 +21,7 @@ export default function Login() {
                     <TouchableOpacity
                         style={LoginStyle.arrowButton}
                         onPress={() => navigation.goBack()}>
-                        <ArrowLeftIcon size={20} color="black"></ArrowLeftIcon>
+                        <ArrowLeftIcon size={30} color="black"></ArrowLeftIcon>
                     </TouchableOpacity>
                 </View>
                 <View style={LoginStyle.imageContainer}>

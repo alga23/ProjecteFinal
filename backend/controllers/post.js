@@ -271,6 +271,7 @@ const favPostsUser = async (req, res) => {
         res.status(500).send("Error interno del servidor. " + error);
     }
 }
+
 //method to delete post
 const deletePost = async(req, res) => { 
     try{
@@ -296,6 +297,7 @@ catch (e) {
 }
 }
 
+
 module.exports = {
     createPost,
     userPosts,
@@ -305,4 +307,5 @@ module.exports = {
     favPost,
     favPostsUser,
     deletePost
+   
 }

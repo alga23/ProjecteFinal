@@ -1,11 +1,7 @@
 const bcrypt = require("bcrypt")
 const User = require('../models/user')
-const jwt = require("jsonwebtoken")
 const Validators = require("../middleware/validators")
-require('dotenv').config()
-
-// Obtener la clave para generar un token de authentificación
-const key = process.env.JWT_PRIVATE_KEY
+const generateToken = require("../services/jwt");
 
 const register = async (req, res) => {
 
@@ -57,13 +53,13 @@ const login = async (req, res) => {
     const body = req.body
     try {
         // Verificar que los campos no esten vacios
-        if (!body.username || !body.password) {
+        if (!body.email || !body.password) {
             return res.status(400).send("Missing fields.")
         }
         // Pasar el username a minuscula
-        const lowercaseUsername = body.username.toLowerCase()
+        const lowercaseUsername = body.email.toLowerCase()
         // Buscar el username 
-        const user = await User.findOne({ username: { $regex: new RegExp(lowercaseUsername, 'i') }})
+        const user = await User.findOne({ email: { $regex: new RegExp(lowercaseUsername, 'i') }})
 
         if (!user) {    
             return res.status(400).send("El usuario no se encuentra")
@@ -71,12 +67,7 @@ const login = async (req, res) => {
         // Comparar la contraseña que le estas pasando y la contraseña encriptada
         if (await bcrypt.compare(body.password, user.password)) {
             // Firma o se crea un token con esos datos
-            const token = jwt.sign({ 
-                id: user._id, 
-                nick: user.nick,
-                username: user.username,
-                imagen: user.imagen
-            }, key)
+            const token = generateToken(user);
 
             res.status(200).send({
                 user: {
