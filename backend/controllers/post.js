@@ -272,6 +272,32 @@ const favPostsUser = async (req, res) => {
     }
 }
 
+//method to delete post
+const deletePost = async(req, res) => { 
+    try{
+    const publicationId = req.params.id;
+    
+    const publication =  await Post.findOne({"user_id": req.user.id, "_id": publicationId});
+    
+    if (!publication) {
+        return res.status(404).send({
+            status: "error",
+            message: "No se ha podido encontrar ningun post que borrar"
+        })
+    }
+    
+    await publication.deleteOne({"_id": publicationId});
+    return res.status(200).send({
+        status: "succes",
+        message: "publicacion borrada"
+    })
+}
+catch (e) {
+    console.log(e);
+}
+}
+
+
 module.exports = {
     createPost,
     userPosts,
@@ -279,5 +305,7 @@ module.exports = {
     feedFollows,
     likePost,
     favPost,
-    favPostsUser
+    favPostsUser,
+    deletePost
+   
 }
