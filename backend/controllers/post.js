@@ -30,22 +30,22 @@ const createPost = async (req, res) => {
 const userPosts = async (req, res) => {
 
     try {
-        
+
         // Obtener id del usuario
         const userId = req.params.id;
 
         let page = 1;
-        if(req.params.page) page = req.params.page;
+        if (req.params.page) page = req.params.page;
 
         const itemsPerPage = 10;
 
         // Obtener publicaciones de ese usuario
-        const publications = await Post.find({user_id: userId})
-                                        .sort('-createdAt')
-                                        .populate('user_id', '-password -__v -email')
-                                        .paginate(page, itemsPerPage);
+        const publications = await Post.find({ user_id: userId })
+            .sort('-createdAt')
+            .populate('user_id', '-password -__v -email')
+            .paginate(page, itemsPerPage);
 
-        if(!publications) {
+        if (!publications) {
             return res.status(404).send({
                 status: "error",
                 message: "No hay publicaciones de ese usuario"
@@ -53,8 +53,8 @@ const userPosts = async (req, res) => {
         }
 
         // COntar todos los Posts que tiene el usuario
-        const total = await Post.countDocuments({user_id: userId});
- 
+        const total = await Post.countDocuments({ user_id: userId });
+
         // Retornar publicacion y paginación
         return res.status(200).send({
             status: "success",
@@ -64,7 +64,7 @@ const userPosts = async (req, res) => {
             publications
         })
 
-    }catch(error) {
+    } catch (error) {
 
         return res.status(500).send({
             status: "error",
@@ -74,13 +74,13 @@ const userPosts = async (req, res) => {
 }
 
 // Subir una imagen a una publicación
-const upload = async(req, res) => {
+const upload = async (req, res) => {
     try {
 
         // Obtener ip de publicacion
         let publicationId = req.params.id;
 
-        if(!req.file) {
+        if (!req.file) {
             return res.status(404).send({
                 status: "error",
                 message: "Petición no incluye una imagen"
@@ -96,7 +96,7 @@ const upload = async(req, res) => {
 
         // Verificar que no envien un archivo con una extension invalida
         if (!extensiones.includes(extension)) {
-            
+
             // Borrar archivo en caso de ser incorrecta
             const filePath = req.file.path;
             fs.unlinkSync(filePath);
@@ -109,9 +109,9 @@ const upload = async(req, res) => {
         }
 
         // Actualizar publicación añadiendo el archivo enviado en el Post del usuario
-        const publicationUpdated = await Post.findByIdAndUpdate({"user_id": req.user.id, "_id": publicationId}, {file: req.file.filename}, {new: true});
+        const publicationUpdated = await Post.findByIdAndUpdate({ "user_id": req.user.id, "_id": publicationId }, { file: req.file.filename }, { new: true });
 
-        if (!publicationUpdated ) {
+        if (!publicationUpdated) {
             return res.status(404).send({
                 status: "error",
                 message: "No se ha podido encontrar esa publicación para añadir una imagen"
@@ -123,10 +123,10 @@ const upload = async(req, res) => {
             publicationUpdated,
             file: req.file
         })
-        
 
-    }catch(error) {
-        
+
+    } catch (error) {
+
         return res.status(500).send({
             status: "error",
             message: "Error en el servidor al actualizar una imagen de un post"
@@ -145,23 +145,23 @@ const feedFollows = async (req, res) => {
 
         // Pagina actual
         let page = 1;
-        if(req.params.page) page = req.params.page;
+        if (req.params.page) page = req.params.page;
 
         const itemsPerPage = 10; // Items por pagina
         // Mostrar los posts de los usuarios que sigues y hacer paginación
-        const posts = await Post.find({"user_id": {$in: follows.following}})
-                                .sort('-createdAt')
-                                .select({"likes_users_id": 0, "__v": 0})
-                                .paginate(page, itemsPerPage);
-        
-        if(!posts) {
+        const posts = await Post.find({ "user_id": { $in: follows.following } })
+            .sort('-createdAt')
+            .select({ "likes_users_id": 0, "__v": 0 })
+            .paginate(page, itemsPerPage);
+
+        if (!posts) {
             return res.status(404).send({
                 status: "error",
                 message: "No hay publicación de usuarios que sigues"
             })
         }
         // Contar los posts que hay de los usuarios que sigues
-        const total = await Post.countDocuments({"user_id": {$in: follows.following}});
+        const total = await Post.countDocuments({ "user_id": { $in: follows.following } });
         return res.status(200).send({
             status: "success",
             page,
@@ -172,7 +172,7 @@ const feedFollows = async (req, res) => {
             follower: follows.follower,
         })
 
-    }catch(error) {
+    } catch (error) {
         return res.status(500).send({
             status: "error",
             message: "Error en el servidor: ", error
@@ -271,30 +271,77 @@ const favPostsUser = async (req, res) => {
         res.status(500).send("Error interno del servidor. " + error);
     }
 }
+
+const respondPost = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.postId).select()
+        if (!post) {
+            return res.status(404).send("Post no encontrado")
+        }
+        const responsePost = new Post({
+            content: req.body.content,
+            user_id: user.id,
+            posts_parents: [...post.posts_parents, post._id]
+        })
+        post.posts_responses.push(responsePost)
+        await post.save()
+        await responsePost.save()
+        res.status(201).json({
+            message: "Respuesta creada con éxito.",
+            respondPost: respondPost
+        })
+
+    } catch (error) {
+        console.error("Error al obtener el post: ", error);
+        res.status(500).send("Error interno del servidor. " + error);
+    }
+}
+
+const retrievePost = async (req, res) => {
+    try {
+        const post = await Post.findById(req.params.postId).select()
+        if (!post) {
+            console.log("No se ha encontrado el post")
+            res.status(400).send("No se ha encontrado el post")
+        }
+        res.status(200).json({
+            message: "Post encontrado",
+            post: post
+        })
+
+    } catch (error) {
+        console.log("There was an error: " + error)
+        res.status(500).send("There was an error: " + error)
+    }
+
+}
+
 //method to delete post
-const deletePost = async(req, res) => { 
-    try{
-    const publicationId = req.params.id;
-    
-    const publication =  await Post.findOne({"user_id": req.user.id, "_id": publicationId});
-    
-    if (!publication) {
-        return res.status(404).send({
-            status: "error",
-            message: "No se ha podido encontrar ningun post que borrar"
+const deletePost = async (req, res) => {
+    try {
+        const publicationId = req.params.id;
+
+        const publication = await Post.findOne({ "user_id": req.user.id, "_id": publicationId });
+
+        if (!publication) {
+            return res.status(404).send({
+                status: "error",
+                message: "No se ha podido encontrar ningun post que borrar"
+            })
+        }
+
+        await publication.deleteOne({ "_id": publicationId });
+        return res.status(200).send({
+            status: "succes",
+            message: "publicacion borrada"
         })
     }
-    
-    await publication.deleteOne({"_id": publicationId});
-    return res.status(200).send({
-        status: "succes",
-        message: "publicacion borrada"
-    })
+    catch (e) {
+        console.log(e);
+    }
 }
-catch (e) {
-    console.log(e);
-}
-}
+
+
 
 module.exports = {
     createPost,
@@ -304,5 +351,8 @@ module.exports = {
     likePost,
     favPost,
     favPostsUser,
+    respondPost,
+    retrievePost,
     deletePost
+
 }
