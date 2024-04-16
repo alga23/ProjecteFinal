@@ -98,7 +98,17 @@ export const LoginStyle = {
         backgroundColor: themeColors.inputGray,
         borderRadius: 20,
         marginHorizontal: 20
+    },
+    alertContainer: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        backgroundColor: 'red',
+        paddingHorizontal: 15,
+        paddingVertical: 5,
+        borderRadius: 10
+    },
+    textAlert: {
+        color: '#fff'
     }
-
-
 }
