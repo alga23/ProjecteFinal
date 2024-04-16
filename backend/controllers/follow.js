@@ -3,7 +3,6 @@ const Follow = require('../models/follow');
 // Guardar y eliminar un Follow
 const save = async (req, res) => {
 
-    console.log("guardaar");
     try {
         const user = req.user.id;
 

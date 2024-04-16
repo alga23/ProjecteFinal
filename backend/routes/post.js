@@ -23,6 +23,10 @@ router.put('/like/:postId', auth, postController.likePost)
 router.post('/fav/:postId', auth, postController.favPost)
 router.get('/fav/user', auth, postController.favPostsUser)
 router.get('/feed/:page?', auth, postController.feedFollows);
+router.post('/respond/:postId', auth, postController.respondPost)
+router.get('/:postId', auth, postController.retrievePost)
+router.get('/feed/:page?', auth, postController.feedFollows);
+router.delete('/delete/:id', auth, postController.deletePost);
 
 //Exportar todas las rutas
 module.exports = router;

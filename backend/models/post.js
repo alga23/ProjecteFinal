@@ -1,12 +1,12 @@
-const mongoose = require("mongoose");
+const { Schema, model } = require('mongoose');
 
-const postSchema = new mongoose.Schema({
+const postSchema = Schema({
     content: {
         type: String,
         required: true
     },
     user_id: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: 'User'
     },
     file: {
@@ -16,9 +16,22 @@ const postSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    posts_parents: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Post'
+        }
+    ],
+    posts_responses: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'Post'
+        }
+    ],
+
     likes_users_id: [
         {
-            type: mongoose.Schema.Types.ObjectId,
+            type: Schema.Types.ObjectId,
             ref: 'User'
         }
     ]
@@ -28,6 +41,4 @@ const postSchema = new mongoose.Schema({
     }
 );
 
-const Post = mongoose.model("Post", postSchema);
-
-module.exports = Post;
+module.exports = model('Post', postSchema, 'posts');

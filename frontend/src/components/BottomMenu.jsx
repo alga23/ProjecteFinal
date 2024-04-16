@@ -80,8 +80,12 @@ const BottomMenu = () => {
                 <TouchableOpacity onPress={() => handleRouter("Search") }>
                     <Icon name='search' size={30} />
                 </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleRouter('Bandeja')}>
                 <Icon name='mail' size={30} />
+                </TouchableOpacity>
+                <TouchableOpacity>
                 <Icon name='person' size={30} />
+                </TouchableOpacity>
             </View>
         </View>
     )

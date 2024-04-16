@@ -54,7 +54,10 @@ const login = async (req, res) => {
     try {
         // Verificar que los campos no esten vacios
         if (!body.email || !body.password) {
-            return res.status(400).send("Missing fields.")
+            return res.status(400).send({
+                status: "error",
+                message: "Faltan campos"
+            })
         }
         // Pasar el username a minuscula
         const lowercaseUsername = body.email.toLowerCase()
@@ -62,7 +65,10 @@ const login = async (req, res) => {
         const user = await User.findOne({ email: { $regex: new RegExp(lowercaseUsername, 'i') }})
 
         if (!user) {    
-            return res.status(400).send("El usuario no se encuentra")
+            return res.status(400).send({
+                status: "error",
+                message: "El usuario no se encuentra"
+            })
         }
         // Comparar la contraseña que le estas pasando y la contraseña encriptada
         if (await bcrypt.compare(body.password, user.password)) {
@@ -70,6 +76,7 @@ const login = async (req, res) => {
             const token = generateToken(user);
 
             res.status(200).send({
+                status: "success",
                 user: {
                     id: user._id,
                     username: user.username,
@@ -78,7 +85,10 @@ const login = async (req, res) => {
                 message: "Has iniciado sesión correctamente",
             })
         } else {
-            res.status(400).send("Contraseña incorrecta")
+            res.status(400).send({
+                status: "error",
+                message: "Contraseña incorrecta"
+            })
         }
     } catch (error) {
         res.status(500).send("Error en el servidor: " + error)

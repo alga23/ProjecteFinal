@@ -1,5 +1,16 @@
+import { themeColors } from "../../theme";
+
 export const MensajeStyle ={
 
+    containerPrincipal: {
+        flex: 1,
+        backgroundColor: '#fff'
+    },
+    lineTop: {
+        borderTopWidth: 1,
+        borderColor: themeColors.lineBorderGray,
+        marginBottom: 20
+    },
     textoBandeja: {
         fontSize: 28,
         fontWeight: 'bold'
@@ -7,8 +18,7 @@ export const MensajeStyle ={
     container: {
         marginTop: 178,
         justifyContent: 'center',
-        alignItems: 'center',
-        flex:0
+        alignItems: 'center'
     },
     containerSecundario:{
         justifyContent: 'center',
@@ -16,7 +26,6 @@ export const MensajeStyle ={
     },
     textoSecundario:{
         fontSize: 14
-
     },
     botonStyle:{
         backgroundColor: '#0074B4',
@@ -25,9 +34,7 @@ export const MensajeStyle ={
         alignItems: 'center',
         marginTop: 20,
         borderRadius: 20,
-        padding:13
-
-        
+        padding:13,
  },
     botonTexto:{
         color: 'white',
@@ -35,8 +42,6 @@ export const MensajeStyle ={
         alignItems: 'center',
         fontWeight: 'bold',
         fontSize: 20,
-
-    
     },
     botonContainer:{
         justifyContent: 'center',
@@ -113,4 +118,3 @@ export const MensajeStyle ={
         borderColor: '#ccc'
     }
 }
-
