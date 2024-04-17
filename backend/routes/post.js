@@ -9,11 +9,11 @@ const storage = multer.diskStorage({
         cb(null, './uploads/post/')
     },
     filename: (req, path, cb) => {
-        cb(null, 'post-' + Date.now() + '-' + path.originalname)
+        cb(null, 'post-'+Date.now() + '-'+path.originalname)
     }
 })
 
-const uploads = multer({ storage });
+const uploads = multer({storage});
 
 // Rutas para el post
 router.post("/create", auth, postController.createPost)
@@ -22,12 +22,11 @@ router.post('/upload/:id', [auth, uploads.single('file0')], postController.uploa
 router.put('/like/:postId', auth, postController.likePost)
 router.post('/fav/:postId', auth, postController.favPost)
 router.get('/fav/user', auth, postController.favPostsUser)
+router.get('/feed/:page?', auth, postController.feedFollows);
 router.post('/respond/:postId', auth, postController.respondPost)
 router.get('/:postId', auth, postController.retrievePost)
 router.get('/feed/:page?', auth, postController.feedFollows);
 router.delete('/delete/:id', auth, postController.deletePost);
-
-
 
 //Exportar todas las rutas
 module.exports = router;

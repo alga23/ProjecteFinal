@@ -33,6 +33,7 @@ const Feed = () => {
     return (
         <View style={FeedStyle.containerPrincipal}>
             <Header />
+            <View style={FeedStyle.lineTop} />
             <View style={FeedStyle.container}>
                 <TouchableOpacity onPress={() => setSelectPage('Siguiendo')}>
                     <Text style={[FeedStyle.text, selectPage === 'Siguiendo' && FeedStyle.textSiguiendo]}>Siguiendo</Text>
