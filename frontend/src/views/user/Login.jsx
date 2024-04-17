@@ -1,18 +1,46 @@
 import { StatusBar } from 'expo-status-bar'
-import { Text, View, Image, TouchableOpacity, TextInput } from 'react-native'
+import { Text, View, Image, TouchableOpacity, TextInput, ToastAndroid } from 'react-native'
 import { LoginStyle } from '../../styles/user/LoginStyle'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ArrowLeftIcon } from "react-native-heroicons/solid"
 import { themeColors } from "../../theme/index"
 import { useNavigation } from '@react-navigation/native'
+import useForm from '../../hooks/useForm'
+import { Global } from '../../utils/Global'
+import useFetch from '../../hooks/useFetch'
+import SecureStorage from 'react-native-secure-storage';
 
 export default function Login() {
 
     const navigation = useNavigation();
+    const { form, changed } = useForm({});
+    
+    const handleLogin = async () => {
+        const newForm = form;
 
-    const handleLogin = () => {
-        navigation.navigate("Feed");
+        const login = await useFetch(Global.url + 'user/login', 'POST', newForm);
+
+        console.log(login);
+
+        if (login.status === "success") {
+            
+            // await SecureStorage.setItem('token', login.token);
+            // await SecureStorage.setItem('user', login.user);
+
+            setTimeout(() => {
+                navigation.navigate("Feed");
+            }, 1000);
+        } else {
+            ToastAndroid.showWithGravityAndOffset(
+                login.message,
+                ToastAndroid.LONG,
+                ToastAndroid.BOTTOM,
+                25,
+                50,
+              );
+        }
     }
+
     return (
         <SafeAreaView style={LoginStyle.container}>
             <StatusBar style="auto" />
@@ -37,7 +65,7 @@ export default function Login() {
                     <TextInput
                         style={LoginStyle.textInput}
                         placeholder="Escribe tu email aquí"
-                        onChangeText={(text) => setName(text)} />
+                        onChangeText={(email) => changed('email', email)} />
                 </View>
                 <View style={LoginStyle.passwordContainer}>
                     <Text style={{ color: themeColors.textGray, marginLeft: 10 }}>Contraseña</Text>
@@ -45,7 +73,7 @@ export default function Login() {
                         style={LoginStyle.textInput}
                         secureTextEntry
                         placeholder="Escribe tu contraseña aquí"
-                        onChangeText={(text) => setPassword(text)} />
+                        onChangeText={(password) => changed('password', password)} />
                 </View>
                 <TouchableOpacity style={{ alignItems: "flex-end" }}>
                     <Text style={LoginStyle.forgotPasswordText}>Recordar contraseña?</Text>
