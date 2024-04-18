@@ -65,11 +65,7 @@ const login = async (req, res) => {
         const user = await User.findOne({ email: { $regex: new RegExp(lowercaseUsername, 'i') } })
 
         if (!user) {    
-            return res.status(400).send({
-                status: "error",
-                message: "El usuario no se encuentra"
-            })
-
+            return res.status(400).send("El usuario no se encuentra")
         }
         // Comparar la contraseña que le estas pasando y la contraseña encriptada
         if (await bcrypt.compare(body.password, user.password)) {

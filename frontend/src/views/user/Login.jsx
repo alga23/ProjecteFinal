@@ -8,7 +8,7 @@ import { useNavigation } from '@react-navigation/native'
 import useForm from '../../hooks/useForm'
 import { Global } from '../../utils/Global'
 import useFetch from '../../hooks/useFetch'
-import SecureStorage from 'react-native-secure-storage';
+import * as SecureStore from 'expo-secure-store';
 
 export default function Login() {
 
@@ -18,16 +18,15 @@ export default function Login() {
     const handleLogin = async () => {
         const newForm = form;
 
-        const login = await useFetch(Global.url + 'user/login', 'POST', newForm);
+        const data = await useFetch(Global.url + 'user/login', 'POST', newForm);
 
-        console.log(login);
+        console.log(data);
 
-        if (login.status === "success") {
-            
-            // await SecureStorage.setItem('token', login.token);
-            // await SecureStorage.setItem('user', login.user);
+        if (data.status === "success") {
 
-            setTimeout(() => {
+            await SecureStore.setItemAsync('token', data.token);  
+
+            setTimeout(async () => {
                 navigation.navigate("Feed");
             }, 1000);
         } else {

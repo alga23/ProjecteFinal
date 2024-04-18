@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, Image, ScrollView, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
 import Header from '../../components/Header';
 import { FeedStyle } from '../../styles/post/FeedStyle';
 import perfil from '../../../assets/images/default_profile_picture.jpg';
@@ -6,13 +6,33 @@ import cristiano from '../../../assets/images/cristiano.jpg';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useEffect, useState } from 'react';
 import BottomMenu from '../../components/BottomMenu';
-
+import useFetch from '../../hooks/useFetch';
+import { Global } from '../../utils/Global';
+import * as SecureStore from 'expo-secure-store';
+import moment from 'moment';
 
 const Feed = () => {
 
     const [cards, setCards] = useState([...Array(10).keys()]);
 
     const [selectPage, setSelectPage] = useState('Siguiendo');
+    const [page, setPage] = useState(1);
+    const [feed, setFeed] = useState([]);
+
+
+    useEffect(() => {
+        feedSiguiendo();
+    }, []);
+
+    const feedSiguiendo = async () => {
+
+        const resultPosts = await useFetch(Global.url + "post/feed/" + page, 'GET', null, {
+            'Content-Type': 'application/json',
+            'Authorization': await SecureStore.getItemAsync('token')
+        });
+        
+        setFeed(resultPosts);
+    }
 
     const nextPage = () => {
 
@@ -46,16 +66,16 @@ const Feed = () => {
             <View style={[FeedStyle.mainLine, selectPage === 'Siguiendo' ? FeedStyle.lineSelectSiguiendo : FeedStyle.lineSelectPopulares]} />
             <ScrollView style={FeedStyle.scroll} onScroll={nextPage}>
                 {selectPage === 'Siguiendo' &&
-                    cards.map((_, index) => {
+                    feed.posts && feed.posts.map((post, index) => {
                         return (
-                            <View style={FeedStyle.cardPost} key={index}>
+                            <View style={FeedStyle.cardPost} key={post._id}>
 
                                 <Image style={FeedStyle.imageUsuario} source={perfil} />
                                 <View style={FeedStyle.postInfo}>
                                     <View style={FeedStyle.infoUsuario}>
-                                        <Text>Pablo51</Text>
-                                        <Text>@pablo...</Text>
-                                        <Text>· 2h</Text>
+                                        <Text>{post.user_id.nick}</Text>
+                                        <Text>{post.user_id.username}</Text>
+                                        <Text>{moment(post.createdAt).fromNow()}</Text>
                                     </View>
                                     <Text>Hola a todos</Text>
                                     <Image style={FeedStyle.imagenPost} source={cristiano} />
