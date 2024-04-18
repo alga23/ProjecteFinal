@@ -20,8 +20,8 @@ const register = async (req, res) => {
         // Verificar si el usuario que tenga username o email no este creado en la bbdd
         const existingUser = await User.findOne({
             $or: [
-                {username: body.username.toLowerCase()},
-                {email: body.email.toLowerCase()}
+                { username: body.username.toLowerCase() },
+                { email: body.email.toLowerCase() }
             ]
         })
 
@@ -39,7 +39,7 @@ const register = async (req, res) => {
         // Guardar usuario en la bbdd
         await user.save()
         res.status(201).send({
-            status: "success", 
+            status: "success",
             message: "Usuario creado con exito",
             user
         })
@@ -62,13 +62,14 @@ const login = async (req, res) => {
         // Pasar el username a minuscula
         const lowercaseUsername = body.email.toLowerCase()
         // Buscar el username 
-        const user = await User.findOne({ email: { $regex: new RegExp(lowercaseUsername, 'i') }})
+        const user = await User.findOne({ email: { $regex: new RegExp(lowercaseUsername, 'i') } })
 
         if (!user) {    
             return res.status(400).send({
                 status: "error",
                 message: "El usuario no se encuentra"
             })
+
         }
         // Comparar la contraseña que le estas pasando y la contraseña encriptada
         if (await bcrypt.compare(body.password, user.password)) {
@@ -95,7 +96,28 @@ const login = async (req, res) => {
     }
 }
 
+const viewUserProfile = async (req, res) => {
+    try {
+        const userId = req.params.userId
+        const user = await User.findById(userId).select("-nombreCompleto -password -email -__v")
+        if (!user) {
+            return res.status(404).send({
+                status: 'error'
+            })
+        }
+
+        res.status(200).send({
+            status: "success",
+            user: user
+        })
+    } catch (error) {
+        console.error('Error buscando el usuario:', error)
+        res.status(500).send({ error: 'Error interno del servidor' })
+    }
+}
+
 module.exports = {
     register,
     login,
+    viewUserProfile
 }
