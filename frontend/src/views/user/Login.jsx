@@ -14,13 +14,12 @@ export default function Login() {
 
     const navigation = useNavigation();
     const { form, changed } = useForm({});
+    const { fetchData } = useFetch();
     
     const handleLogin = async () => {
         const newForm = form;
 
-        const data = await useFetch(Global.url + 'user/login', 'POST', newForm);
-
-        console.log(data);
+        const data = await fetchData(Global.url + 'user/login', 'POST', newForm);
 
         if (data.status === "success") {
 
@@ -31,7 +30,7 @@ export default function Login() {
             }, 1000);
         } else {
             ToastAndroid.showWithGravityAndOffset(
-                login.message,
+                data.message,
                 ToastAndroid.LONG,
                 ToastAndroid.BOTTOM,
                 25,

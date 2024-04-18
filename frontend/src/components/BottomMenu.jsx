@@ -63,9 +63,11 @@ const BottomMenu = () => {
                 <Animated.View style={[BottomMenuStyle.button, BottomMenuStyle.secondary, cameraStyle]} >
                     <AddCircleWithCross name='camera' size={55} iconSize={20} />
                 </Animated.View>
+                <TouchableWithoutFeedback onPress={() => handleRouter('createPost')}>
                 <Animated.View style={[BottomMenuStyle.button, BottomMenuStyle.secondary, pencilStyle]} >
                     <AddCircleWithCross name='pencil' size={55} iconSize={25} />
                 </Animated.View>
+                </TouchableWithoutFeedback>
                 <TouchableWithoutFeedback onPress={toggleMenu}>
                     <Animated.View style={[BottomMenuStyle.button, BottomMenuStyle.menu, rotation]}>
                         <AddCircleWithCross name='times' rotate="transform: [{ rotate: '45deg' }]" />
