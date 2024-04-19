@@ -43,6 +43,7 @@ const FollowFeed = ({ post, index, like, likePosts }) => {
                         </TouchableOpacity>
                         <Text>{post.likes}</Text>
                     </View>
+                    
                     <View style={FeedStyle.containerIconElement}>
 
                         <TouchableOpacity>
