@@ -1,52 +1,69 @@
-import { View, Text, TouchableOpacity, Image, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import Header from '../../components/Header';
 import { FeedStyle } from '../../styles/post/FeedStyle';
-import perfil from '../../../assets/images/default_profile_picture.jpg';
-import cristiano from '../../../assets/images/cristiano.jpg';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { useEffect, useState } from 'react';
 import BottomMenu from '../../components/BottomMenu';
 import useFetch from '../../hooks/useFetch';
 import { Global } from '../../utils/Global';
 import * as SecureStore from 'expo-secure-store';
-import moment from 'moment';
+
+import FollowFeed from './FollowFeed';
 
 const Feed = () => {
 
-    const [cards, setCards] = useState([...Array(10).keys()]);
-
     const [selectPage, setSelectPage] = useState('Siguiendo');
     const [page, setPage] = useState(1);
+    const [more, setMore] = useState(true);
     const [feed, setFeed] = useState([]);
+    const { fetchData, loading } = useFetch();
+    const [like, setLike] = useState("");
 
 
     useEffect(() => {
-        feedSiguiendo();
-    }, []);
+        feedSiguiendo(1);
+    }, [like]);
 
-    const feedSiguiendo = async () => {
+    const feedSiguiendo = async (nextPage) => {
 
-        const resultPosts = await useFetch(Global.url + "post/feed/" + page, 'GET', null, {
+        const resultPosts = await fetchData(Global.url + "post/feed/" + nextPage, 'GET', {
             'Content-Type': 'application/json',
             'Authorization': await SecureStore.getItemAsync('token')
         });
-        
-        setFeed(resultPosts);
+
+        if (resultPosts.status === "success") {
+            let newPosts = nextPage === 1 ? resultPosts.posts : [...feed, ...resultPosts.posts]; // Falta arreglarlo
+            setFeed(newPosts);
+
+            if (feed.length >= (resultPosts.total - resultPosts.posts.length)) {
+                setMore(false);
+            }
+        }
     }
 
     const nextPage = () => {
+        let page = page + 1;
 
-        if (cards.length <= 50) {
-            setTimeout(() => {
+        setPage(page);
+        feedSiguiendo(page);
+    }
 
-                let newCards = [...cards];
+    const handleScroll = (event) => {
+        const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
 
-                for (let i = 0; i < 10; i++) {
-                    newCards.push(cards.length + i);
-                }
+        const isCloseToBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 20;
 
-                setCards(newCards);
-            }, 500);
+        if (isCloseToBottom && more && !loading) {
+            nextPage();
+        }
+    }
+
+    const likePosts = async (userPost) => {
+        const like = await fetchData(Global.url + 'post/like/' + userPost, 'PUT');
+
+        if (like.message === "Like borrado del post") {
+            setLike("Like");
+        } else {
+            setLike("Dar Like");
         }
     }
 
@@ -62,65 +79,18 @@ const Feed = () => {
                     <Text style={[FeedStyle.text, selectPage === 'Populares' && FeedStyle.textPopulares]}>Populares</Text>
                 </TouchableOpacity>
             </View>
+
             <View style={FeedStyle.line} />
             <View style={[FeedStyle.mainLine, selectPage === 'Siguiendo' ? FeedStyle.lineSelectSiguiendo : FeedStyle.lineSelectPopulares]} />
-            <ScrollView style={FeedStyle.scroll} onScroll={nextPage}>
+            <ScrollView style={FeedStyle.scroll} onScroll={handleScroll}>
                 {selectPage === 'Siguiendo' &&
-                    feed.posts && feed.posts.map((post, index) => {
+
+                    feed && feed.map((post, index) => {
                         return (
-                            <View style={FeedStyle.cardPost} key={post._id}>
-
-                                <Image style={FeedStyle.imageUsuario} source={perfil} />
-                                <View style={FeedStyle.postInfo}>
-                                    <View style={FeedStyle.infoUsuario}>
-                                        <Text>{post.user_id.nick}</Text>
-                                        <Text>{post.user_id.username}</Text>
-                                        <Text>{moment(post.createdAt).fromNow()}</Text>
-                                    </View>
-                                    <Text>Hola a todos</Text>
-                                    <Image style={FeedStyle.imagenPost} source={cristiano} />
-                                    <View style={FeedStyle.containerIcons}>
-                                        <View style={FeedStyle.containerIconElement}>
-
-                                            <TouchableOpacity>
-                                                <Icon name='comment-o' size={20} />
-                                            </TouchableOpacity>
-                                            <Text>0</Text>
-                                        </View>
-                                        <View style={FeedStyle.containerIconElement}>
-
-                                            <TouchableOpacity>
-                                                <Icon name='retweet' size={20} />
-                                            </TouchableOpacity>
-                                            <Text>0</Text>
-                                        </View>
-                                        <View style={FeedStyle.containerIconElement}>
-
-                                            <TouchableOpacity>
-                                                <Icon name='heart-o' size={20} />
-                                            </TouchableOpacity>
-                                            <Text>0</Text>
-                                        </View>
-                                        <View style={FeedStyle.containerIconElement}>
-
-                                            <TouchableOpacity>
-                                                <Icon name='bar-chart' size={20} />
-                                            </TouchableOpacity>
-                                            <Text>0</Text>
-                                        </View>
-                                        <View style={FeedStyle.containerIconElement}>
-
-                                            <TouchableOpacity>
-                                                <Icon name='bookmark-o' size={20} />
-                                            </TouchableOpacity>
-                                            <Text>0</Text>
-                                        </View>
-                                    </View>
-                                </View>
-                            </View>
+                            <FollowFeed post={post} index={index} like={like} likePosts={() => likePosts(post._id)} />
                         )
-                    })}
-
+                    })
+                }
             </ScrollView>
             <BottomMenu />
         </View>

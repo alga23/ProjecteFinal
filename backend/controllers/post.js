@@ -149,7 +149,7 @@ const feedFollows = async (req, res) => {
         let page = 1;
         if (req.params.page) page = req.params.page;
 
-        const itemsPerPage = 10; // Items por pagina
+        const itemsPerPage = 3; // Items por pagina
         // Mostrar los posts de los usuarios que sigues y hacer paginación
         const posts = await Post.find({ "user_id": { $in: follows.following } })
             .sort('-createdAt')
