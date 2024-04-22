@@ -24,6 +24,7 @@ export default function Login() {
         if (data.status === "success") {
 
             await SecureStore.setItemAsync('token', data.token);  
+            await SecureStore.setItemAsync('user', data.user.id);  
 
             setTimeout(async () => {
                 navigation.navigate("Feed");

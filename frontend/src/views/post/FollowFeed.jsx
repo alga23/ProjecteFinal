@@ -5,11 +5,12 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { FeedStyle } from '../../styles/post/FeedStyle';
 import 'moment/locale/es';
 import moment from 'moment';
+import React from "react";
 
-const FollowFeed = ({ post, index, like, likePosts }) => {
+const FollowFeed = React.memo(({ post, onLikePress, isLiked }) => {
 
     return (
-        <View style={FeedStyle.cardPost} key={index}>
+        <View style={FeedStyle.cardPost} key={post._id}>
             {post.user_id.imagen === "default.png" && (
                 <Image style={FeedStyle.imageUsuario} source={perfil} />
             )}
@@ -38,8 +39,8 @@ const FollowFeed = ({ post, index, like, likePosts }) => {
                     </View>
                     <View style={FeedStyle.containerIconElement}>
 
-                        <TouchableOpacity onPress={() => likePosts(post._id)}>
-                            {like === "Like" && index === post._id ? <Icon name='heart-o' size={20} /> : <Icon name='heart' color="red" size={20} />}
+                        <TouchableOpacity onPress={() => onLikePress(post._id)}>
+                        <Icon name={isLiked ? 'heart' : 'heart-o'} color={isLiked ? "red" : undefined} size={20} />
                         </TouchableOpacity>
                         <Text>{post.likes}</Text>
                     </View>
@@ -62,6 +63,6 @@ const FollowFeed = ({ post, index, like, likePosts }) => {
             </View>
         </View>
     )
-}
+});
 
 export default FollowFeed;
