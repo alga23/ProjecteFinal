@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import Header from '../../components/Header';
 import { FeedStyle } from '../../styles/post/FeedStyle';
 import { useCallback, useEffect, useState } from 'react';
@@ -7,6 +7,7 @@ import useFetch from '../../hooks/useFetch';
 import { Global } from '../../utils/Global';
 import * as SecureStore from 'expo-secure-store';
 import FollowFeed from './FollowFeed';
+import { useNavigation } from '@react-navigation/native';
 
 const Feed = () => {
 
@@ -17,6 +18,8 @@ const Feed = () => {
     const { fetchData, loading } = useFetch();
     const [liked, setLiked] = useState({});
     const [userId, setUserId] = useState(null);
+
+    const navigation = useNavigation();
 
     useEffect(() => {
         feedSiguiendo(1);
@@ -35,7 +38,6 @@ const Feed = () => {
         getUserId();
     }, []);
 
-
     const feedSiguiendo = async (nextPage) => {
 
         const resultPosts = await fetchData(Global.url + "post/feed/" + nextPage, 'GET');
@@ -48,7 +50,8 @@ const Feed = () => {
             if (feed.length >= (resultPosts.total - resultPosts.posts.length)) {
                 setMore(false);
             }
-        }   
+        }
+
     }
 
     const nextPage = () => {
@@ -70,19 +73,19 @@ const Feed = () => {
 
     const likePosts = useCallback(async (postId) => {
         const likeResponse = await fetchData(Global.url + 'post/like/' + postId, 'PUT');
-    
+
         if (likeResponse.status === "success" && userId) {
             setFeed(prevFeed => {
                 return prevFeed.map(post => {
                     if (post._id === postId) {
                         const isLiked = likeResponse.post.likes_users_id.includes(userId);
                         const newLikes = isLiked ? post.likes + 1 : post.likes - 1;
-                        return {...post, likes: newLikes}; // Crea un nuevo objeto
+                        return { ...post, likes: newLikes };
                     }
-                    return {...post}; // Asegura que cada objeto es una nueva referencia
+                    return { ...post };
                 });
             });
-    
+
             setLiked(prevLiked => ({
                 ...prevLiked,
                 [postId]: likeResponse.post.likes_users_id.includes(userId)
@@ -91,7 +94,7 @@ const Feed = () => {
 
         feedSiguiendo(1);
     }, [userId, fetchData]);
-    
+
 
 
     const updateLikes = (posts) => {
@@ -126,6 +129,16 @@ const Feed = () => {
                         )
                     })
                 }
+
+                {feed.length === 0 && (
+                    <View style={FeedStyle.containerNoPosts}>
+                        <Text style={FeedStyle.noPosts}>No hay publicaciónes de usuarios que sigas</Text>
+
+                        <TouchableOpacity style={FeedStyle.followBottom} activeOpacity={0.6} onPress={() => navigation.navigate('Bandeja_mensaje')}>
+                            <Text style={FeedStyle.followButtonText}>Sigue a usuarios</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
             </ScrollView>
             <BottomMenu />
         </View>

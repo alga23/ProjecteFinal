@@ -3,16 +3,18 @@ import { View, Text, Button, Touchable, TouchableOpacity, Image, TextInput, Scro
 import { MensajeStyle } from '../../styles/post/MensajeStyle';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Cristiano from '../../../assets/images/cristiano.png'
+import { useNavigation } from '@react-navigation/native';
 
 
 const MensajesEscritos = () => {
 
     const [card, setCard] = useState([...Array(12).fill(0)]);
+    const navigation = useNavigation();
 
     return (
         <View style={MensajeStyle.ContainerPrincipal}>
             <View style={MensajeStyle.containerConMensajes}>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
                     <Icon style={MensajeStyle.arrowContainer} name="arrow-left" size={30}></Icon>
                 </TouchableOpacity>
                 <Text style={MensajeStyle.textoTusMensajes}>Tus mensajes</Text>
