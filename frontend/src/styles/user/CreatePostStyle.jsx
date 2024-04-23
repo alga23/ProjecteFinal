@@ -56,6 +56,9 @@ export const CreatePostStyle = {
         fontWeight: "300",
         width: "100%"
 
+    },
+    cameraContainer: {
+        padding: 5,
     }
 
 
