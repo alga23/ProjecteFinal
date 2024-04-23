@@ -1,13 +1,13 @@
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import Header from '../../components/Header';
 import { FeedStyle } from '../../styles/post/FeedStyle';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import BottomMenu from '../../components/BottomMenu';
 import useFetch from '../../hooks/useFetch';
 import { Global } from '../../utils/Global';
 import * as SecureStore from 'expo-secure-store';
-
 import FollowFeed from './FollowFeed';
+import { useNavigation } from '@react-navigation/native';
 
 const Feed = () => {
 
@@ -16,28 +16,42 @@ const Feed = () => {
     const [more, setMore] = useState(true);
     const [feed, setFeed] = useState([]);
     const { fetchData, loading } = useFetch();
-    const [like, setLike] = useState("");
+    const [liked, setLiked] = useState({});
+    const [userId, setUserId] = useState(null);
 
+    const navigation = useNavigation();
 
     useEffect(() => {
         feedSiguiendo(1);
-    }, [like]);
+    }, [page]);
+
+    useEffect(() => {
+        updateLikes(feed);
+    }, [feed]);
+
+    useEffect(() => {
+        const getUserId = async () => {
+            const storedUserId = await SecureStore.getItemAsync('user');
+            setUserId(storedUserId);
+        };
+
+        getUserId();
+    }, []);
 
     const feedSiguiendo = async (nextPage) => {
 
-        const resultPosts = await fetchData(Global.url + "post/feed/" + nextPage, 'GET', {
-            'Content-Type': 'application/json',
-            'Authorization': await SecureStore.getItemAsync('token')
-        });
+        const resultPosts = await fetchData(Global.url + "post/feed/" + nextPage, 'GET');
 
         if (resultPosts.status === "success") {
-            let newPosts = nextPage === 1 ? resultPosts.posts : [...feed, ...resultPosts.posts]; // Falta arreglarlo
+            let newPosts = nextPage === 1 ? resultPosts.posts : [...feed, ...resultPosts.posts];
+
             setFeed(newPosts);
 
             if (feed.length >= (resultPosts.total - resultPosts.posts.length)) {
                 setMore(false);
             }
         }
+
     }
 
     const nextPage = () => {
@@ -57,15 +71,38 @@ const Feed = () => {
         }
     }
 
-    const likePosts = async (userPost) => {
-        const like = await fetchData(Global.url + 'post/like/' + userPost, 'PUT');
+    const likePosts = useCallback(async (postId) => {
+        const likeResponse = await fetchData(Global.url + 'post/like/' + postId, 'PUT');
 
-        if (like.message === "Like borrado del post") {
-            setLike("Like");
-        } else {
-            setLike("Dar Like");
+        if (likeResponse.status === "success" && userId) {
+            setFeed(prevFeed => {
+                return prevFeed.map(post => {
+                    if (post._id === postId) {
+                        const isLiked = likeResponse.post.likes_users_id.includes(userId);
+                        const newLikes = isLiked ? post.likes + 1 : post.likes - 1;
+                        return { ...post, likes: newLikes };
+                    }
+                    return { ...post };
+                });
+            });
+
+            setLiked(prevLiked => ({
+                ...prevLiked,
+                [postId]: likeResponse.post.likes_users_id.includes(userId)
+            }));
         }
-    }
+
+    }, [userId, fetchData]);
+
+
+
+    const updateLikes = (posts) => {
+        const updatedLiked = {};
+        posts.forEach(post => {
+            updatedLiked[post._id] = post.likes_users_id.includes(userId);
+        });
+        setLiked(updatedLiked);
+    };
 
     return (
         <View style={FeedStyle.containerPrincipal}>
@@ -85,12 +122,22 @@ const Feed = () => {
             <ScrollView style={FeedStyle.scroll} onScroll={handleScroll}>
                 {selectPage === 'Siguiendo' &&
 
-                    feed && feed.map((post, index) => {
+                    feed && feed.map((post) => {
                         return (
-                            <FollowFeed post={post} index={index} like={like} likePosts={() => likePosts(post._id)} />
+                            <FollowFeed key={post._id} post={post} onLikePress={likePosts} isLiked={liked[post._id]} />
                         )
                     })
                 }
+                {!loading && feed.length === 0 && (
+                    <View style={FeedStyle.containerNoPosts}>
+                        <Text style={FeedStyle.noPosts}>No hay publicaciónes de usuarios que sigas</Text>
+
+                        <TouchableOpacity style={FeedStyle.followBottom} activeOpacity={0.6} onPress={() => navigation.navigate('Bandeja_mensaje')}>
+                            <Text style={FeedStyle.followButtonText}>Sigue a usuarios</Text>
+                        </TouchableOpacity>
+                    </View>
+                )}
+            {loading && <ActivityIndicator size={40} color='#0074B4' style={{marginTop:20}}/>}
             </ScrollView>
             <BottomMenu />
         </View>

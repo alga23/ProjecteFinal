@@ -34,7 +34,8 @@ export const VisualizarJuegoStyle = {
         left: 20,
         borderRadius: 50,
         padding: 4,
-        backgroundColor: 'rgba(0, 0, 0, .4)'
+        backgroundColor: 'rgba(0, 0, 0, .4)',
+        zIndex: 1000
     },
     iconArrow: {
         color: '#fff'

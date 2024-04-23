@@ -100,7 +100,7 @@ export default function CreatePost() {
         <SafeAreaView>
             <View style={CreatePostStyle.topContainer}>
                 <View style={CreatePostStyle.backButtonContainer}>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
                         <ArrowLeftIcon size={40} color="black"></ArrowLeftIcon>
                     </TouchableOpacity>
                 </View>
