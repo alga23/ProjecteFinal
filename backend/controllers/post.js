@@ -157,7 +157,7 @@ const feedFollows = async (req, res) => {
         // Mostrar los posts de los usuarios que sigues y hacer paginación
         const posts = await Post.find({ "user_id": { $in: follows.following } })
             .sort('-createdAt')
-            .select({ "likes_users_id": 0, "__v": 0 })
+            .select({ "__v": 0 })
             .paginate(page, itemsPerPage)
             .populate("user_id", "nick username imagen");
 

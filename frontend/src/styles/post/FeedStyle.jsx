@@ -73,5 +73,33 @@ export const FeedStyle = {
     },
     lineSelectPopulares: {
         marginLeft: 235
+    },
+    noPosts: {
+        marginHorizontal: 30,
+        marginVertical: 20,
+        fontSize: 16,
+        color: 'gray', // Puedes ajustar el color según el diseño de tu app
+    },
+    followBottom: {
+        paddingVertical: 15,
+        paddingHorizontal: 30,
+        backgroundColor: themeColors.azulFondo,
+        borderRadius: 10,
+        alignSelf: 'center',
+        marginTop: 150,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    followButtonText: {
+        color: '#FFFFFF',
+        textAlign: 'center',
+        fontSize: 18,
+        fontWeight: 'bold',
     }
 }
