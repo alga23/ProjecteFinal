@@ -18,7 +18,11 @@ const createPost = async (req, res) => {
             user_id: user.id, //user from the authMiddleware
         })
         await post.save();
-        res.status(201).json(post);
+        res.status(201).send({
+            message: "Post creado correctamente",
+            status: "success",
+            post: post
+        });
     } catch (error) {
         res.status(500).send({
             status: "error",
@@ -78,7 +82,7 @@ const userPosts = async (req, res) => {
 const upload = async (req, res) => {
     try {
 
-        // Obtener ip de publicacion
+        // Obtener id de publicacion
         let publicationId = req.params.id;
 
         if (!req.file) {

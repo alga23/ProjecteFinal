@@ -15,7 +15,7 @@ export default function Login() {
     const navigation = useNavigation();
     const { form, changed } = useForm({});
     const { fetchData } = useFetch();
-    
+
     const handleLogin = async () => {
         const newForm = form;
 
@@ -23,7 +23,7 @@ export default function Login() {
 
         if (data.status === "success") {
 
-            await SecureStore.setItemAsync('token', data.token);  
+            await SecureStore.setItemAsync('token', data.token);
 
             setTimeout(async () => {
                 navigation.navigate("Feed");
@@ -35,7 +35,7 @@ export default function Login() {
                 ToastAndroid.BOTTOM,
                 25,
                 50,
-              );
+            );
         }
     }
 
