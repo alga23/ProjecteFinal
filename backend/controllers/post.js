@@ -288,7 +288,7 @@ const respondPost = async (req, res) => {
         }
         const responsePost = new Post({
             content: req.body.content,
-            user_id: user.id,
+            user_id: req.user.id,
             posts_parents: [...post.posts_parents, post._id]
         })
         post.posts_responses.push(responsePost)
