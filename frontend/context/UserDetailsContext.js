@@ -2,25 +2,27 @@ import React, { createContext, useEffect, useState } from 'react';
 import useFetch from '../src/hooks/useFetch';
 import * as SecureStore from 'expo-secure-store';
 import { Global } from '../src/utils/Global';
+import React, { createContext, useContext, useState } from 'react';
 
 export const UserDetailsContext = createContext()
 
 export const UserDetailsProvider = ({ children }) => {
     const [userDetails, setUserDetails] = useState(null)
-    const [ auth, setAuth ] = useState({});
-    const [loading, setLoading ] = useState(true);
+
+    const [auth, setAuth] = useState({});
+    const [loading, setLoading] = useState(true);
     const { fetchData } = useFetch({});
 
     useEffect(() => {
 
         authUser();
-        
+
     }, [userDetails]);
 
-    const authUser = async() => {
+    const authUser = async () => {
         // Sacar datos usuario identificado del localStorage
         const token = await SecureStore.getItemAsync('token');
-        const user = await SecureStore.getItemAsync('user'); 
+        const user = await SecureStore.getItemAsync('user');
         // Comprobar si tengo el token y el user
         if (!token || !user) {
             setLoading(false);
@@ -37,20 +39,22 @@ export const UserDetailsProvider = ({ children }) => {
         setLoading(false);
     }
 
+
     const updateUserDetails = (newDetails) => {
         setUserDetails(newDetails);
     };
 
     return (
-        <UserDetailsContext.Provider 
-        value={{ 
-            userDetails, updateUserDetails,
-            auth,
-            setAuth,
-            loading,
-            authUser
-        }}>
-            {children}
+
+        <UserDetailsContext.Provider
+            value={{
+                userDetails, updateUserDetails,
+                auth,
+                setAuth,
+                loading,
+                authUser
+            }}>
+
         </UserDetailsContext.Provider>
     )
 }
