@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const followService = require('../services/followService');
 const mongoosePaginate = require('mongoose-pagination');
+const cloudinary = require('../cloudinary');
 
 const createPost = async (req, res) => {
     //Check for content
@@ -110,11 +111,18 @@ const upload = async (req, res) => {
                 status: "error",
                 message: "Esa extension no es valida"
             })
-
         }
 
+        const imagenPost = await cloudinary.uploader.upload(req.file.path, {
+                                                            folder: 'Post',
+                                                            width: 200,
+                                                            height: 200,
+                                                            crop: "scale",
+                                                            format: 'webp'
+        });
+
         // Actualizar publicación añadiendo el archivo enviado en el Post del usuario
-        const publicationUpdated = await Post.findByIdAndUpdate({ "user_id": req.user.id, "_id": publicationId }, { file: req.file.filename }, { new: true });
+        const publicationUpdated = await Post.findByIdAndUpdate({ "user_id": req.user.id, "_id": publicationId }, { file: imagenPost.secure_url }, { new: true });
 
         if (!publicationUpdated) {
             return res.status(404).send({
@@ -125,13 +133,12 @@ const upload = async (req, res) => {
 
         return res.status(200).send({
             status: "success",
-            publicationUpdated,
-            file: req.file
+            publicationUpdated
         })
 
 
     } catch (error) {
-
+        console.log(error);
         return res.status(500).send({
             status: "error",
             message: "Error en el servidor al actualizar una imagen de un post"

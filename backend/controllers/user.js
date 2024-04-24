@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt")
 const User = require('../models/user')
 const Validators = require("../middleware/validators")
 const generateToken = require("../services/jwt");
+const cloudinary = require('../cloudinary');
 
 const register = async (req, res) => {
 
@@ -112,8 +113,49 @@ const viewUserProfile = async (req, res) => {
     }
 }
 
+const upload = async (req, res) => {
+    try {
+        console.log("entrando");
+        const userId = req.user.id
+        const file = req.file;
+
+        if (!file) {
+            res.status(404).send({
+                status: "error",
+                message: "No hay fichero seleccionado"
+            })
+        }
+
+        const imagen = file.path;
+
+        const imagenPerfil = await cloudinary.uploader.upload(imagen, {
+                                                folder: 'Perfil',
+                                                width: 100,
+                                                height: 100,
+                                                crop: "scale",
+                                                format: 'webp'
+        });
+
+        console.log(imagen);
+        console.log(imagenPerfil);
+        const updateUser = await User.findByIdAndUpdate({"_id": userId}, {imagen: imagenPerfil.secure_url}, {new: true});
+
+        console.log(updateUser);
+        
+        return res.status(200).send({
+            status: "success",
+            message: "Imagen subida correctamente",
+            user: updateUser
+        })
+
+    }catch(error) {
+        console.log(error);
+    }
+}
+
 module.exports = {
     register,
     login,
-    viewUserProfile
+    viewUserProfile,
+    upload
 }
