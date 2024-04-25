@@ -34,6 +34,7 @@ const register = async (req, res) => {
         const hashedPassword = await bcrypt.hash(body.password, 10)
 
         body.password = hashedPassword;
+        body.rol = 'user';
         // Crear un nuevo usuario
         const user = new User(body);
 
@@ -65,7 +66,7 @@ const login = async (req, res) => {
         // Buscar el username 
         const user = await User.findOne({ email: { $regex: new RegExp(lowercaseUsername, 'i') } })
 
-        if (!user) {    
+        if (!user) {
             return res.status(400).send("El usuario no se encuentra")
         }
         // Comparar la contraseña que le estas pasando y la contraseña encriptada
@@ -115,7 +116,6 @@ const viewUserProfile = async (req, res) => {
 
 const upload = async (req, res) => {
     try {
-        console.log("entrando");
         const userId = req.user.id
         const file = req.file;
 
@@ -136,12 +136,8 @@ const upload = async (req, res) => {
                                                 format: 'webp'
         });
 
-        console.log(imagen);
-        console.log(imagenPerfil);
         const updateUser = await User.findByIdAndUpdate({"_id": userId}, {imagen: imagenPerfil.secure_url}, {new: true});
 
-        console.log(updateUser);
-        
         return res.status(200).send({
             status: "success",
             message: "Imagen subida correctamente",
@@ -149,7 +145,30 @@ const upload = async (req, res) => {
         })
 
     }catch(error) {
-        console.log(error);
+        res.status(500).send({
+            status: "error",
+            message: "Error en el servidor al subir la imagen, " + error
+        })
+    }
+}
+
+const retrieveOwnUser = async (req, res) => {
+    try {
+        const userId = req.user.id
+        const user = await User.findById(userId).select("-password -__v")
+        if (!user) {
+            return res.status(404).send({
+                status: 'error'
+            })
+        }
+
+        res.status(200).send({
+            status: "success",
+            user: user
+        })
+    } catch (error) {
+        console.error('Error buscando el usuario:', error)
+        res.status(500).send({ error: 'Error interno del servidor' })
     }
 }
 
@@ -157,5 +176,6 @@ module.exports = {
     register,
     login,
     viewUserProfile,
-    upload
+    upload,
+    retrieveOwnUser
 }

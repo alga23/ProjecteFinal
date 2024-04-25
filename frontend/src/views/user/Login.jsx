@@ -27,7 +27,7 @@ export default function Login() {
             await SecureStore.setItemAsync('user', data.user.id);  
 
             setTimeout(async () => {
-                navigation.navigate("Feed");
+                navigation.navigate("Drawer");
             }, 1000);
         } else {
             ToastAndroid.showWithGravityAndOffset(
