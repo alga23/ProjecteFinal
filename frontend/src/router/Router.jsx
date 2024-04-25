@@ -15,6 +15,7 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerI
 import React, { useEffect, useState } from 'react'
 import { View, ActivityIndicator } from "react-native"
 import * as SecureStore from 'expo-secure-store'
+import Profile from '../views/user/Profile';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator()
@@ -123,6 +124,7 @@ export default function Router() {
             ) : (
                 <Stack.Navigator initialRouteName={firstScreen}>
                     <Stack.Screen name="Drawer" options={{ headerShown: false }} component={DrawerNavigator} />
+                    <Stack.Screen name="Profile" options={{ headerShown: false }} component={Profile} />
                     <Stack.Screen name="Welcome" options={{ headerShown: false }} component={Welcome} />
                     <Stack.Screen name="Login" options={{ headerShown: false }} component={Login} />
                     <Stack.Screen name="SignUp" options={{ headerShown: false }} component={Registro} />
