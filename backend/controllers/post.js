@@ -307,7 +307,7 @@ const respondPost = async (req, res) => {
 
 const retrievePost = async (req, res) => {
     try {
-        const post = await Post.findById(req.params.postId).select()
+        const post = await Post.findById(req.params.postId).populate("user_id")
         if (!post) {
             console.log("No se ha encontrado el post")
             res.status(400).send("No se ha encontrado el post")
