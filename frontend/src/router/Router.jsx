@@ -15,8 +15,6 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerI
 import React, { useEffect, useState } from 'react'
 import { View, ActivityIndicator } from "react-native"
 import * as SecureStore from 'expo-secure-store'
-import Profile from '../views/user/Profile';
-
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator()
