@@ -1,6 +1,7 @@
 import React, { createContext, useEffect, useState } from 'react';
 import useFetch from '../src/hooks/useFetch';
 import * as SecureStore from 'expo-secure-store';
+import { Global } from '../src/utils/Global';
 
 export const UserDetailsContext = createContext()
 
@@ -26,13 +27,9 @@ export const UserDetailsProvider = ({ children }) => {
             return false;
         }
 
-        // Transformar los datos a un objeto de javascript
-        const userObj = JSON.parse(user);
-        const userId = userObj._id;
-
         // Petición ajax al backend que compruebe el token y
         // que me devuelva todos los datos del usuario
-        const data = await fetchData(Global.url + "user/profile/"+userId, 'GET');
+        const data = await fetchData(Global.url + "user/devolverUsuarioToken", 'GET');
 
         // Setear el estado de auth
         setAuth(data.user);

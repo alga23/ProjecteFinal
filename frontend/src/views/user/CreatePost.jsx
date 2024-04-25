@@ -122,8 +122,6 @@ const Posts = () => {
 
             const uploadData = await request.json();
 
-            console.log(uploadData);
-
             if (uploadData.status == "success" && uploadData.post) {
                 setAuth(data.post);
             }
@@ -140,8 +138,6 @@ const Posts = () => {
 
         let pickerResult = await ImagePicker.launchImageLibraryAsync();
 
-        console.log(pickerResult.assets[0]);
-
         if (!pickerResult.cancelled) {
             setImage(pickerResult.assets[0].uri);
         }
@@ -151,6 +147,10 @@ const Posts = () => {
         setChangesMade(false);
         setConfirmModalVisible(false);
         handleNavigate('Feed');
+        
+        setText('');
+        setImage(null);
+        setCharCount(0);
     }
 
     const handleGoBack = () => {
@@ -251,7 +251,7 @@ const Posts = () => {
                 <TouchableWithoutFeedback onPress={() => setConfirmModalVisible(false)}>
                     <View style={CreatePostStyle.modalView}>
                         <View style={CreatePostStyle.modalContent}>
-                            <Text style={CreatePostStyle.textEditar}>Editar post</Text>
+                            <Text style={CreatePostStyle.textEditar}>Post</Text>
                             <Text>¿Quieres descartar los cambios?</Text>
                             <View style={CreatePostStyle.confirmationButtonsContainer}>
                                 <TouchableOpacity onPress={() => setConfirmModalVisible(false)}>
