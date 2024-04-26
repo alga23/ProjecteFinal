@@ -23,11 +23,7 @@ const Feed = () => {
 
     useEffect(() => {
         feedSiguiendo(1);
-    }, [page]);
-
-    useEffect(() => {
-        updateLikes(feed);
-    }, [feed]);
+    }, [userId]);
 
     useEffect(() => {
         const getUserId = async () => {
@@ -74,35 +70,13 @@ const Feed = () => {
     const likePosts = useCallback(async (postId) => {
         const likeResponse = await fetchData(Global.url + 'post/like/' + postId, 'PUT');
 
+        console.log(likeResponse.status);
         if (likeResponse.status === "success" && userId) {
-            setFeed(prevFeed => {
-                return prevFeed.map(post => {
-                    if (post._id === postId) {
-                        const isLiked = likeResponse.post.likes_users_id.includes(userId);
-                        const newLikes = isLiked ? post.likes + 1 : post.likes - 1;
-                        return { ...post, likes: newLikes };
-                    }
-                    return { ...post };
-                });
-            });
+            const newLiked = {...liked};
 
-            setLiked(prevLiked => ({
-                ...prevLiked,
-                [postId]: likeResponse.post.likes_users_id.includes(userId)
-            }));
         }
 
     }, [userId, fetchData]);
-
-
-
-    const updateLikes = (posts) => {
-        const updatedLiked = {};
-        posts.forEach(post => {
-            updatedLiked[post._id] = post.likes_users_id.includes(userId);
-        });
-        setLiked(updatedLiked);
-    };
 
     return (
         <View style={FeedStyle.containerPrincipal}>

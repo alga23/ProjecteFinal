@@ -115,9 +115,9 @@ const upload = async (req, res) => {
 
         const imagenPost = await cloudinary.uploader.upload(req.file.path, {
                                                             folder: 'Post',
-                                                            width: 200,
-                                                            height: 200,
-                                                            crop: "scale",
+                                                            width: 400,
+                                                            height: 400,
+                                                            crop: "limit",
                                                             format: 'webp'
         });
 
@@ -214,7 +214,8 @@ const likePost = async (req, res) => {
             message = "Like borrado del post"
         }
         await post.save()
-        res.status(201).json({
+        res.status(201).send({
+            status: "success",
             message: message,
             post: post,
             user: req.user.id
@@ -314,7 +315,7 @@ const respondPost = async (req, res) => {
 
 const retrievePost = async (req, res) => {
     try {
-        const post = await Post.findById(req.params.postId).select()
+        const post = await Post.findById(req.params.postId).populate("user_id")
         if (!post) {
             console.log("No se ha encontrado el post")
             res.status(400).send("No se ha encontrado el post")

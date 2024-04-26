@@ -47,7 +47,9 @@ export const FeedStyle = {
     },
     imagenPost: {
         width: '100%',
-        height: 250
+        height: 250,
+        resizeMode: 'cover',
+        borderRadius: 15
     },
     containerIconElement: {
         flexDirection: 'row',

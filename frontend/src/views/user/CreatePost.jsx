@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, Image, TextInput, Keyboard, ScrollView, Modal, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, TouchableOpacity, Image, TextInput, Keyboard, ScrollView, Modal, TouchableWithoutFeedback, ToastAndroid } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import useAuth from '../../hooks/useAuth';
 import { useNavigation } from '@react-navigation/native'
@@ -94,6 +94,13 @@ const Posts = () => {
 
         if (data.status == "success") {
 
+            ToastAndroid.showWithGravityAndOffset(
+                data.message,
+                ToastAndroid.LONG,
+                ToastAndroid.BOTTOM,
+                25,
+                50,
+              );
             navigate.navigate('Feed');
             setText('');
             setImage(null);
