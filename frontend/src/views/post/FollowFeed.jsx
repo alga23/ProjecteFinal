@@ -1,4 +1,4 @@
-import { View, Text, Image, ActivityIndicator, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity } from "react-native";
 import perfil from '../../../assets/images/default_profile_picture.jpg';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { FeedStyle } from '../../styles/post/FeedStyle';
@@ -7,7 +7,7 @@ import moment from 'moment';
 import React from "react";
 import { useNavigation } from '@react-navigation/native'
 
-const FollowFeed = React.memo(({ post, onLikePress, isLiked }) => {
+const FollowFeed = React.memo(({ post, onLikePress, onFavPress, isLiked, isFav }) => {
 
     const navigation = useNavigation()
 
@@ -30,7 +30,7 @@ const FollowFeed = React.memo(({ post, onLikePress, isLiked }) => {
                 </View>
                 <Text>{post.content}</Text>
                 {post.file && (
-                    <Image style={FeedStyle.imagenPost} source={{uri: post.file}} />
+                    <Image style={FeedStyle.imagenPost} source={{ uri: post.file }} />
                 )}
                 <View style={FeedStyle.containerIcons}>
                     <View style={FeedStyle.containerIconElement}>
@@ -48,9 +48,9 @@ const FollowFeed = React.memo(({ post, onLikePress, isLiked }) => {
                     <View style={FeedStyle.containerIconElement}>
 
                         <TouchableOpacity onPress={() => onLikePress(post._id)}>
-                            <Icon name={isLiked ? 'heart' : 'heart-o'} color={isLiked ? "red" : undefined} size={20} />
+                            <Icon name={isLiked?.isLikedByCurrentUser ? 'heart' : 'heart-o'} color={isLiked?.isLikedByCurrentUser ? "red" : undefined} size={20} />
                         </TouchableOpacity>
-                        <Text>{post.likes}</Text>
+                        <Text>{isLiked?.likeCount ?? post.likes}</Text>
                     </View>
 
                     <View style={FeedStyle.containerIconElement}>
@@ -62,10 +62,9 @@ const FollowFeed = React.memo(({ post, onLikePress, isLiked }) => {
                     </View>
                     <View style={FeedStyle.containerIconElement}>
 
-                        <TouchableOpacity>
-                            <Icon name='bookmark-o' size={20} />
+                        <TouchableOpacity onPress={() => onFavPress(post._id)}>
+                            <Icon name={isFav?.isFavByCurrentUser ? 'bookmark' : 'bookmark-o'} color={isFav?.isFavByCurrentUser ? "#FFD700" : undefined} size={20} />
                         </TouchableOpacity>
-                        <Text>0</Text>
                     </View>
                 </View>
             </View>

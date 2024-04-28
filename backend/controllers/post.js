@@ -260,6 +260,7 @@ const favPost = async (req, res) => {
 
         // Respondemos con el mensaje y la información del post y el usuario
         res.status(201).json({
+            status: "success",
             message: message,
             post: post,
             user: user.id

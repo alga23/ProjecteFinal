@@ -15,7 +15,7 @@ export const UserDetailsProvider = ({ children }) => {
 
         authUser();
         
-    }, []);
+    }, [userDetails]);
 
     const authUser = async() => {
         // Sacar datos usuario identificado del localStorage

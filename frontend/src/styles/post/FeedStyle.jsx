@@ -18,7 +18,6 @@ export const FeedStyle = {
     cardPost: {
         flexDirection: 'row',
         marginHorizontal: 15,
-        marginVertical: 15,
         borderBottomWidth: 1,
         borderColor: themeColors.lineBorderGray,
         paddingBottom: 10
@@ -43,7 +42,7 @@ export const FeedStyle = {
     },
     containerIcons: {
         flexDirection: 'row',
-        gap: 25
+        gap: 32,
     },
     imagenPost: {
         width: '100%',
