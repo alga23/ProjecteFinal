@@ -101,9 +101,6 @@ export default function Router() {
                         //notifyMessage("There was an error.")
                     }
                 }, 5000)
-
-                console.log("Stored token is: " + token)
-                console.log(JSON.stringify(responseUserDetails.status))
             }
         } catch (error) {
             console.error('Error checking token:', error)
@@ -138,7 +135,3 @@ export default function Router() {
         </View>
     )
 }
-
-
-
-
