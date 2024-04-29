@@ -11,12 +11,12 @@ const FollowRoutes = require('./routes/follow');
 const ComentarioRoutes = require('./routes/comentario');
 const app = express();
 
-dotenv.config(); 
+dotenv.config();
 conexion(process.env.URI);
 
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 
 const port = process.env.PORT || 3000;
 
