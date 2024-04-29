@@ -114,8 +114,68 @@ const viewUserProfile = async (req, res) => {
     }
 }
 
+const upload = async (req, res) => {
+    try {
+        const userId = req.user.id
+        const file = req.file;
+
+        if (!file) {
+            res.status(404).send({
+                status: "error",
+                message: "No hay fichero seleccionado"
+            })
+        }
+
+        const imagen = file.path;
+
+        const imagenPerfil = await cloudinary.uploader.upload(imagen, {
+            folder: 'Perfil',
+            width: 100,
+            height: 100,
+            crop: "scale",
+            format: 'webp'
+        });
+
+        const updateUser = await User.findByIdAndUpdate({ "_id": userId }, { imagen: imagenPerfil.secure_url }, { new: true });
+
+        return res.status(200).send({
+            status: "success",
+            message: "Imagen subida correctamente",
+            user: updateUser
+        })
+
+    } catch (error) {
+        res.status(500).send({
+            status: "error",
+            message: "Error en el servidor al subir la imagen, " + error
+        })
+    }
+}
+
+const retrieveOwnUser = async (req, res) => {
+    try {
+        const userId = req.user.id
+        const user = await User.findById(userId).select("-password -__v")
+        if (!user) {
+            return res.status(404).send({
+                status: 'error'
+            })
+        }
+
+        res.status(200).send({
+            status: "success",
+            user: user
+        })
+    } catch (error) {
+        console.error('Error buscando el usuario:', error)
+        res.status(500).send({ error: 'Error interno del servidor' })
+    }
+}
+
 module.exports = {
     register,
     login,
-    viewUserProfile
+    viewUserProfile,
+    upload,
+    retrieveOwnUser
 }

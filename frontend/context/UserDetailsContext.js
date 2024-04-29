@@ -2,7 +2,6 @@ import React, { createContext, useEffect, useState } from 'react';
 import useFetch from '../src/hooks/useFetch';
 import * as SecureStore from 'expo-secure-store';
 import { Global } from '../src/utils/Global';
-import React, { createContext, useContext, useState } from 'react';
 
 export const UserDetailsContext = createContext()
 
