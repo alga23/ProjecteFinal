@@ -1,12 +1,16 @@
-import { View, Image, TouchableOpacity } from 'react-native';
+import { View, Image, TouchableOpacity, Text } from 'react-native';
 import logo from '../../assets/images/logo.png';
-import perfil from '../../assets/images/default_profile_picture.jpg';
 import { HeaderStyle } from '../styles/HeaderStyle';
 import { useNavigation } from '@react-navigation/native';
-
+import useAuth from '../hooks/useAuth';
+import { Global } from '../utils/Global';
 
 const Header = () => {
     const navigation = useNavigation()
+    const { auth } = useAuth();
+
+
+
 
     return (
         <>
@@ -18,7 +22,11 @@ const Header = () => {
                     onPress={() => {
                         navigation.openDrawer()
                     }}>
-                    <Image style={HeaderStyle.imagenPerfil} source={perfil} />
+                    {auth.imagen && auth.imagen === "default.png" ? (
+                        <Image style={HeaderStyle.imagenPerfil} source={{ uri: Global.url_default }} />
+                    ) : (
+                        <Image style={HeaderStyle.imagenPerfil} source={{ uri: auth.imagen }} />
+                    )}
                 </TouchableOpacity>
             </View>
 

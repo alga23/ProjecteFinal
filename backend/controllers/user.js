@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt")
 const User = require('../models/user')
 const Validators = require("../middleware/validators")
 const generateToken = require("../services/jwt");
+const cloudinary = require('../cloudinary');
 
 const register = async (req, res) => {
 
@@ -33,6 +34,7 @@ const register = async (req, res) => {
         const hashedPassword = await bcrypt.hash(body.password, 10)
 
         body.password = hashedPassword;
+        body.rol = 'user';
         // Crear un nuevo usuario
         const user = new User(body);
 
@@ -112,29 +114,8 @@ const viewUserProfile = async (req, res) => {
     }
 }
 
-const retrieveOwnUser = async (req, res) => {
-    try {
-        const userId = req.user.id
-        const user = await User.findById(userId).select("-password -__v")
-        if (!user) {
-            return res.status(404).send({
-                status: 'error'
-            })
-        }
-
-        res.status(200).send({
-            status: "success",
-            user: user
-        })
-    } catch (error) {
-        console.error('Error buscando el usuario:', error)
-        res.status(500).send({ error: 'Error interno del servidor' })
-    }
-}
-
 module.exports = {
     register,
     login,
-    viewUserProfile,
-    retrieveOwnUser
+    viewUserProfile
 }

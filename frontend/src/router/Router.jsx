@@ -15,7 +15,6 @@ import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerI
 import React, { useEffect, useState } from 'react'
 import { View, ActivityIndicator } from "react-native"
 import * as SecureStore from 'expo-secure-store'
-import Profile from '../views/user/Profile';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator()
@@ -100,9 +99,6 @@ export default function Router() {
                         //notifyMessage("There was an error.")
                     }
                 }, 5000)
-
-                console.log("Stored token is: " + token)
-                console.log(JSON.stringify(responseUserDetails.status))
             }
         } catch (error) {
             console.error('Error checking token:', error)
@@ -137,7 +133,3 @@ export default function Router() {
         </View>
     )
 }
-
-
-
-

@@ -1,13 +1,14 @@
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
 import Header from '../../components/Header';
 import { FeedStyle } from '../../styles/post/FeedStyle';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import BottomMenu from '../../components/BottomMenu';
 import useFetch from '../../hooks/useFetch';
 import { Global } from '../../utils/Global';
 import * as SecureStore from 'expo-secure-store';
 import FollowFeed from './FollowFeed';
 import { useNavigation } from '@react-navigation/native';
+import useAuth from '../../hooks/useAuth';
 
 const Feed = () => {
 
@@ -15,19 +16,25 @@ const Feed = () => {
     const [page, setPage] = useState(1);
     const [more, setMore] = useState(true);
     const [feed, setFeed] = useState([]);
-    const { fetchData, loading } = useFetch();
+    const { fetchData } = useFetch();
     const [liked, setLiked] = useState({});
+    const [fav, setFav] = useState({});
     const [userId, setUserId] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const { auth } = useAuth({});
+    const [isFollowing, setIsFollowing] = useState(true);
 
     const navigation = useNavigation();
 
     useEffect(() => {
         feedSiguiendo(1);
-    }, [page]);
+    }, [userId]);
 
     useEffect(() => {
-        updateLikes(feed);
-    }, [feed]);
+        if (!isFollowing) {
+            setSelectPage('Populares');
+        }
+    }, [isFollowing]);
 
     useEffect(() => {
         const getUserId = async () => {
@@ -40,69 +47,82 @@ const Feed = () => {
 
     const feedSiguiendo = async (nextPage) => {
 
+        setLoading(true);
         const resultPosts = await fetchData(Global.url + "post/feed/" + nextPage, 'GET');
 
         if (resultPosts.status === "success") {
             let newPosts = nextPage === 1 ? resultPosts.posts : [...feed, ...resultPosts.posts];
 
+            const newLikes = newPosts.reduce((acc, post) => ({
+                ...acc,
+                [post._id]: {
+                    likeCount: post.likes,
+                    isLikedByCurrentUser: post.likes_users_id.includes(userId)
+                }
+            }), { ...liked });
+
+            const newFav = newPosts.reduce((acc, post) => ({
+                ...acc,
+                [post._id]: {
+                    isFavByCurrentUser: Array.isArray(auth.fav_posts_id) ? auth.fav_posts_id.includes(post._id) : false
+                }
+            }), { ...fav });
+
+            setLiked(newLikes);
+            setFav(newFav);
             setFeed(newPosts);
 
-            if (feed.length >= (resultPosts.total - resultPosts.posts.length)) {
-                setMore(false);
-            }
-        }
+            setLoading(false);
+            setMore(newPosts.length < resultPosts.total);
+            setIsFollowing(newPosts.length > 0);
 
+        }
     }
 
     const nextPage = () => {
-        let page = page + 1;
-
-        setPage(page);
-        feedSiguiendo(page);
-    }
+        if (more && !loading) {
+            setPage(prevPage => {
+                const nextPage = prevPage + 1;
+                feedSiguiendo(nextPage);
+                return nextPage;
+            });
+        }
+    };
 
     const handleScroll = (event) => {
         const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
-
         const isCloseToBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 20;
-
         if (isCloseToBottom && more && !loading) {
             nextPage();
         }
-    }
+    };
 
-    const likePosts = useCallback(async (postId) => {
+    const likePosts = async (postId) => {
         const likeResponse = await fetchData(Global.url + 'post/like/' + postId, 'PUT');
 
         if (likeResponse.status === "success" && userId) {
-            setFeed(prevFeed => {
-                return prevFeed.map(post => {
-                    if (post._id === postId) {
-                        const isLiked = likeResponse.post.likes_users_id.includes(userId);
-                        const newLikes = isLiked ? post.likes + 1 : post.likes - 1;
-                        return { ...post, likes: newLikes };
-                    }
-                    return { ...post };
-                });
-            });
-
             setLiked(prevLiked => ({
                 ...prevLiked,
-                [postId]: likeResponse.post.likes_users_id.includes(userId)
-            }));
+                [postId]: {
+                    likeCount: likeResponse.post.likes,
+                    isLikedByCurrentUser: !prevLiked[postId]?.isLikedByCurrentUser
+                }
+            }))
         }
+    }
 
-    }, [userId, fetchData]);
+    const favPosts = async (postId) => {
+        const postResponse = await fetchData(Global.url + 'post/fav/' + postId, 'POST');
 
-
-
-    const updateLikes = (posts) => {
-        const updatedLiked = {};
-        posts.forEach(post => {
-            updatedLiked[post._id] = post.likes_users_id.includes(userId);
-        });
-        setLiked(updatedLiked);
-    };
+        if (postResponse.status === "success" && userId) {
+            setFav(prevFav => ({
+                ...prevFav,
+                [postId]: {
+                    isFavByCurrentUser: !prevFav[postId]?.isFavByCurrentUser
+                }
+            }))
+        }
+    }
 
     return (
         <View style={FeedStyle.containerPrincipal}>
@@ -124,20 +144,25 @@ const Feed = () => {
 
                     feed && feed.map((post) => {
                         return (
-                            <FollowFeed key={post._id} post={post} onLikePress={likePosts} isLiked={liked[post._id]} />
+                            <FollowFeed key={post._id}
+                                post={post}
+                                onLikePress={likePosts}
+                                onFavPress={favPosts}
+                                isLiked={liked[post._id]}
+                                isFav={fav[post._id]} />
                         )
                     })
                 }
-                {!loading && feed.length === 0 && (
+                {!loading && selectPage === 'Siguiendo' && feed.length === 0 && (
                     <View style={FeedStyle.containerNoPosts}>
                         <Text style={FeedStyle.noPosts}>No hay publicaciónes de usuarios que sigas</Text>
 
-                        <TouchableOpacity style={FeedStyle.followBottom} activeOpacity={0.6} onPress={() => navigation.navigate('Bandeja_mensaje')}>
+                        <TouchableOpacity style={FeedStyle.followBottom} activeOpacity={0.6} onPress={() => navigation.navigate('Search')}>
                             <Text style={FeedStyle.followButtonText}>Sigue a usuarios</Text>
                         </TouchableOpacity>
                     </View>
                 )}
-            {loading && <ActivityIndicator size={40} color='#0074B4' style={{marginTop:20}}/>}
+                {loading && <ActivityIndicator size={40} color='#0074B4' style={{ marginTop: 20 }} />}
             </ScrollView>
             <BottomMenu />
         </View>
