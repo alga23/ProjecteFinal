@@ -144,7 +144,7 @@ const upload = async (req, res) => {
             user: updateUser
         })
 
-    }catch(error) {
+    }catch (error) {
         res.status(500).send({
             status: "error",
             message: "Error en el servidor al subir la imagen, " + error

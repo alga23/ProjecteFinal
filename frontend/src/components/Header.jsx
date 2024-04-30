@@ -20,7 +20,7 @@ const Header = () => {
                         navigation.openDrawer()
                     }}>
                     {auth.imagen && auth.imagen === "default.png" ? (
-                        <Image style={HeaderStyle.imagenPerfil} source={{uri: Global.url_default}} />
+                        <Image style={HeaderStyle.imagenPerfil} source={{ uri: Global.url_default }} />
                     ) : (
                         <Image style={HeaderStyle.imagenPerfil} source={{ uri: auth.imagen }} />
                     )}

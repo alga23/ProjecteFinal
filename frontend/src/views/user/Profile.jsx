@@ -17,9 +17,10 @@ export default function Profile() {
     const [profileDetails, setProfileDetails] = useState(null)
     const [isLoadingProfile, setIsLoadingProfile] = useState(true)
     const { fetchData } = useFetch();
+    const navigation = useNavigation();
 
     const LoadingIndicator = () => (
-        <View style={{ flex: 1, marginTop: 60}}>
+        <View style={{ flex: 1, marginTop: 60 }}>
             <ActivityIndicator size="large" color="#0000ff" />
         </View>
     );
@@ -29,7 +30,7 @@ export default function Profile() {
             const responseProfileDetails = await fetchData(Global.url + "user/profile/" + resolvedProfileId);
             if (responseProfileDetails.status === "success") {
                 const user = await responseProfileDetails.user;
-                console.log(user)
+
                 setProfileDetails(user);
             } else {
                 console.log('Error getting user details.');
@@ -50,6 +51,10 @@ export default function Profile() {
             //fetchLikes();
         }, [profileId])
     )
+
+    const handlePress = (route, id) => {
+        navigation.navigate(route, {id: id});
+    }
 
     return (
         <SafeAreaView>
@@ -86,7 +91,7 @@ export default function Profile() {
                     <View style={ProfileStyle.bottomPartContainer}>
                         <View style={ProfileStyle.followersRowContainer}>
                             <View style={ProfileStyle.followersContainer}>
-                                <TouchableOpacity>
+                                <TouchableOpacity onPress={() => handlePress('Following', profileDetails._id)}>
                                     <Text style={{ fontSize: 16 }}>
                                         <Text style={{ fontWeight: 'bold' }}>57</Text> seguidores
                                     </Text>

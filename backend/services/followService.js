@@ -27,7 +27,7 @@ const followindUserIds = async (identityUser) => {
 
         return {
             following: followingClean,
-            follower: followerClean
+            followers: followerClean
         }
 
     } catch (error) {
