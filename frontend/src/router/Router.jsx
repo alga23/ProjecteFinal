@@ -17,6 +17,7 @@ import { View, ActivityIndicator } from "react-native"
 import * as SecureStore from 'expo-secure-store'
 import Profile from '../views/user/Profile';
 import Following from '../views/follow/Following';
+import Followers from '../views/follow/Followers';
 
 
 const Stack = createNativeStackNavigator();
@@ -132,6 +133,7 @@ export default function Router() {
                     <Stack.Screen name='Bandeja_mensaje' options={{ headerShown: false }} component={MensajesEscritos} />
                     <Stack.Screen name='ViewGame' options={{ headerShown: false }} component={VisualizarJuego} />
                     <Stack.Screen name='Following' options={{ headerShown: false }} component={Following} />
+                    <Stack.Screen name='Followers' options={{ headerShown: false }} component={Followers} />
                 </Stack.Navigator>
             )}
         </View>

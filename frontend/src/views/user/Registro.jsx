@@ -23,7 +23,7 @@ const Registro = () => {
         if (user.status === "success") {
             navigation.navigate("Login");
             ToastAndroid.showWithGravityAndOffset(
-                data.message,
+                user.message,
                 ToastAndroid.LONG,
                 ToastAndroid.BOTTOM,
                 25,
@@ -31,7 +31,7 @@ const Registro = () => {
               );
         } else {
             ToastAndroid.showWithGravityAndOffset(
-                data.message,
+                user.message,
                 ToastAndroid.LONG,
                 ToastAndroid.BOTTOM,
                 25,

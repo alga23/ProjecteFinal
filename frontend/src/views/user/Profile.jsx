@@ -91,12 +91,12 @@ export default function Profile() {
                     <View style={ProfileStyle.bottomPartContainer}>
                         <View style={ProfileStyle.followersRowContainer}>
                             <View style={ProfileStyle.followersContainer}>
-                                <TouchableOpacity onPress={() => handlePress('Following', profileDetails._id)}>
+                                <TouchableOpacity onPress={() => handlePress('Followers', profileDetails._id)}>
                                     <Text style={{ fontSize: 16 }}>
                                         <Text style={{ fontWeight: 'bold' }}>57</Text> seguidores
                                     </Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity>
+                                <TouchableOpacity onPress={() => handlePress('Following', profileDetails._id)}>
                                     <Text style={{ marginLeft: 15, fontSize: 16 }}>
                                         <Text style={{ fontWeight: 'bold' }}>543</Text> siguiendo
                                     </Text>

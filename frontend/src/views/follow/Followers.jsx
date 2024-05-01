@@ -7,7 +7,7 @@ import { Follow } from '../../styles/follow/Follow';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import LayoutFollow from './LayoutFollow';
 
-const Following = () => {
+const Followers = () => {
 
     const [user, setUser] = useState({});
     const [followers, setFollowers] = useState([]);
@@ -36,7 +36,8 @@ const Following = () => {
     }
 
     const obtenerFollower = async () => {
-        const data = await fetchData(Global.url + 'follow/following/' + user._id, 'GET');
+
+        const data = await fetchData(Global.url + 'follow/followers/' + user._id, 'GET');
 
         if (data.status === "success") {
             const follows = data.follows.map(follow => ({
@@ -50,7 +51,7 @@ const Following = () => {
     }
 
     const saveAndUnFollow = async (userId) => {
-
+        
         const data = await fetchData(Global.url + 'follow/save', 'POST', { follower: userId });
 
         if (data.status === 'success') {
@@ -83,4 +84,4 @@ const Following = () => {
     )
 }
 
-export default Following;
+export default Followers;

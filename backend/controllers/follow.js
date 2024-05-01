@@ -114,7 +114,7 @@ const followers = async (req, res) => {
         }
 
          const follows = await Follow.find({ follower: userId })
-         .populate("user", "-password -__v -email")
+         .populate("user follower", "-password -__v -email")
          .paginate(page, itemsPerPage);
 
          const total = await Follow.countDocuments();
