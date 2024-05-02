@@ -1,34 +1,45 @@
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import { Follow } from '../../styles/follow/Follow';
 import { Global } from "../../utils/Global";
+import useAuth from "../../hooks/useAuth";
+import { useNavigation } from "@react-navigation/native";
 
-const LayoutFollow = ({ follows, followPress, loading, }) => {
+const LayoutFollow = ({ follows, followPress, loading, followType, userFollowing }) => {
+
+    const { auth } = useAuth({});
+    const navigation = useNavigation();
 
     return (
         <View style={Follow.containerSiguiendo}>
-            {follows.map((followUser, index) => (
-                <View style={Follow.userContainer} key={index}>
-                    <View style={Follow.imageContainer}>
-                        {followUser.follower.imagen !== "default.png" ? (
-                            <Image style={Follow.imagenUsuario} source={{ uri: followUser.follower.imagen }} />
-                        ) : (
-                            <Image style={Follow.imagenUsuario} source={{ uri: Global.url_default }} />
-                        )}
-                    </View>
-                    <View style={Follow.userInfoContainer}>
-                        <Text style={Follow.userInfoName}>{followUser.follower.nombreCompleto}</Text>
-                        <Text>{followUser.follower.nick}</Text>
-                    </View>
+            {follows.map((followUser, index) => {
+                const followData = followUser[followType];
+                const isFollowing = userFollowing.includes(followData._id);
+                const isCurrentId = followData._id === auth._id;
 
-                    <TouchableOpacity style={Follow.followButton} onPress={() => followPress(followUser.follower._id)}>
-                        {followUser.isFollowing ? (
-                            <Text style={Follow.followText}>Siguiendo</Text>
-                        ) : (
-                            <Text style={Follow.followText}>Seguir</Text>
+                return (
+                    <View style={Follow.userContainer} key={index}>
+                        <TouchableOpacity style={{ flexDirection: 'row'}} onPress={() => navigation.navigate('Profile', {profileId: followData._id})}>
+                        <View style={Follow.imageContainer}>
+                            {followData.imagen !== "default.png" ? (
+                                <Image style={Follow.imagenUsuario} source={{ uri: followData.imagen }} />
+                            ) : (
+                                <Image style={Follow.imagenUsuario} source={{ uri: Global.url_default }} />
+                            )}
+                        </View>
+                        <View style={Follow.userInfoContainer}>
+                            <Text style={Follow.userInfoName}>{followData.nombreCompleto}</Text>
+                            <Text>{followData.nick}</Text>
+                        </View>
+                        </TouchableOpacity>
+
+                        {!isCurrentId && (
+                            <TouchableOpacity onPress={() => followPress(followData._id)} style={Follow.followButton}>
+                                <Text style={Follow.followText}>{isFollowing ? 'Siguiendo' : 'Seguir'}</Text>
+                            </TouchableOpacity>
                         )}
-                    </TouchableOpacity>
-                </View>
-            ))}
+                    </View>
+                )
+            })}
             {loading && <Text>Cargando...</Text>}
             {!loading && follows.length === 0 && (
                 <View style={Follow.noFollowersContainer}>

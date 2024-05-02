@@ -19,7 +19,6 @@ const save = async (req, res) => {
     
             const follow = await followStored.save();
 
-            console.log(follow);
             return res.status(200).send({
                 status: "success",
                 message: "Le has seguido",
@@ -33,6 +32,7 @@ const save = async (req, res) => {
                 status: "success",
                 message: "Le has dejado de seguir"
             })
+
         }
 
     } catch(error) {
