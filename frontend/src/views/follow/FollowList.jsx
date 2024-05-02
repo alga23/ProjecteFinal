@@ -1,21 +1,23 @@
-import { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import useFetch from '../../hooks/useFetch';
-import { Global } from '../../utils/Global';
+import { useEffect, useState } from "react";
+import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import useFetch from "../../hooks/useFetch";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { Global } from "../../utils/Global";
+import LayoutFollow from "./LayoutFollow";
 import { Follow } from '../../styles/follow/Follow';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import LayoutFollow from './LayoutFollow';
 
-const Followers = () => {
-
+const FollowList = ({ route }) => {
     const [user, setUser] = useState({});
     const [followers, setFollowers] = useState([]);
     const [userFollowing, setUserFollowing] = useState([]);
     const { fetchData } = useFetch({});
     const [loading, setLoading] = useState(true);
-    const route = useRoute();
+
     const { id } = route.params;
+
+    const type = id[1];
+
     const navigation = useNavigation();
 
     useEffect(() => {
@@ -30,7 +32,7 @@ const Followers = () => {
 
 
     const obtenerUser = async () => {
-        const data = await fetchData(Global.url + 'user/profile/' + id, 'GET');
+        const data = await fetchData(Global.url + 'user/profile/' + id[0], 'GET');
 
         if (data.status === "success") {
             setUser(data.user);
@@ -39,7 +41,7 @@ const Followers = () => {
 
     const obtenerFollower = async () => {
 
-        const data = await fetchData(Global.url + 'follow/followers/' + user._id, 'GET');
+        const data = await fetchData(Global.url + `follow/${type === 'followers' ? "followers" : 'following'}/` + user._id, 'GET');
 
         if (data.status === "success") {
             const follows = data.follows.map(follow => ({
@@ -70,7 +72,6 @@ const Followers = () => {
             setFollowers(updatedFollowers);
         }
     }
-
     return (
         <ScrollView>
             <View style={Follow.container}>
@@ -84,11 +85,11 @@ const Followers = () => {
                     follows={followers}
                     followPress={saveAndUnFollow}
                     loading={loading}
-                    followType="user"
+                    followType={type == "followers" ? "user" : "follower"}
                     userFollowing={userFollowing} />
             </View>
         </ScrollView>
     )
 }
 
-export default Followers;
+export default FollowList;
