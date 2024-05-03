@@ -129,14 +129,14 @@ const upload = async (req, res) => {
         const imagen = file.path;
 
         const imagenPerfil = await cloudinary.uploader.upload(imagen, {
-            folder: 'Perfil',
-            width: 100,
-            height: 100,
-            crop: "scale",
-            format: 'webp'
+                                                folder: 'Perfil',
+                                                width: 100,
+                                                height: 100,
+                                                crop: "scale",
+                                                format: 'webp'
         });
 
-        const updateUser = await User.findByIdAndUpdate({ "_id": userId }, { imagen: imagenPerfil.secure_url }, { new: true });
+        const updateUser = await User.findByIdAndUpdate({"_id": userId}, {imagen: imagenPerfil.secure_url}, {new: true});
 
         return res.status(200).send({
             status: "success",
@@ -144,7 +144,7 @@ const upload = async (req, res) => {
             user: updateUser
         })
 
-    } catch (error) {
+    }catch (error) {
         res.status(500).send({
             status: "error",
             message: "Error en el servidor al subir la imagen, " + error
