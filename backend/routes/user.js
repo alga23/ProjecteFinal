@@ -23,6 +23,8 @@ router.post('/login', UserController.login);
 router.get('/profile/:userId', UserController.viewUserProfile);
 router.post('/upload', [auth, uploads.single('file0')], UserController.upload);
 router.get('/devolverUsuarioToken', auth, UserController.retrieveOwnUser);
+router.get('/:id/contador', auth, UserController.devolverContador);
+
 
 //Exportar todas las rutas
 module.exports = router;

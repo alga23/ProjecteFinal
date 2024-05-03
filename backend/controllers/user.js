@@ -1,5 +1,7 @@
 const bcrypt = require("bcrypt")
 const User = require('../models/user')
+const Post = require('../models/post')
+const Follow = require('../models/follow')
 const Validators = require("../middleware/validators")
 const generateToken = require("../services/jwt");
 const cloudinary = require('../cloudinary');
@@ -129,14 +131,14 @@ const upload = async (req, res) => {
         const imagen = file.path;
 
         const imagenPerfil = await cloudinary.uploader.upload(imagen, {
-                                                folder: 'Perfil',
-                                                width: 100,
-                                                height: 100,
-                                                crop: "scale",
-                                                format: 'webp'
+            folder: 'Perfil',
+            width: 100,
+            height: 100,
+            crop: "scale",
+            format: 'webp'
         });
 
-        const updateUser = await User.findByIdAndUpdate({"_id": userId}, {imagen: imagenPerfil.secure_url}, {new: true});
+        const updateUser = await User.findByIdAndUpdate({ "_id": userId }, { imagen: imagenPerfil.secure_url }, { new: true });
 
         return res.status(200).send({
             status: "success",
@@ -144,7 +146,7 @@ const upload = async (req, res) => {
             user: updateUser
         })
 
-    }catch (error) {
+    } catch (error) {
         res.status(500).send({
             status: "error",
             message: "Error en el servidor al subir la imagen, " + error
@@ -172,10 +174,37 @@ const retrieveOwnUser = async (req, res) => {
     }
 }
 
+const devolverContador = async (req, res) => {
+    try {
+        if (!req.params.id) {
+            return res.status(400).send({ error: 'No se ha proporcionado usuario' })
+        }
+
+        const following = await Follow.countDocuments({ user: req.params.id })
+        const followers = await Follow.countDocuments({ follower: req.params.id })
+        const posts = await Post.countDocuments({ user_id: req.params.id })
+        const user = await User.findOne({ _id: req.params.id })
+        const likes = user.fav_posts_id.length
+
+        res.status(200).send({
+            status: "success",
+            following: following,
+            followers: followers,
+            posts: posts,
+            likes: likes
+
+        })
+
+    } catch (error) {
+        res.status(500).send({ error: 'Error interno del servidor' })
+    }
+}
+
 module.exports = {
     register,
     login,
     viewUserProfile,
     upload,
-    retrieveOwnUser
+    retrieveOwnUser,
+    devolverContador
 }
