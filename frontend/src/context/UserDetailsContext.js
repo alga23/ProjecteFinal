@@ -1,13 +1,12 @@
 import React, { createContext, useEffect, useState } from 'react';
-import useFetch from '../src/hooks/useFetch';
+import useFetch from '../hooks/useFetch';
 import * as SecureStore from 'expo-secure-store';
-import { Global } from '../src/utils/Global';
+import { Global } from '../utils/Global';
 
 export const UserDetailsContext = createContext()
 
 export const UserDetailsProvider = ({ children }) => {
     const [userDetails, setUserDetails] = useState(null)
-
     const [auth, setAuth] = useState({});
     const [loading, setLoading] = useState(true);
     const { fetchData } = useFetch({});
@@ -44,16 +43,15 @@ export const UserDetailsProvider = ({ children }) => {
     };
 
     return (
-
-        <UserDetailsContext.Provider
-            value={{
-                userDetails, updateUserDetails,
-                auth,
-                setAuth,
-                loading,
-                authUser
-            }}>
-
+        <UserDetailsContext.Provider 
+        value={{ 
+            userDetails, updateUserDetails,
+            auth,
+            setAuth,
+            loading,
+            authUser
+        }}>
+            {children}
         </UserDetailsContext.Provider>
     )
 }

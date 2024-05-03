@@ -6,9 +6,8 @@ const followControllers = require('../controllers/follow');
 
 // Rutas para los follows
 router.post('/save', auth, followControllers.save);
-router.post('/following/:id', auth, followControllers.following);
-router.post('/follower/:id', auth, followControllers.follower);
-
+router.get('/following/:id/:page?', auth, followControllers.following);
+router.get('/followers/:id/:page?', auth, followControllers.followers);
 
 //Exportar todas las rutas
 module.exports = router;

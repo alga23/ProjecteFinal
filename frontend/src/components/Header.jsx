@@ -9,9 +9,6 @@ const Header = () => {
     const navigation = useNavigation()
     const { auth } = useAuth();
 
-
-
-
     return (
         <>
             <View style={HeaderStyle.container}>
