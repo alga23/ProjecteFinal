@@ -1,4 +1,4 @@
-import { View, Text, Image, TouchableOpacity, ScrollView, TextInput } from "react-native";
+import { View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import { VisualizarJuegoStyle } from "../../styles/juego/VisualizarJuegoStyle";
 import GTA5 from '../../../assets/images/gta5.jpg';
 import Icon from "react-native-vector-icons/FontAwesome";

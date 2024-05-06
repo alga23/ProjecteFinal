@@ -1,21 +1,44 @@
-const useFetch = async (url, method, body) => {
+import * as SecureStore from 'expo-secure-store';
+import { useState } from 'react';
 
-    try {
-        const request = await fetch(url, {
-            method: method,
-            body: JSON.stringify(body),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
+const useFetch = () => {
+    
+    const [loading, setLoading] = useState(false);
 
-        const data = await request.json();
+    const fetchData = async (url, method, body) => {
+        try {
+            setLoading(true);
 
-        
-        console.log(data);
-        return data;
-    } catch(error) {
-        console.log(error);
+            const headers = {
+                'Content-Type': 'application/json',   
+            }
+            
+            const token = await SecureStore.getItemAsync('token'); 
+            if(token) {
+                headers['Authorization'] = token;
+            }
+    
+            // Realizar la solicitud con los encabezados construidos
+            const request = await fetch(url, {
+                method: method,
+                body: method !== 'GET' ? JSON.stringify(body) : null,
+                headers: headers,
+            });
+    
+            // Obtener y devolver los datos de la respuesta
+            const data = await request.json();
+    
+            setLoading(false);
+
+            return data;
+        } catch (error) {
+            throw Error("Error al obtener los datos, " + error);
+        }
+    }
+
+    return {
+        fetchData,
+        loading
     }
 }
 

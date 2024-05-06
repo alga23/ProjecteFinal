@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableWithoutFeedback, Image, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, Image, ScrollView, TouchableOpacity } from "react-native";
 import Header from "../../components/Header";
 import { SearchStyle } from "../../styles/juego/SearchStyle";
 import Icon from 'react-native-vector-icons/FontAwesome';

@@ -9,11 +9,11 @@ const storage = multer.diskStorage({
         cb(null, './uploads/post/')
     },
     filename: (req, path, cb) => {
-        cb(null, 'post-'+Date.now() + '-'+path.originalname)
+        cb(null, 'post-' + Date.now() + '-' + path.originalname)
     }
 })
 
-const uploads = multer({storage});
+const uploads = multer({ storage });
 
 // Rutas para el post
 router.post("/create", auth, postController.createPost)

@@ -3,6 +3,8 @@ const User = require('../models/user')
 const path = require('path');
 const fs = require('fs');
 const followService = require('../services/followService');
+const mongoosePaginate = require('mongoose-pagination');
+const cloudinary = require('../cloudinary');
 
 const createPost = async (req, res) => {
     //Check for content
@@ -17,7 +19,11 @@ const createPost = async (req, res) => {
             user_id: user.id, //user from the authMiddleware
         })
         await post.save();
-        res.status(201).json(post);
+        res.status(201).send({
+            message: "Post creado correctamente",
+            status: "success",
+            post: post
+        });
     } catch (error) {
         res.status(500).send({
             status: "error",
@@ -77,7 +83,7 @@ const userPosts = async (req, res) => {
 const upload = async (req, res) => {
     try {
 
-        // Obtener ip de publicacion
+        // Obtener id de publicacion
         let publicationId = req.params.id;
 
         if (!req.file) {
@@ -105,11 +111,18 @@ const upload = async (req, res) => {
                 status: "error",
                 message: "Esa extension no es valida"
             })
-
         }
 
+        const imagenPost = await cloudinary.uploader.upload(req.file.path, {
+                                                            folder: 'Post',
+                                                            width: 400,
+                                                            height: 400,
+                                                            crop: "limit",
+                                                            format: 'webp'
+        });
+
         // Actualizar publicación añadiendo el archivo enviado en el Post del usuario
-        const publicationUpdated = await Post.findByIdAndUpdate({ "user_id": req.user.id, "_id": publicationId }, { file: req.file.filename }, { new: true });
+        const publicationUpdated = await Post.findByIdAndUpdate({ "user_id": req.user.id, "_id": publicationId }, { file: imagenPost.secure_url }, { new: true });
 
         if (!publicationUpdated) {
             return res.status(404).send({
@@ -120,13 +133,12 @@ const upload = async (req, res) => {
 
         return res.status(200).send({
             status: "success",
-            publicationUpdated,
-            file: req.file
+            publicationUpdated
         })
 
 
     } catch (error) {
-
+        console.log(error);
         return res.status(500).send({
             status: "error",
             message: "Error en el servidor al actualizar una imagen de un post"
@@ -143,16 +155,18 @@ const feedFollows = async (req, res) => {
         // Servicio para obtener un array de ids de usuarios que sigues y los que te siguen
         const follows = await followService.followindUserIds(userId);
 
+        console.log(follows);
         // Pagina actual
         let page = 1;
         if (req.params.page) page = req.params.page;
 
-        const itemsPerPage = 10; // Items por pagina
+        const itemsPerPage = 3; // Items por pagina
         // Mostrar los posts de los usuarios que sigues y hacer paginación
         const posts = await Post.find({ "user_id": { $in: follows.following } })
             .sort('-createdAt')
-            .select({ "likes_users_id": 0, "__v": 0 })
-            .paginate(page, itemsPerPage);
+            .select({ "__v": 0 })
+            .paginate(page, itemsPerPage)
+            .populate("user_id", "nick username imagen");
 
         if (!posts) {
             return res.status(404).send({
@@ -167,12 +181,13 @@ const feedFollows = async (req, res) => {
             page,
             total,
             pages: Math.ceil(total / itemsPerPage),
-            posts,
+            posts: posts,
             following: follows.following,
             follower: follows.follower,
         })
 
     } catch (error) {
+        console.log(error);
         return res.status(500).send({
             status: "error",
             message: "Error en el servidor: ", error
@@ -199,7 +214,8 @@ const likePost = async (req, res) => {
             message = "Like borrado del post"
         }
         await post.save()
-        res.status(201).json({
+        res.status(201).send({
+            status: "success",
             message: message,
             post: post,
             user: req.user.id
@@ -244,6 +260,7 @@ const favPost = async (req, res) => {
 
         // Respondemos con el mensaje y la información del post y el usuario
         res.status(201).json({
+            status: "success",
             message: message,
             post: post,
             user: user.id
@@ -280,7 +297,7 @@ const respondPost = async (req, res) => {
         }
         const responsePost = new Post({
             content: req.body.content,
-            user_id: user.id,
+            user_id: req.user.id,
             posts_parents: [...post.posts_parents, post._id]
         })
         post.posts_responses.push(responsePost)
@@ -299,7 +316,7 @@ const respondPost = async (req, res) => {
 
 const retrievePost = async (req, res) => {
     try {
-        const post = await Post.findById(req.params.postId).select()
+        const post = await Post.findById(req.params.postId).populate("user_id")
         if (!post) {
             console.log("No se ha encontrado el post")
             res.status(400).send("No se ha encontrado el post")
