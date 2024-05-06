@@ -3,6 +3,7 @@ import { Follow } from '../../styles/follow/Follow';
 import { Global } from "../../utils/Global";
 import useAuth from "../../hooks/useAuth";
 import { useNavigation } from "@react-navigation/native";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const LayoutFollow = ({ follows, followPress, loading, followType, userFollowing }) => {
 
@@ -28,7 +29,7 @@ const LayoutFollow = ({ follows, followPress, loading, followType, userFollowing
                         </View>
                         <View style={Follow.userInfoContainer}>
                             <Text style={Follow.userInfoName}>{followData.nombreCompleto}</Text>
-                            <Text>{followData.nick}</Text>
+                            <Text>@{followData.nick}</Text>
                         </View>
                         </TouchableOpacity>
 
@@ -44,7 +45,7 @@ const LayoutFollow = ({ follows, followPress, loading, followType, userFollowing
             {!loading && follows.length === 0 && (
                 <View style={Follow.noFollowersContainer}>
                     <Icon name="user" size={50} color="#888" />
-                    <Text style={Follow.noFollowersText}>0 Seguidos</Text>
+                    <Text style={Follow.noFollowersText}>0 {followType == "follower" ? "Seguidos" : "Seguidores" }</Text>
                 </View>
             )}
         </View>
