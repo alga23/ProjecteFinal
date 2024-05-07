@@ -16,6 +16,7 @@ const Feed = () => {
     const [page, setPage] = useState(1);
     const [more, setMore] = useState(true);
     const [feed, setFeed] = useState([]);
+    const [populate, setPopulate] = useState([]);
     const { fetchData } = useFetch();
     const [liked, setLiked] = useState({});
     const [fav, setFav] = useState({});
@@ -28,6 +29,7 @@ const Feed = () => {
 
     useEffect(() => {
         feedSiguiendo(1);
+        populatePosts(1);
     }, [userId]);
 
     useEffect(() => {
@@ -76,6 +78,38 @@ const Feed = () => {
             setMore(newPosts.length < resultPosts.total);
             setIsFollowing(newPosts.length > 0);
 
+        }
+    }
+
+    const populatePosts = async (nextPage) => {
+        setLoading(true);
+        const resultsPopulates = await fetchData(Global.url + 'post/populate/' + nextPage, 'GET');
+
+        if (resultsPopulates.status === "success") {
+            const newPosts = nextPage === 1 ? resultsPopulates.populate : [...populate, resultsPopulates.populate];
+
+            const newLikes = newPosts.reduce((acc, post) => ({
+                ...acc,
+                [post._id]: {
+                    likeCount: post.likes,
+                    isLikedByCurrentUser: post.likes_users_id.includes(userId)
+                }
+            }), { ...liked });
+            
+            const newFav = newPosts.reduce((acc, post) => ({
+                ...acc,
+                [post._id]: {
+                    isFavByCurrentUser: Array.isArray(auth.fav_posts_id) ? auth.fav_posts_id.includes(post._id) : false
+                }
+            }), { ...fav });
+
+            setLiked(newLikes);
+            setFav(newFav);
+            setPopulate(newPosts);
+
+            setLoading(false);
+            setMore(newPosts.length < resultsPopulates.total);
+            setIsFollowing(newPosts.length > 0);
         }
     }
 
@@ -153,6 +187,18 @@ const Feed = () => {
                         )
                     })
                 }
+                {selectPage === 'Populares' && (
+                    populate && populate.map((post) => {
+                        return (
+                            <FollowFeed key={post._id}
+                                post={post}
+                                onLikePress={likePosts}
+                                onFavPress={favPosts}
+                                isLikes={liked[post._id]}
+                                isFav={fav[post._id]} />
+                        )
+                    })
+                )}
                 {!loading && selectPage === 'Siguiendo' && feed.length === 0 && (
                     <View style={FeedStyle.containerNoPosts}>
                         <Text style={FeedStyle.noPosts}>No hay publicaciónes de usuarios que sigas</Text>

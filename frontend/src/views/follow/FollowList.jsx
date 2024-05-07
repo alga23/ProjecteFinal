@@ -67,13 +67,8 @@ const FollowList = ({ route }) => {
                         isFollowing: !follower.isFollowing
                     };
                 }
-                
-                console.log(follower.isFollowing);
-
                 return follower;
-
             });
-
             setFollowers(updatedFollowers);
         }
     }
