@@ -1,21 +1,30 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ProfileStyle } from '../../styles/user/ProfileStyle'
 import { TouchableOpacity } from "react-native";
-import { View, Image, Text, ActivityIndicator } from "react-native";
+import { View, Image, Text, ActivityIndicator, FlatList } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { useNavigation, useFocusEffect, useRoute } from '@react-navigation/native'
 import useFetch from '../../hooks/useFetch'
-import React, { useState, useContext, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Global } from '../../utils/Global'
+import useAuth from "../../hooks/useAuth";
+import FollowFeed from "../post/FollowFeed";
 
-export default function Profile() {
-    const route = useRoute()
-    //const resolvedProfileId = profileId ?? userDetails._id
+
+
+export default function Profile({ route }) {
+
+    const { auth } = useAuth({})
+    const isOwnProfile = resolvedProfileId === auth._id
+
+    const [isLoadingProfile, setIsLoadingProfile] = useState(true)
     const [active, setActive] = useState("publicaciones")
     const { profileId } = route.params ?? { profileId: null }
-    const resolvedProfileId = profileId
+    const resolvedProfileId = profileId ?? auth._id
     const [profileDetails, setProfileDetails] = useState(null)
-    const [isLoadingProfile, setIsLoadingProfile] = useState(true)
+
+    const [profileContador, setProfileContador] = useState(null)
+    const [profilePosts, setProfilePosts] = useState(null)
     const { fetchData } = useFetch();
     const navigation = useNavigation();
 
@@ -27,7 +36,7 @@ export default function Profile() {
 
     const fetchProfileData = async () => {
         try {
-            const responseProfileDetails = await fetchData(Global.url + "user/profile/" + resolvedProfileId);
+            const responseProfileDetails = await fetchData(Global.url + "user/profile/" + resolvedProfileId, "GET");
             if (responseProfileDetails.status === "success") {
                 const user = await responseProfileDetails.user;
 
@@ -35,25 +44,38 @@ export default function Profile() {
             } else {
                 console.log('Error getting user details.');
             }
+            const responseContador = await fetchData(Global.url + "user/" + resolvedProfileId + "/contador", "GET");
+            if (responseContador.status === "success") {
+
+                setProfileContador(responseContador);
+            } else {
+                console.log('Error getting counter details.');
+            }
+            const responsePosts = await fetchData(Global.url + "post/user/" + resolvedProfileId, "GET")
+            if (responsePosts.status === "success") {
+                setProfilePosts(responsePosts.publications);
+
+            } else {
+                console.log('Error getting posts from user.');
+            }
         } catch (error) {
             console.log("Error: " + error);
         } finally {
             setIsLoadingProfile(false)
+            console.log(responsePosts)
         }
     };
 
     useFocusEffect(
         React.useCallback(() => {
-            //setIsLoadingPosts(true)
             setIsLoadingProfile(true)
             fetchProfileData()
-            //fetchData();
-            //fetchLikes();
+
         }, [profileId])
     )
 
     const handlePress = (route, id) => {
-        navigation.navigate(route, {id: id});
+        navigation.navigate(route, { id: id });
     }
 
     return (
@@ -64,7 +86,7 @@ export default function Profile() {
                 <View style={ProfileStyle.profileInfoContainer}>
                     <View style={ProfileStyle.topPartContainer}>
                         <View style={ProfileStyle.profileImageContainer}>
-                            {profileDetails.imagen === "default.png" ? (
+                            {profileDetails.imagen && profileDetails.imagen === "default.png" ? (
                                 <Image
                                     source={{ uri: Global.url_default }}
                                     style={ProfileStyle.imageProfile} />
@@ -90,15 +112,15 @@ export default function Profile() {
                     </View>
                     <View style={ProfileStyle.bottomPartContainer}>
                         <View style={ProfileStyle.followersRowContainer}>
-                        <View style={ProfileStyle.followersContainer}>
-                                <TouchableOpacity onPress={() => handlePress('FollowList', [profileDetails._id, type="followers"])}>
+                            <View style={ProfileStyle.followersContainer}>
+                                <TouchableOpacity onPress={() => handlePress('FollowList', [profileDetails._id, type = "followers"])}>
                                     <Text style={{ fontSize: 16 }}>
-                                        <Text style={{ fontWeight: 'bold' }}>57</Text> seguidores
+                                        <Text style={{ fontWeight: 'bold' }}>{profileContador.followers}</Text> seguidores
                                     </Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => handlePress('FollowList', [profileDetails._id, type="following"])}>
+                                <TouchableOpacity onPress={() => handlePress('FollowList', [profileDetails._id, type = "following"])}>
                                     <Text style={{ marginLeft: 15, fontSize: 16 }}>
-                                        <Text style={{ fontWeight: 'bold' }}>543</Text> siguiendo
+                                        <Text style={{ fontWeight: 'bold' }}>{profileContador.following}</Text> siguiendo
                                     </Text>
                                 </TouchableOpacity>
                             </View>
@@ -123,12 +145,12 @@ export default function Profile() {
                             <View style={ProfileStyle.bottomElementsContainer}>
                                 <View style={ProfileStyle.bottomElements1}>
                                     <TouchableOpacity onPress={() => setActive("publicaciones")}>
-                                        <Text style={[active == "publicaciones" ? ProfileStyle.bottomTextFocused : ProfileStyle.bottomTextUnfocused]}>16 publicaciones</Text>
+                                        <Text style={[active == "publicaciones" ? ProfileStyle.bottomTextFocused : ProfileStyle.bottomTextUnfocused]}>{profileContador.posts} publicaciones</Text>
                                     </TouchableOpacity>
                                     {active == "publicaciones" && (<View style={ProfileStyle.elementActive} />)}
                                 </View>
                                 <TouchableOpacity onPress={() => setActive("likes")}>
-                                    <Text style={[active == "likes" ? ProfileStyle.bottomTextFocused : ProfileStyle.bottomTextUnfocused]}>65 me gusta</Text>
+                                    <Text style={[active == "likes" ? ProfileStyle.bottomTextFocused : ProfileStyle.bottomTextUnfocused]}>{profileContador.likes} me gusta</Text>
                                     {active == "likes" && (<View style={ProfileStyle.elementActive} />)}
                                 </TouchableOpacity>
                             </View>
@@ -136,6 +158,16 @@ export default function Profile() {
                     </View>
                 </View>
             )}
+            <View>
+                <FlatList
+                    data={profilePosts}
+                    renderItem={({ item }) => {
+                        return <FollowFeed info={item} />
+                    }}
+                    keyExtractor={(post) => post._id.toString()}
+                    showsVerticalScrollIndicator={false}
+                />
+            </View>
         </SafeAreaView>
     )
 }
