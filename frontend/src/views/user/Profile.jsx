@@ -102,7 +102,7 @@ export default function Profile() {
                                     </Text>
                                 </TouchableOpacity>
                             </View>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => handlePress('Chat')}>
                                 <Icon name="mail-outline" size={26} />
                             </TouchableOpacity>
                         </View>
