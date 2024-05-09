@@ -1,0 +1,17 @@
+{
+    "bienvenido": "Welcome!",
+    "registrate": "Sign Up",
+    "tienesUnaCuenta?": "Already have an account?",
+    "iniciaSesion": "Log In",
+    "email": "Email",
+    "escribeTuEmailAqui": "Type your Email here",
+    "contraseña": "Password",
+    "escribeTuContraseñaAqui": "Type your password here",
+    "recordarContraseña?": "Forgot password?",
+    "login": "Login",
+    "o": "Or",
+    "noTienesCuenta?": "Don't have an account?",
+    "nombreCompleto": "Full Name",
+    "nick": "Alias",
+    "username": "Username"
+}
