@@ -9,8 +9,8 @@ import React, { useState } from 'react'
 import { Global } from '../../utils/Global'
 import useAuth from "../../hooks/useAuth";
 import FollowFeed from "../post/FollowFeed";
-
-
+import { useTranslation } from 'react-i18next';
+import i18n from '../../languages/i18n';
 
 export default function Profile({ route }) {
 
@@ -27,6 +27,8 @@ export default function Profile({ route }) {
     const [profilePosts, setProfilePosts] = useState(null)
     const { fetchData } = useFetch();
     const navigation = useNavigation();
+
+    const { t, i18n } = useTranslation();
 
     const LoadingIndicator = () => (
         <View style={{ flex: 1, marginTop: 60 }}>
@@ -115,12 +117,12 @@ export default function Profile({ route }) {
                             <View style={ProfileStyle.followersContainer}>
                                 <TouchableOpacity onPress={() => handlePress('FollowList', [profileDetails._id, type = "followers"])}>
                                     <Text style={{ fontSize: 16 }}>
-                                        <Text style={{ fontWeight: 'bold' }}>{profileContador.followers}</Text> seguidores
+                                        <Text style={{ fontWeight: 'bold' }}>{profileContador.followers}</Text>{t('seguidores')}
                                     </Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => handlePress('FollowList', [profileDetails._id, type = "following"])}>
                                     <Text style={{ marginLeft: 15, fontSize: 16 }}>
-                                        <Text style={{ fontWeight: 'bold' }}>{profileContador.following}</Text> siguiendo
+                                        <Text style={{ fontWeight: 'bold' }}>{profileContador.following}</Text>{t('siguiendo')}
                                     </Text>
                                 </TouchableOpacity>
                             </View>
@@ -145,12 +147,12 @@ export default function Profile({ route }) {
                             <View style={ProfileStyle.bottomElementsContainer}>
                                 <View style={ProfileStyle.bottomElements1}>
                                     <TouchableOpacity onPress={() => setActive("publicaciones")}>
-                                        <Text style={[active == "publicaciones" ? ProfileStyle.bottomTextFocused : ProfileStyle.bottomTextUnfocused]}>{profileContador.posts} publicaciones</Text>
+                                        <Text style={[active == "publicaciones" ? ProfileStyle.bottomTextFocused : ProfileStyle.bottomTextUnfocused]}>{profileContador.posts} {t('publicaciones')}</Text>
                                     </TouchableOpacity>
                                     {active == "publicaciones" && (<View style={ProfileStyle.elementActive} />)}
                                 </View>
                                 <TouchableOpacity onPress={() => setActive("likes")}>
-                                    <Text style={[active == "likes" ? ProfileStyle.bottomTextFocused : ProfileStyle.bottomTextUnfocused]}>{profileContador.likes} me gusta</Text>
+                                    <Text style={[active == "likes" ? ProfileStyle.bottomTextFocused : ProfileStyle.bottomTextUnfocused]}>{profileContador.likes} {t('meGusta')}</Text>
                                     {active == "likes" && (<View style={ProfileStyle.elementActive} />)}
                                 </TouchableOpacity>
                             </View>

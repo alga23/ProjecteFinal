@@ -3,8 +3,12 @@ import { EditProfileStyle } from "../../styles/user/EditProfileStyle";
 import { View, Text, TouchableOpacity, TextInput, Image } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome"
 import { themeColors } from "../../theme";
+import { useTranslation } from 'react-i18next';
 
 export default function EditProfile() {
+
+    const { t, i18n } = useTranslation();
+
     return (
         <SafeAreaView>
             <View style={EditProfileStyle.topContainer}>
@@ -14,10 +18,10 @@ export default function EditProfile() {
                         onPress={() => navigation.goBack()}>
                         <Icon name="arrow-left" size={30} />
                     </TouchableOpacity>
-                    <Text style={EditProfileStyle.editText}>Editar perfil</Text>
+                    <Text style={EditProfileStyle.editText}>{t("editarPerfil")}</Text>
                 </View>
                 <TouchableOpacity>
-                    <Text style={EditProfileStyle.guardarText}> Guardar</Text>
+                    <Text style={EditProfileStyle.guardarText}>{t("guardar")}</Text>
                 </TouchableOpacity>
 
             </View>
@@ -31,7 +35,7 @@ export default function EditProfile() {
 
                 </View>
                 <View style={EditProfileStyle.inputContainer}>
-                    <Text style={EditProfileStyle.textOutsideInput}>Nombre completo</Text>
+                    <Text style={EditProfileStyle.textOutsideInput}>{t("nombreCompleto")}</Text>
                     <TextInput
                         style={EditProfileStyle.textInput}
                         defaultValue="Juan Luis"
@@ -41,7 +45,7 @@ export default function EditProfile() {
                     />
                 </View>
                 <View style={EditProfileStyle.inputContainer}>
-                    <Text style={EditProfileStyle.textOutsideInput}>Nick</Text>
+                    <Text style={EditProfileStyle.textOutsideInput}>{t("nick")}</Text>
                     <TextInput
                         style={EditProfileStyle.textInput}
                         defaultValue="JuanLuis12"
@@ -51,7 +55,7 @@ export default function EditProfile() {
                     />
                 </View>
                 <View style={EditProfileStyle.inputContainer}>
-                    <Text style={EditProfileStyle.textOutsideInput}>Email</Text>
+                    <Text style={EditProfileStyle.textOutsideInput}>{t("email")}</Text>
                     <TextInput
                         style={EditProfileStyle.textInput}
                         defaultValue="juanLuis@gmail.com"
@@ -65,18 +69,18 @@ export default function EditProfile() {
                     <TextInput
                         style={EditProfileStyle.textInput}
                         defaultValue="password"
-                        placeholder="Escribe tu nueva contraseña"
+                        placeholder={t("escribeTuNuevaContraseña")}
                         placeholderTextColor={themeColors.postBorderLight}
                         secureTextEntry
                     //onChangeText={(text) => setName(text)}
                     />
                 </View>
                 <View style={EditProfileStyle.inputContainer}>
-                    <Text style={EditProfileStyle.textOutsideInput}>Biografía</Text>
+                    <Text style={EditProfileStyle.textOutsideInput}>{t("biografia")}</Text>
                     <TextInput
                         style={[EditProfileStyle.textInput, EditProfileStyle.textInputBiografia]}
                         defaultValue="esta es la biografia actual del usuario jisdnaiudauidnaudnida"
-                        placeholder="Escribe tu nueva biografia"
+                        placeholder={t("escribeTuNuevaBiografia")}
                         placeholderTextColor={themeColors.postBorderLight}
                         multiline={true} // Hace que el input sea multilinea
                         numberOfLines={4}

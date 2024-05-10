@@ -7,9 +7,12 @@ import * as ImagePicker from 'expo-image-picker';
 import { Circle } from 'react-native-progress';
 import useForm from '../../hooks/useForm';
 import useFetch from '../../hooks/useFetch';
-import { Global} from '../../utils/Global';
+import { Global } from '../../utils/Global';
 import * as SecureStore from 'expo-secure-store';
 import { CreatePostStyle } from '../../styles/user/CreatePostStyle';
+import { useTranslation } from 'react-i18next';
+import i18n from '../../languages/i18n';
+
 
 const Posts = () => {
     const { auth, setAuth } = useAuth({});
@@ -28,7 +31,9 @@ const Posts = () => {
     const [originalForm, setOriginalForm] = useState({ nick: auth.nick, bio: auth.bio });
     const [confirmModalVisible, setConfirmModalVisible] = useState(false);
     const [changesMade, setChangesMade] = useState(false);
-    const { fetchData } = useFetch({}); 
+    const { fetchData } = useFetch({});
+
+    const { t, i18n } = useTranslation();
 
     useEffect(() => {
         textInputRef.current.focus();
@@ -100,7 +105,7 @@ const Posts = () => {
                 ToastAndroid.BOTTOM,
                 25,
                 50,
-              );
+            );
             navigate.navigate('Feed');
             setText('');
             setImage(null);
@@ -115,9 +120,9 @@ const Posts = () => {
             formData.append('file0', {
                 uri: image,
                 name: 'publication.png',
-                type: 'image/jpeg' 
+                type: 'image/jpeg'
             })
-            
+
 
             const request = await fetch(Global.url + "post/upload/" + publicationId, {
                 method: "POST",
@@ -154,7 +159,7 @@ const Posts = () => {
         setChangesMade(false);
         setConfirmModalVisible(false);
         handleNavigate('Feed');
-        
+
         setText('');
         setImage(null);
         setCharCount(0);
@@ -183,7 +188,7 @@ const Posts = () => {
                         <Icon name="x" size={25} color="#000" />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={enviarPost} disabled={charCount > 200}>
-                        <Text style={[CreatePostStyle.addPublicar, charCount > 200 ? CreatePostStyle.disabledButton : null]}>Publicar</Text>
+                        <Text style={[CreatePostStyle.addPublicar, charCount > 200 ? CreatePostStyle.disabledButton : null]}>{t('publicar')}</Text>
                     </TouchableOpacity>
                 </View>
                 <ScrollView style={CreatePostStyle.scrollView}>
@@ -194,7 +199,7 @@ const Posts = () => {
                                 ref={textInputRef}
                                 style={CreatePostStyle.textInput}
                                 multiline={true}
-                                placeholder="¿Qué está pasando?"
+                                placeholder={t('queEstaPasando?')}
                                 onChangeText={(text) => { handleTextChange(text); handleFormChange('text', text) }}
                                 textAlignVertical="top"
                                 scrollEnabled={false}
@@ -217,7 +222,7 @@ const Posts = () => {
             </View>
             <View style={[CreatePostStyle.containerFooter, { bottom: isKeyboardOpen ? keyboardHeight : -140 }]}>
                 <Icon name="globe" size={16} color="#2196F3" />
-                <Text style={CreatePostStyle.text}>Cualquier persona puede responder</Text>
+                <Text style={CreatePostStyle.text}>{t('cualquierPersonaPuedeResponder')}</Text>
 
             </View>
             <View style={[CreatePostStyle.containerFooter2, { bottom: isKeyboardOpen ? keyboardHeight : -140 }]}>
@@ -258,14 +263,14 @@ const Posts = () => {
                 <TouchableWithoutFeedback onPress={() => setConfirmModalVisible(false)}>
                     <View style={CreatePostStyle.modalView}>
                         <View style={CreatePostStyle.modalContent}>
-                            <Text style={CreatePostStyle.textEditar}>Post</Text>
-                            <Text>¿Quieres descartar los cambios?</Text>
+                            <Text style={CreatePostStyle.textEditar}>{t("publicacion")}</Text>
+                            <Text>{t("quieresDescartarLosCambios?")}</Text>
                             <View style={CreatePostStyle.confirmationButtonsContainer}>
                                 <TouchableOpacity onPress={() => setConfirmModalVisible(false)}>
-                                    <Text style={CreatePostStyle.confirmationButton}>Cancelar</Text>
+                                    <Text style={CreatePostStyle.confirmationButton}>{t("cancelar")}</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => discardChangesAndGoBack()}>
-                                    <Text style={CreatePostStyle.confirmationButton}>Descartar</Text>
+                                    <Text style={CreatePostStyle.confirmationButton}>{t("descartar")}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>

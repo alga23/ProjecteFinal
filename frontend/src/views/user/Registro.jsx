@@ -8,6 +8,7 @@ import useForm from '../../hooks/useForm';
 import useFetch from '../../hooks/useFetch';
 import { Global } from '../../utils/Global';
 import { useTranslation } from 'react-i18next';
+import i18n from '../../languages/i18n';
 
 
 const Registro = () => {

@@ -2,6 +2,7 @@ import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import es from './es.json';
 import en from './en.json';
+import ca from './ca.json';
 import { getLocales } from 'expo-localization';
 
 const locales = getLocales();
@@ -21,6 +22,9 @@ i18n
             es: {
                 translation: es,
             },
+            ca: {
+                translation: ca,
+            }
         },
         lng: phoneLocale, // Set detected locale as initial language
         fallbackLng: 'en',

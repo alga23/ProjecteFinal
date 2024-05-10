@@ -10,7 +10,7 @@ import { Global } from '../../utils/Global'
 import useFetch from '../../hooks/useFetch'
 import * as SecureStore from 'expo-secure-store';
 import { useTranslation } from 'react-i18next';
-
+import i18n from '../../languages/i18n';
 
 export default function Login() {
 

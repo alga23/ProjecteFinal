@@ -1,5 +1,5 @@
 {
-    "bienvenido": "¡Bienvenido!",
+    "bienvenido": "¡Bienvenido/a!",
     "registrate": "Regístrate",
     "tienesUnaCuenta?": "Tienes una cuenta?",
     "iniciaSesion": "Inicia sesion",
@@ -13,5 +13,24 @@
     "noTienesCuenta?": "No tienes cuenta?",
     "nombreCompleto": "Nombre completo",
     "nick": "Alias",
-    "username": "Nombre de usuario"
+    "username": "Nombre de usuario",
+    "seguidores": "seguidores",
+    "siguiendo": "siguiendo",
+    "meGusta": "me gusta",
+    "publicaciones": "publicaciones",
+    "queEstaPasando?": "¿Qué está pasando?",
+    "publicar": "Publicar",
+    "cualquierPersonaPuedeResponder": "Cualquier persona puede responder",
+    "quieresDescartarLosCambios?": "¿Quieres descartar los cambios?",
+    "cancelar": "Cancelar",
+    "descartar": "Descartar",
+    "editarPerfil": "Editar perfil",
+    "guardar": "Guardar",
+    "escribeTuNuevaContraseña": "Escribe tu nueva contraseña",
+    "biografia": "Biografía",
+    "escribeTuNuevaBiografia": "Escribe tu nueva biografía",
+    "bandejaDeEntrada": "Bandeja de entrada",
+    "noTienesNingunMensaje": "No tienes ningun mensaje",
+    "escribeUnMensaje": "Escribe un mensaje",
+    "publicacion": "Publicación"
 }
