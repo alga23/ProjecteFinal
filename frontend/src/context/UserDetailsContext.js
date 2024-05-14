@@ -15,6 +15,7 @@ export const UserDetailsProvider = ({ children }) => {
 
         authUser();
 
+        
     }, [userDetails]);
 
     const authUser = async () => {
