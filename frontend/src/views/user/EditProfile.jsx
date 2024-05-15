@@ -3,6 +3,7 @@ import { EditProfileStyle } from "../../styles/user/EditProfileStyle";
 import { View, Text, TouchableOpacity, TextInput, Image } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome"
 import { themeColors } from "../../theme";
+import { editUser } from "../../../../backend/controllers/user";
 
 export default function EditProfile() {
     return (
@@ -38,6 +39,7 @@ export default function EditProfile() {
                         placeholder="Escribe tu nuevo nombre completo"
                         placeholderTextColor={themeColors.postBorderLight}
                     //onChangeText={(text) => setName(text)}
+
                     />
                 </View>
                 <View style={EditProfileStyle.inputContainer}>
