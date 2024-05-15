@@ -200,11 +200,90 @@ const devolverContador = async (req, res) => {
     }
 }
 
+//borrar usuario
+const deleteUser = async (req, res) => {
+    try {
+        const userId = req.params.userId;
+
+        // Verificar el ID del usuario a eliminar
+        console.log('ID del usuario a eliminar:', userId);
+
+
+        // Buscar el usuario que se quiere eliminar
+        const user = await User.findById(userId);
+
+        // Verificar si se encontró el usuario
+        console.log('Usuario encontrado:', user);
+        if (!user) {
+            return res.status(404).send({
+                status: "error",
+                message: "No se ha podido encontrar el usuario que borrar"
+            });
+        }
+
+        // Eliminar al usuario
+        const result = await user.deleteOne({ "_id": userId });
+
+        console.log('Resultado de la eliminación:', result); // Verificar el resultado de la eliminación
+
+        if (result.deletedCount === 0) {
+            return res.status(400).send({
+                status: "error",
+                message: "No se ha podido eliminar el usuario"
+            });
+        }
+
+        return res.status(200).send({
+            status: "success",
+            message: "Usuario borrado correctamente"
+        });
+    } catch (error) {
+        console.error('Error al intentar eliminar el usuario:', error);
+        res.status(500).send({ error: 'Error interno del servidor' });
+    }
+}
+//editar usuario
+const editUser = async (req, res) => {
+    const userIdentity = req.user.id;
+    const userUpdate = req.body;
+
+    
+    try {
+        
+        Object.entries(userUpdate).forEach(([key, value]) => {
+            if (value !== '') {
+                userUpdate[key] = value;
+            } else {
+                delete userUpdate[key]; // Eliminar el campo si el valor está en blanco
+            }
+        });
+          
+
+        // Actualizar el usuario con los datos del body
+        const updatedUser = await User.findOneAndUpdate(
+            { _id: userIdentity }, userUpdate, { new: true } // Devuelve el documento actualizado
+        );
+
+        res.status(200).send({
+            status: "success",
+            message: "Usuario actualizado correctamente",
+            user: updatedUser
+        });
+    } catch (error) {
+        console.error('Error al intentar actualizar el usuario:', error);
+        res.status(500).send({ error: 'Error interno del servidor' });
+    }
+}
+
+
+
 module.exports = {
     register,
     login,
     viewUserProfile,
     upload,
     retrieveOwnUser,
-    devolverContador
+    devolverContador,
+    deleteUser,
+    editUser
 }
