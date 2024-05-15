@@ -40,6 +40,12 @@ export const FeedStyle = {
         gap: 15,
         alignItems: 'center'
     },
+    infoNick: {
+        fontWeight: 'bold'
+    },
+    infoUsername: {
+        flex: .5
+    },
     containerIcons: {
         flexDirection: 'row',
         gap: 32,

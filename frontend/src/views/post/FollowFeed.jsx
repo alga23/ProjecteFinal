@@ -24,8 +24,8 @@ const FollowFeed = React.memo(({ post, onLikePress, onFavPress, isLiked, isFav }
             </TouchableOpacity>
             <View style={FeedStyle.postInfo}>
                 <View style={FeedStyle.infoUsuario}>
-                    <Text>{post.user_id.nick}</Text>
-                    <Text>{post.user_id.username}</Text>
+                    <Text style={FeedStyle.infoNick}>{post.user_id.nick}</Text>
+                    <Text style={FeedStyle.infoUsername} numberOfLines={1} ellipsizeMode="tail">@{post.user_id.username}koko</Text>
                     <Text>{moment(post.createdAt).fromNow()}</Text>
                 </View>
                 <Text>{post.content}</Text>

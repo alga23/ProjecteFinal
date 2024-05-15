@@ -27,6 +27,7 @@ router.post('/respond/:postId', auth, postController.respondPost)
 router.get('/:postId', auth, postController.retrievePost)
 router.get('/feed/:page?', auth, postController.feedFollows);
 router.delete('/delete/:id', auth, postController.deletePost);
+router.get('/populate/:page?', auth, postController.populatePost);
 
 //Exportar todas las rutas
 module.exports = router;
