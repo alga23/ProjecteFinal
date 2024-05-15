@@ -29,7 +29,7 @@ function connectChat() {
 
             userSockets[userId] = socket.id;
             console.log(`Usuario ${userId} registrado con socket ${socket.id}`);
-
+            console.log(userSockets);
             try {
                 const messages = await Message.find({
                     $or: [
@@ -47,6 +47,8 @@ function connectChat() {
         socket.on('message', async ({ usuarioReceptor, usuarioEmisor, contenido, imagen }) => {
             const recipientSocketId = userSockets[usuarioReceptor];
             let imagenUrl;
+
+            console.log(usuarioReceptor);
             try {
                 if (imagen) {
                     // Guardar la imagen temporalmente en el servidor

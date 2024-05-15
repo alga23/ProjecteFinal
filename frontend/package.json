@@ -12,7 +12,7 @@
     "@react-navigation/drawer": "^6.6.15",
     "@react-navigation/native": "^6.1.14",
     "@react-navigation/native-stack": "^6.9.25",
-    "expo": "^51.0.5",
+    "expo": "~51.0.5",
     "expo-image-picker": "~15.0.4",
     "expo-secure-store": "~13.0.1",
     "expo-status-bar": "~1.12.1",
