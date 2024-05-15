@@ -2,6 +2,7 @@ const Follow = require('../models/follow');
 const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-pagination');
 const followService = require('../services/followService');
+const user = require('../models/user');
 
 // Guardar y eliminar un Follow
 const save = async (req, res) => {
@@ -9,14 +10,14 @@ const save = async (req, res) => {
     try {
         const user = req.user.id;
 
-        const seguido = await Follow.findOne({user: user, follower: req.body.follower});
+        const seguido = await Follow.findOne({ user: user, follower: req.body.follower });
 
         if (!seguido) {
             const followStored = new Follow({
                 user: user,
                 follower: req.body.follower
             })
-    
+
             const follow = await followStored.save();
 
             return res.status(200).send({
@@ -27,7 +28,7 @@ const save = async (req, res) => {
             })
 
         } else {
-            await Follow.findOneAndDelete({user: user, follower: req.body.follower});
+            await Follow.findOneAndDelete({ user: user, follower: req.body.follower });
             return res.status(200).send({
                 status: "success",
                 message: "Le has dejado de seguir"
@@ -35,8 +36,8 @@ const save = async (req, res) => {
 
         }
 
-    } catch(error) {
-        
+    } catch (error) {
+
         return res.status(500).send({
             status: "error",
             message: "Error en el servidor al guardar un follow, " + error,
@@ -68,8 +69,8 @@ const following = async (req, res) => {
         }
         // Find a follow, popular datos de los usuarios y paginar con mongoose pagination
         const follows = await Follow.find({ user: userId })
-                                    .populate("user follower", "-password -__v -email")
-                                    .paginate(page, itemsPerPage);
+            .populate("user follower", "-password -__v -email")
+            .paginate(page, itemsPerPage);
 
 
         const total = await Follow.countDocuments();
@@ -82,7 +83,7 @@ const following = async (req, res) => {
             message: "Listado de usuarios que estoy siguiendo",
             follows,
             total: total,
-            pages: Math.ceil(total/itemsPerPage),
+            pages: Math.ceil(total / itemsPerPage),
             user_following: followUserIds.following,
             user_follow_me: followUserIds.followers
         })
@@ -113,11 +114,11 @@ const followers = async (req, res) => {
             })
         }
 
-         const follows = await Follow.find({ follower: userId })
-         .populate("user follower", "-password -__v -email")
-         .paginate(page, itemsPerPage);
+        const follows = await Follow.find({ follower: userId })
+            .populate("user follower", "-password -__v -email")
+            .paginate(page, itemsPerPage);
 
-         const total = await Follow.countDocuments();
+        const total = await Follow.countDocuments();
 
         const followUserIds = await followService.followindUserIds(req.user.id);
 
@@ -126,18 +127,20 @@ const followers = async (req, res) => {
             message: "Listado de usuarios que me siguen",
             follows,
             total: total,
-            pages: Math.ceil(total/itemsPerPage),
+            pages: Math.ceil(total / itemsPerPage),
             user_following: followUserIds.following,
             user_follow_me: followUserIds.followers
         })
 
-    } catch(error) {
+    } catch (error) {
         console.log(error);
     }
 }
 
+
+
 module.exports = {
     save,
     following,
-    followers
+    followers,
 }

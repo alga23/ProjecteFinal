@@ -4,8 +4,11 @@ import { MensajeStyle } from '../../styles/post/MensajeStyle';
 import BottomMenu from '../../components/BottomMenu';
 import Header from '../../components/Header';
 import { useNavigation } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
 
 const Mensajes = () => {
+
+    const { t, i18n } = useTranslation();
 
     const navigation = useNavigation();
     return (
@@ -14,14 +17,14 @@ const Mensajes = () => {
             <ScrollView>
                 <View style={MensajeStyle.container}>
                     <View>
-                        <Text style={MensajeStyle.textoBandeja}>Bandeja de entrada</Text>
+                        <Text style={MensajeStyle.textoBandeja}>{t("bandejaDeEntrada")}</Text>
                     </View>
                     <View style={MensajeStyle.containerSecundario}>
-                        <Text style={MensajeStyle.textoSecundario}>No tienes ningun mensaje</Text>
+                        <Text style={MensajeStyle.textoSecundario}>{t("noTienesNingunMensaje")}</Text>
                     </View>
                     <View style={MensajeStyle.botonContainer}>
                         <TouchableOpacity style={MensajeStyle.botonStyle} onPress={() => navigation.navigate('Bandeja_mensaje')}>
-                            <Text style={MensajeStyle.botonTexto}>Escribe un mensaje</Text>
+                            <Text style={MensajeStyle.botonTexto}>{t("escribeUnMensaje")}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

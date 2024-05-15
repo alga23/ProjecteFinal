@@ -7,6 +7,9 @@ import { themeColors } from "../../theme/index"
 import useForm from '../../hooks/useForm';
 import useFetch from '../../hooks/useFetch';
 import { Global } from '../../utils/Global';
+import { useTranslation } from 'react-i18next';
+import i18n from '../../languages/i18n';
+
 
 const Registro = () => {
 
@@ -14,6 +17,8 @@ const Registro = () => {
     const { fetchData, loading } = useFetch();
 
     const navigation = useNavigation();
+
+    const { t, i18n } = useTranslation();
 
     const handlerRegister = async () => {
         const newForm = form;
@@ -28,7 +33,7 @@ const Registro = () => {
                 ToastAndroid.BOTTOM,
                 25,
                 50,
-              );
+            );
         } else {
             ToastAndroid.showWithGravityAndOffset(
                 user.message,
@@ -36,7 +41,7 @@ const Registro = () => {
                 ToastAndroid.BOTTOM,
                 25,
                 50,
-              );
+            );
         }
     }
 
@@ -59,41 +64,41 @@ const Registro = () => {
             <View style={LoginStyle.fieldsContainer}>
                 <ScrollView>
                     <View >
-                        <Text style={{ color: themeColors.textGray, marginLeft: 10 }}>Nombre completo</Text>
+                        <Text style={{ color: themeColors.textGray, marginLeft: 10 }}>{t('nombreCompleto')}</Text>
                         <TextInput
                             style={LoginStyle.textInput}
                             onChangeText={nombreCompleto => changed('nombreCompleto', nombreCompleto)} />
                     </View>
-                    <View style={{flexDirection:'row', justifyContent: 'space-between', gap: 20}}>
-                        <View style={{flex: 1}}>
-                            <Text style={{ color: themeColors.textGray, marginLeft: 10, marginTop: 10 }}>Nick</Text>
+                    <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 20 }}>
+                        <View style={{ flex: 1 }}>
+                            <Text style={{ color: themeColors.textGray, marginLeft: 10, marginTop: 10 }}>{t('nick')}</Text>
                             <TextInput
                                 style={LoginStyle.textInput}
                                 onChangeText={nick => changed('nick', nick)} />
                         </View>
 
-                        <View style={{flex: 1}}>
-                            <Text style={{ color: themeColors.textGray, marginLeft: 10, marginTop: 10 }}>Username</Text>
+                        <View style={{ flex: 1 }}>
+                            <Text style={{ color: themeColors.textGray, marginLeft: 10, marginTop: 10 }}>{t('username')}</Text>
                             <TextInput
                                 style={LoginStyle.textInput}
                                 onChangeText={username => changed('username', username)} />
                         </View>
                     </View>
                     <View>
-                        <Text style={{ color: themeColors.textGray, marginLeft: 10, marginTop: 10 }}>Email</Text>
+                        <Text style={{ color: themeColors.textGray, marginLeft: 10, marginTop: 10 }}>{t('email')}</Text>
                         <TextInput
                             style={LoginStyle.textInput}
                             onChangeText={email => changed('email', email)} />
                     </View>
                     <View>
-                        <Text style={{ color: themeColors.textGray, marginLeft: 10, marginTop: 10 }}>Password</Text>
+                        <Text style={{ color: themeColors.textGray, marginLeft: 10, marginTop: 10 }}>{t('contraseña')}</Text>
                         <TextInput
                             style={LoginStyle.textInput}
                             secureTextEntry
                             onChangeText={password => changed('password', password)} />
                     </View>
                     <TouchableOpacity style={LoginStyle.loginButton} onPress={() => { handlerRegister() }}>
-                        <Text style={LoginStyle.loginButtonText}>Registrate</Text>
+                        <Text style={LoginStyle.loginButtonText}>{t('registrate')}</Text>
                     </TouchableOpacity>
                 </ScrollView>
             </View>

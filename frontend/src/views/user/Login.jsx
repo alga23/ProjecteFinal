@@ -9,12 +9,17 @@ import useForm from '../../hooks/useForm'
 import { Global } from '../../utils/Global'
 import useFetch from '../../hooks/useFetch'
 import * as SecureStore from 'expo-secure-store';
+import { useTranslation } from 'react-i18next';
+import i18n from '../../languages/i18n';
 
 export default function Login() {
 
     const navigation = useNavigation();
     const { form, changed } = useForm({});
     const { fetchData } = useFetch();
+
+    const { t, i18n } = useTranslation();
+
 
     const handleLogin = async () => {
         const newForm = form;
@@ -23,8 +28,8 @@ export default function Login() {
 
         if (data.status === "success") {
 
-            await SecureStore.setItemAsync('token', data.token);  
-            await SecureStore.setItemAsync('user', data.user.id);  
+            await SecureStore.setItemAsync('token', data.token);
+            await SecureStore.setItemAsync('user', data.user.id);
 
             setTimeout(async () => {
                 navigation.navigate("Drawer");
@@ -60,31 +65,31 @@ export default function Login() {
             </View>
             <View style={LoginStyle.fieldsContainer}>
                 <View style={LoginStyle.emailContainer}>
-                    <Text style={{ color: themeColors.textGray, marginLeft: 10 }}>Email</Text>
+                    <Text style={{ color: themeColors.textGray, marginLeft: 10 }}>{t('email')}</Text>
                     <TextInput
                         style={LoginStyle.textInput}
-                        placeholder="Escribe tu email aquí"
+                        placeholder={t('escribeTuEmailAqui')}
                         onChangeText={(email) => changed('email', email)} />
                 </View>
                 <View style={LoginStyle.passwordContainer}>
-                    <Text style={{ color: themeColors.textGray, marginLeft: 10 }}>Contraseña</Text>
+                    <Text style={{ color: themeColors.textGray, marginLeft: 10 }}>{t('contraseña')}</Text>
                     <TextInput
                         style={LoginStyle.textInput}
                         secureTextEntry
-                        placeholder="Escribe tu contraseña aquí"
+                        placeholder={t('escribeTuContraseñaAqui')}
                         onChangeText={(password) => changed('password', password)} />
                 </View>
                 <TouchableOpacity style={{ alignItems: "flex-end" }}>
-                    <Text style={LoginStyle.forgotPasswordText}>Recordar contraseña?</Text>
+                    <Text style={LoginStyle.forgotPasswordText}>{t('recordarContraseña?')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={LoginStyle.loginButton}
                     onPress={() => {
                         handleLogin()
                     }}>
                     <Text style={LoginStyle.loginButtonText}
-                    >Login</Text>
+                    >{t('login')}</Text>
                 </TouchableOpacity>
-                <Text style={{ marginTop: 10, fontSize: 20, color: themeColors.textGray, fontWeight: 'bold', textAlign: 'center', paddingVertical: 5 }}>O</Text>
+                <Text style={{ marginTop: 10, fontSize: 20, color: themeColors.textGray, fontWeight: 'bold', textAlign: 'center', paddingVertical: 5 }}>{t('o')}</Text>
                 <View style={LoginStyle.brandIconsContainer}>
                     <TouchableOpacity style={LoginStyle.brandIconButton} >
                         <Image source={require('../../../assets/icons/brand_icons/google.png')}
@@ -100,9 +105,9 @@ export default function Login() {
                     </TouchableOpacity>
                 </View>
                 <View style={LoginStyle.dontHaveAnAccount}>
-                    <Text style={LoginStyle.dontHaveAnAccountText}>No tienes cuenta?</Text>
+                    <Text style={LoginStyle.dontHaveAnAccountText}>{t('noTienesCuenta?')}</Text>
                     <TouchableOpacity onPress={() => navigation.navigate('SignUp')}>
-                        <Text style={LoginStyle.signUpButton}> Regístrate</Text>
+                        <Text style={LoginStyle.signUpButton}> {t('registrate')}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
