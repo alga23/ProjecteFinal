@@ -44,7 +44,7 @@ const BottomMenu = () => {
                 <TouchableOpacity onPress={() => handleRouter('Bandeja')}>
                     <Icon name='mail' size={30} />
                 </TouchableOpacity>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => handleRouter('Profile')}>
                     <Icon name='person' size={30} />
                 </TouchableOpacity>
             </View>
