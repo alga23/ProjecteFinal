@@ -195,6 +195,42 @@ const feedFollows = async (req, res) => {
     }
 }
 
+const populatePost = async (req, res) => {
+
+    try {
+
+        let page = 1;
+
+        if (req.params.page) page = req.params.page;
+
+        const itemsPerPage = 10;
+
+        const populate = await Post.find({"likes": {$gt:1000}})
+                                    .sort('-createdAt')
+                                    .select({ "__v": 0 })
+                                    .paginate(page, itemsPerPage)
+                                    .populate("user_id", "nick username imagen");
+
+        const total = await Post.countDocuments({"likes": {$gt:100}});
+
+        return res.status(200).send({
+            status: "success",
+            total,
+            page,
+            pages: Math.ceil(total / itemsPerPage),
+            populate
+        })
+    }catch(error) {
+        console.log(error);
+
+        return res.status(500).send({
+            status: "error",
+            message: "Error en el servidor: ", error
+        })
+    }
+
+}
+
 //Like posts or remove like from already liked posts
 const likePost = async (req, res) => {
     try {
@@ -370,6 +406,7 @@ module.exports = {
     favPostsUser,
     respondPost,
     retrievePost,
-    deletePost
+    deletePost,
+    populatePost
 
 }

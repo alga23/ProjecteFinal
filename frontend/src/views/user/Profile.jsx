@@ -126,7 +126,7 @@ export default function Profile({ route }) {
                                     </Text>
                                 </TouchableOpacity>
                             </View>
-                            <TouchableOpacity>
+                            <TouchableOpacity onPress={() => handlePress('Chat', profileDetails._id)}>
                                 <Icon name="mail-outline" size={26} />
                             </TouchableOpacity>
                         </View>
@@ -161,14 +161,6 @@ export default function Profile({ route }) {
                 </View>
             )}
             <View>
-                <FlatList
-                    data={profilePosts}
-                    renderItem={({ item }) => {
-                        return <FollowFeed info={item} />
-                    }}
-                    keyExtractor={(post) => post._id.toString()}
-                    showsVerticalScrollIndicator={false}
-                />
             </View>
         </SafeAreaView>
     )
