@@ -4,8 +4,13 @@ import { Text, View, Image, TouchableOpacity } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { useNavigation } from '@react-navigation/native'
 import { WelcomeStyle } from '../../styles/user/WelcomeStyle'
+import i18n from '../../languages/i18n';
+import { useTranslation } from 'react-i18next';
 
 export default function Welcome() {
+
+    const { t, i18n } = useTranslation();
+
     const navigation = useNavigation()
 
 
@@ -13,7 +18,7 @@ export default function Welcome() {
         <SafeAreaView style={WelcomeStyle.container}>
             <StatusBar style="auto" />
             <View style={WelcomeStyle.contentContainer}>
-                <Text style={WelcomeStyle.title}>¡Bienvenido!</Text>
+                <Text style={WelcomeStyle.title}>{t('bienvenido')}</Text>
                 <View style={WelcomeStyle.imageContainer}>
                     <Image
                         source={require("../../../assets/images/welcome.png")}
@@ -26,12 +31,12 @@ export default function Welcome() {
                             navigation.navigate('SignUp')
                         }}
                         style={WelcomeStyle.signUpButton}>
-                        <Text style={WelcomeStyle.signUpButtonText}>Regístrate</Text>
+                        <Text style={WelcomeStyle.signUpButtonText}>{t('registrate')}</Text>
                     </TouchableOpacity>
                     <View style={WelcomeStyle.alreadyHaveAccount}>
-                        <Text style={WelcomeStyle.alreadyHaveAccountText}>Tienes una cuenta?</Text>
+                        <Text style={WelcomeStyle.alreadyHaveAccountText}>{t('tienesUnaCuenta?')}</Text>
                         <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                            <Text style={WelcomeStyle.logInButton}> Inicia sesión</Text>
+                            <Text style={WelcomeStyle.logInButton}> {t('iniciaSesion')}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

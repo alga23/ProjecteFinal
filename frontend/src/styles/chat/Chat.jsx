@@ -25,13 +25,11 @@ export const ChatStyle = {
         marginBottom: 10
     },
     inputMensajes: {
-        flex: .8,
-        marginLeft: 10,
+        flex: .95,
         fontSize: 16,
         color: '#333',
     },
     sendButton: {
-        marginLeft: 10,
         backgroundColor: '#0074B4',
         borderRadius: 20,
         padding: 10,
@@ -72,48 +70,48 @@ export const ChatStyle = {
         alignSelf: 'flex-end',
         marginRight: 8,
         marginBottom: 8,
-        backgroundColor: '#4a4a4a',
-        padding: 12,
+        backgroundColor: '#000000',
+        opacity: .8,
+        paddingTop: 5,
         borderRadius: 20,
-        maxWidth: '70%',
-      },
-      theirMessage: {
+        maxWidth: '100%',
+    },
+    theirMessage: {
         alignSelf: 'flex-start',
         marginLeft: 8,
         marginBottom: 8,
         backgroundColor: '#ccc',
-        padding: 12,
+        paddingTop: 5,
         borderRadius: 20,
-        maxWidth: '70%',
-      },
-      messageUser: {
-        maxWidth: '80%',
-        paddingHorizontal: 30,
-      },
-      contenidoChat: {
-        fontSize: 18,
+        maxWidth: '100%',
+    },
+    messageUser: {
+        maxWidth: '90%',
+        paddingHorizontal: 25,
+        marginBottom: 10
+    },
+    contenidoChat: {
+        fontSize: 15,
         color: '#ffffff',
-        lineHeight: 26,
-      },
-      otherUserTextoChat: {
-        fontSize: 18,
+    },
+    otherUserTextoChat: {
+        fontSize: 15,
         color: '#333333',
-        lineHeight: 26,
-      },
-      fechaChat: {
+    },
+    fechaChat: {
         fontSize: 14,
         color: '#777777',
         marginTop: 6,
         alignSelf: 'flex-end',
-      },
-      imagenMensaje: {
+    },
+    imagenMensaje: {
         width: 225,
         height: 225,
         borderRadius: 20,
         alignSelf: 'flex-end',
         marginRight: 10,
         marginTop: 8,
-      },
+    },
     enterMessage: {
         position: 'absolute',
         top: 15,
@@ -122,7 +120,7 @@ export const ChatStyle = {
     containerInput: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'space-around',
         paddingHorizontal: 10,
         paddingVertical: 5,
         backgroundColor: '#f0f0f0',
