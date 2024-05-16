@@ -161,14 +161,6 @@ export default function Profile({ route }) {
                 </View>
             )}
             <View>
-                <FlatList
-                    data={profilePosts}
-                    renderItem={({ item }) => {
-                        return <FollowFeed info={item} />
-                    }}
-                    keyExtractor={(post) => post._id.toString()}
-                    showsVerticalScrollIndicator={false}
-                />
             </View>
         </SafeAreaView>
     )

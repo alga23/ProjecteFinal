@@ -1,7 +1,6 @@
 import { Text, TouchableOpacity, View, TextInput, ScrollView, Modal, Alert } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import IconFeather from "react-native-vector-icons/Feather";
-
 import { ChatStyle } from '../../styles/chat/Chat';
 import { Image } from "react-native";
 import { Global } from "../../utils/Global";
@@ -30,36 +29,33 @@ const Chat = ({ route }) => {
     const scrollViewRef = useRef();
 
     useEffect(() => {
-        socket.current = io('http://192.168.60.7:3001');
+        getProfile();
 
+        socket.current = io('http://192.168.1.130:3001');
         socket.current.emit('register', auth._id, id);
         socket.current.on('loadMessages', (loadedMessages) => {
             const filteredMessages = loadedMessages.filter(message => (
                 message.usuarioEmisor === id || message.usuarioReceptor === id
             ));
-
             setMessages(filteredMessages);
+        });
+
+        socket.current.on('message', (message) => {
+            setMessages(prevMessages => [...prevMessages, message]);
+            scrollViewRef.current.scrollToEnd({ animated: false });
+        });
+
+        socket.current.on('messageDeleted', (messageId) => {
+            setMessages(prevMessages => prevMessages.filter(msg => msg._id !== messageId));
         });
 
         return () => {
             socket.current.off('loadMessages');
+            socket.current.off('message');
+            socket.current.off('messageDeleted');
             socket.current.close();
         };
     }, [auth._id]);
-
-    useEffect(() => {
-        getProfile();
-
-        socket.current.on('message', (message) => {
-            console.log(message);
-            setMessages(prevMessages => [...prevMessages, message]);
-        });
-        return () => {
-            socket.current.off('message');
-        };
-
-    }, []);
-
 
     useEffect(() => {
         scrollViewRef.current?.scrollToEnd({ animated: false });
@@ -71,7 +67,7 @@ const Chat = ({ route }) => {
                 usuarioReceptor: id,
                 usuarioEmisor: auth._id,
                 contenido: messageInput,
-                imagenUrl: null
+                imagenUrl: null,
             };
 
             if (messageInput.trim()) {
@@ -89,6 +85,7 @@ const Chat = ({ route }) => {
             setImage(null);
 
             setMessages(prevMessages => [...prevMessages, { ...messageData }]);
+            scrollViewRef.current.scrollToEnd({ animated: false });
         }
     };
 
@@ -104,6 +101,10 @@ const Chat = ({ route }) => {
         setSelectedMessage(message);
         setModalVisible(true);
     };
+
+    const deleteMessage = (message) => {
+        socket.current.emit('deleteMessage', message._id);
+    }
 
     const openImagePicker = async () => {
         let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
