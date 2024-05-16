@@ -18,7 +18,6 @@ function connectChat() {
     const userSockets = {};
 
     io.on('connection', socket => {
-        console.log('Usuario conectado: ', socket.id);
 
         socket.on('register', async (userId, id) => {
             Object.keys(userSockets).forEach(key => {
@@ -28,8 +27,7 @@ function connectChat() {
             });
 
             userSockets[userId] = socket.id;
-            console.log(`Usuario ${userId} registrado con socket ${socket.id}`);
-            console.log(userSockets);
+
             try {
                 const messages = await Message.find({
                     $or: [
@@ -48,7 +46,6 @@ function connectChat() {
             const recipientSocketId = userSockets[usuarioReceptor];
             let imagenUrl;
 
-            console.log(usuarioReceptor);
             try {
                 if (imagen) {
                     // Guardar la imagen temporalmente en el servidor
@@ -74,20 +71,37 @@ function connectChat() {
                     messageData.contenido = contenido;
                 }
 
-                console.log(messageData);
                 const message = new Message(messageData);
 
                 await message.save();
-                console.log("Mensaje guardado");
-
+ 
+                if (recipientSocketId) {
+                    io.to(recipientSocketId).emit('message', message);
+                } else {
+                    console.log(`No se encontró socket para el destinatario con ID: ${usuarioReceptor}`);
+                }
             } catch (error) {
                 console.log(error);
             }
-            if (recipientSocketId) {
-                io.to(recipientSocketId).emit('message', message);
-                console.log(`Mensaje enviado de ${usuarioEmisor} a ${usuarioReceptor}`);
-            } else {
-                console.log(`No se encontró socket para el destinatario con ID: ${usuarioReceptor}`);
+        });
+
+        socket.on('deleteMessage', async(message) => {
+            try {
+                const deleteMessage = await Message.findByIdAndDelete(message._id);
+
+                if (deleteMessage) {
+                    const recipientSocketId = userSockets[deleteMessage.usuarioReceptor];
+                    const senderSockerId = userSockets[deleteMessage.usuarioEmisor];
+
+                    if (recipientSocketId) {
+                        io.to(recipientSocketId).emit('messageDeleted', message._id);
+                    }
+                    if (senderSockerId) {
+                        io.to(senderSockerId).emit('messageDeleted', message._id);
+                    }
+                }
+            }catch(error) {
+                console.log(error);
             }
         });
 
@@ -95,7 +109,6 @@ function connectChat() {
             Object.keys(userSockets).forEach(userId => {
                 if (userSockets[userId] === socket.id) {
                     delete userSockets[userId];
-                    console.log(`Usuario ${userId} desconectado y eliminado`);
                 }
             });
         });

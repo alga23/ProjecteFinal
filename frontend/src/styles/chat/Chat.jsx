@@ -81,7 +81,7 @@ export const ChatStyle = {
         marginLeft: 8,
         marginBottom: 8,
         backgroundColor: '#ccc',
-        padding: 12,
+        paddingTop: 5,
         borderRadius: 20,
         maxWidth: '100%',
     },
@@ -95,9 +95,8 @@ export const ChatStyle = {
         color: '#ffffff',
     },
     otherUserTextoChat: {
-        fontSize: 18,
+        fontSize: 15,
         color: '#333333',
-        lineHeight: 26,
     },
     fechaChat: {
         fontSize: 14,
