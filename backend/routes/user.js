@@ -26,6 +26,7 @@ router.get('/devolverUsuarioToken', auth, UserController.retrieveOwnUser);
 router.get('/:id/contador', auth, UserController.devolverContador);
 router.delete('/delete/:userId', UserController.deleteUser);
 router.put('/editUser/', auth, UserController.editUser);
+router.get('/allUsers/:page?', auth, UserController.getAllUsers);
 
 
 
