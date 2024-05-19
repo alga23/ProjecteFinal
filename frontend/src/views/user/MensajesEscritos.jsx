@@ -1,11 +1,10 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import useFetch from '../../hooks/useFetch';
 import { Global } from '../../utils/Global';
 import { MensajeStyle } from '../../styles/post/MensajeStyle';
-import Cristiano from '../../../assets/images/cristiano.png';
 
 const MensajesEscritos = () => {
     const { fetchData } = useFetch({});
@@ -15,47 +14,43 @@ const MensajesEscritos = () => {
     const [more, setMore] = useState(true);
     const navigation = useNavigation();
 
-    useEffect(() => {
-        getUsers(1);
-    }, []);
+    const getUsers = async (nextPage) => {
+        setLoading(true);
+        const response = await fetchData(Global.url + 'user/allUsers/' + nextPage, 'GET');
 
-    const getUsers = useCallback(async (nextPage) => {
-        try {
-            setLoading(true);
-            const response = await fetchData(`${Global.url}user/allUsers?page=${nextPage}`, 'GET');
-            if (response.status === 'success') {
-                const newUsers = nextPage === 1 ? response.users : [...users, ...response.users];
-                setUsers(newUsers);
-                setMore(newUsers.length < response.total);
-            } else {
-                throw new Error('Error al obtener los usuarios');
-            }
-        } catch (error) {
-            console.error('Error al obtener los usuarios:', error);
-        } finally {
+        if (response.status === 'success') {
+            const newUsers = nextPage === 1 ? response.users : [...users, ...response.users];
+            setUsers(newUsers);
+            setLoading(false);
+            setMore(newUsers.length < response.total);
+            setPage(nextPage);
+        } else {
             setLoading(false);
         }
-    }, [fetchData, users]);
+    };
 
-    const handleScroll = useCallback(({ nativeEvent }) => {
-        const { layoutMeasurement, contentOffset, contentSize } = nativeEvent;
+    useFocusEffect(
+        useCallback(() => {
+
+            if (users.length === 0 || page === 1) {
+                getUsers(page);
+            }
+        }, [page])
+    );
+
+    const nextPage = () => {
+        if (more && !loading) {
+            getUsers(page + 1);
+        }
+    };
+
+    const handleScroll = (event) => {
+        const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
         const isCloseToBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 20;
         if (isCloseToBottom && more && !loading) {
             nextPage();
         }
-    }, [more, loading, nextPage]);
-
-    const nextPage = useCallback(() => {
-        if (more && !loading) {
-            setPage(prevPage => prevPage + 1);
-        }
-    }, [more, loading]);
-
-    useEffect(() => {
-        if (page > 1) {
-            getUsers(page);
-        }
-    }, [page, getUsers]);
+    };
 
     return (
         <View style={MensajeStyle.ContainerPrincipal}>
@@ -71,31 +66,23 @@ const MensajesEscritos = () => {
                 <TextInput style={MensajeStyle.inputSearch} placeholder="Buscar usuarios"></TextInput>
             </View>
             <View style={MensajeStyle.line}></View>
-            <ScrollView
-                style={MensajeStyle.scrollViewContainer}
-                onScroll={({ nativeEvent }) => handleScroll({ nativeEvent })}
-                scrollEventThrottle={400}
-                showsVerticalScrollIndicator={false}
-            >
-                {users.map((user, index) => (
-                    <TouchableOpacity key={index} style={MensajeStyle.containerCardMessage}>
+            <ScrollView style={MensajeStyle.scrollViewContainer} onScroll={handleScroll} >
+                {users.map(user => (
+                    <View key={user._id} style={MensajeStyle.containerCardMessage}>
                         <View style={MensajeStyle.containerUser}>
                             <TouchableOpacity onPress={() => navigation.navigate("Profile", { profileId: user._id })}>
-                                <Image source={Cristiano} style={MensajeStyle.fotoUsuario} />
+                                <Image source={{uri: user.imagen === 'default.png' ? Global.url_default : user.imagen}} style={MensajeStyle.fotoUsuario} />
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => navigation.navigate("Chat", {id: user._id})}>
-                            <View style={MensajeStyle.infoUsuario}>
-                                <Text style={MensajeStyle.textName}>{user.nick}</Text>
-                                <Text style={MensajeStyle.textUserName}>@{user.username}</Text>
-                            </View>
+                            <TouchableOpacity onPress={() => navigation.navigate("Chat", { id: user._id })}>
+                                <View style={MensajeStyle.infoUsuario}>
+                                    <Text style={MensajeStyle.textName}>{user.nick}</Text>
+                                    <Text style={MensajeStyle.textUserName}>@{user.username}</Text>
+                                </View>
                             </TouchableOpacity>
                         </View>
-                    </TouchableOpacity>
+                    </View>
                 ))}
-                {loading && <ActivityIndicator size="large" color="#0000ff" style={MensajeStyle.loader} />}
-                {!loading && !more && users.length > 0 && (
-                    <Text style={MensajeStyle.endText}>No hay más usuarios para cargar</Text>
-                )}
+                {loading && <ActivityIndicator size={40} color='#0074B4' style={{ marginTop: 20 }} />}
             </ScrollView>
         </View>
     );

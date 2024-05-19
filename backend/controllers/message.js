@@ -14,6 +14,7 @@ const lastMessages = async (req, res) => {
             ]
         })
         .sort({ created_at: -1 })
+        .populate('usuarioEmisor', '_id')
         .populate('usuarioReceptor', 'nick username imagen');
 
         // Creamos un mapa para almacenar el último mensaje de cada chat
@@ -50,6 +51,26 @@ const lastMessages = async (req, res) => {
     }
 };
 
+const deleteChat = async (req, res) => {
+    const { userId1, userId2 } = req.params;
+
+    try {
+        // Eliminar todos los mensajes entre userId1 y userId2
+        await Message.deleteMany({
+            $or: [
+                { usuarioEmisor: userId1, usuarioReceptor: userId2 },
+                { usuarioEmisor: userId2, usuarioReceptor: userId1 }
+            ]
+        });
+
+        res.status(200).json({ status: 'success', message: 'Chat and messages deleted successfully' });
+    } catch (error) {
+        console.error('Error deleting chat and messages:', error);
+        res.status(500).json({ status: 'error', message: 'Error deleting chat and messages' });
+    }
+};
+
 module.exports = {
-    lastMessages
+    lastMessages,
+    deleteChat
 };

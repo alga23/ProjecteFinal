@@ -152,5 +152,20 @@ export const MensajeStyle ={
     },
     createdAtText: {
         color: '#666666'
-    }
+    },
+    deleteContainer: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        backgroundColor: 'rgba(255, 68, 68, 0.8)',
+        borderRadius: 15,
+        padding: 5,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    deleteText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
 }

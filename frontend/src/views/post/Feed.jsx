@@ -62,7 +62,7 @@ const Feed = () => {
         setLoading(true);
         const resultsPopulates = await fetchData(Global.url + 'post/populate/' + nextPage, 'GET');
         if (resultsPopulates.status === "success") {
-            const newPosts = nextPage === 1 ? resultsPopulates.populate : [...populate, resultsPopulates.populate];
+            const newPosts = nextPage === 1 ? resultsPopulates.populate : [...populate, ...resultsPopulates.populate];
             setPopulate(newPosts);
             setLoading(false);
             setMore(newPosts.length < resultsPopulates.total);
