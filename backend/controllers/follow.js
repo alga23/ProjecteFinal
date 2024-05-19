@@ -3,47 +3,48 @@ const mongoose = require('mongoose');
 const mongoosePaginate = require('mongoose-pagination');
 const followService = require('../services/followService');
 const user = require('../models/user');
+const follow = require('../models/follow');
 
 // Guardar y eliminar un Follow
 const save = async (req, res) => {
-
     try {
         const user = req.user.id;
+        const follower = req.body.follower;
 
-        const seguido = await Follow.findOne({ user: user, follower: req.body.follower });
+        const seguido = await Follow.findOne({ user: user, follower: follower });
 
         if (!seguido) {
             const followStored = new Follow({
                 user: user,
-                follower: req.body.follower
-            })
+                follower: follower
+            });
 
             const follow = await followStored.save();
 
             return res.status(200).send({
                 status: "success",
                 message: "Le has seguido",
-                user: follow.user,
-                follower: follow.follower
-            })
+                isFollowing: true,
+            });
 
         } else {
-            await Follow.findOneAndDelete({ user: user, follower: req.body.follower });
+            await Follow.findOneAndDelete({ user: user, follower: follower });
+
             return res.status(200).send({
                 status: "success",
-                message: "Le has dejado de seguir"
-            })
+                message: "Le has dejado de seguir",
+                isFollowing: false,
+            });
 
         }
 
     } catch (error) {
-
         return res.status(500).send({
             status: "error",
             message: "Error en el servidor al guardar un follow, " + error,
-        })
+        });
     }
-}
+};
 
 // Accion listado de usuarios que cualquier usuario está siguiendo (siguiendo)
 const following = async (req, res) => {

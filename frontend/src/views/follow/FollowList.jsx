@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, Text, TouchableOpacity, View } from "react-native";
 import useFetch from "../../hooks/useFetch";
 import { useNavigation, useRoute } from "@react-navigation/native";
@@ -8,16 +8,12 @@ import { Follow } from '../../styles/follow/Follow';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const FollowList = ({ route }) => {
+    const { id } = route.params;
     const [user, setUser] = useState({});
     const [followers, setFollowers] = useState([]);
     const [userFollowing, setUserFollowing] = useState([]);
     const { fetchData } = useFetch({});
     const [loading, setLoading] = useState(true);
-
-    const { id } = route.params;
-
-    const type = id[1];
-
     const navigation = useNavigation();
 
     useEffect(() => {
@@ -30,48 +26,60 @@ const FollowList = ({ route }) => {
         }
     }, [user._id]);
 
-
     const obtenerUser = async () => {
         const data = await fetchData(Global.url + 'user/profile/' + id[0], 'GET');
 
         if (data.status === "success") {
             setUser(data.user);
         }
-    }
+    };
 
     const obtenerFollower = async () => {
-
-        const data = await fetchData(Global.url + `follow/${type === 'followers' ? "followers" : 'following'}/` + user._id, 'GET');
+        const data = await fetchData(Global.url + `follow/${id[1] === 'followers' ? "followers" : 'following'}/` + user._id, 'GET');
 
         if (data.status === "success") {
             const follows = data.follows.map(follow => ({
                 ...follow,
-                isFollowing: data.user_following.includes(follow.user._id)
+                isFollowing: data.user_following ? data.user_following.includes(follow.user._id) : false
             }));
 
             setFollowers(follows);
-            setUserFollowing(data.user_following);
+            setUserFollowing(data.user_following || []);
             setLoading(false);
         }
-    }
+    };
 
     const saveAndUnFollow = async (userId) => {
-
-        const data = await fetchData(Global.url + 'follow/save', 'POST', { follower: userId });
-
-        if (data.status === 'success') {
-            const updatedFollowers = followers.map(follower => {
-                if (follower.user._id === userId) {
-                    return {
-                        ...follower,
-                        isFollowing: !follower.isFollowing
-                    };
-                }
-                return follower;
-            });
-            setFollowers(updatedFollowers);
+        try {
+            const response = await fetchData(Global.url + 'follow/save', 'POST', { follower: userId });
+    
+            if (response.status === 'success') {
+                const updatedFollowers = followers.map(follower => {
+                    if (follower.user._id === userId) {
+                        return {
+                            ...follower,
+                            isFollowing: response.isFollowing
+                        };
+                    }
+                    return follower;
+                });
+    
+                setFollowers(updatedFollowers);
+    
+                const updatedUserFollowing = response.isFollowing
+                    ? [...userFollowing, userId]
+                    : userFollowing.filter(id => id !== userId);
+    
+                setUserFollowing(updatedUserFollowing);
+            } else {
+                console.error("Error al guardar/dejar de seguir:", response.message);
+            }
+        } catch (error) {
+            console.error("Error en la solicitud:", error);
         }
-    }
+    };
+    
+
     return (
         <ScrollView>
             <View style={Follow.container}>
@@ -85,11 +93,11 @@ const FollowList = ({ route }) => {
                     follows={followers}
                     followPress={saveAndUnFollow}
                     loading={loading}
-                    followType={type == "followers" ? "user" : "follower"}
+                    followType={id[1] === "followers" ? "user" : "follower"}
                     userFollowing={userFollowing} />
             </View>
         </ScrollView>
-    )
-}
+    );
+};
 
 export default FollowList;
