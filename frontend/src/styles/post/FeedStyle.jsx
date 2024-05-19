@@ -48,7 +48,7 @@ export const FeedStyle = {
     },
     containerIcons: {
         flexDirection: 'row',
-        gap: 32,
+        gap: 30,
     },
     imagenPost: {
         width: '100%',
@@ -58,6 +58,7 @@ export const FeedStyle = {
     },
     containerIconElement: {
         flexDirection: 'row',
+        alignItems: 'center',
         gap: 5
     },
     textSiguiendo: {

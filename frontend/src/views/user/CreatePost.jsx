@@ -99,6 +99,8 @@ const Posts = () => {
 
         if (data.status == "success") {
 
+            console.log(data);
+
             ToastAndroid.showWithGravityAndOffset(
                 data.message,
                 ToastAndroid.LONG,
@@ -112,7 +114,7 @@ const Posts = () => {
             setCharCount(0);
         }
 
-        if (data.status == "success" && data.post) {
+        if (data.status == "success" && image) {
             const publicationId = data.post._id;
 
             const formData = new FormData();
