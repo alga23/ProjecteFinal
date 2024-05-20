@@ -26,7 +26,7 @@ const VisualizarJuego = () => {
             };
 
             const body = `
-            fields name, cover.image_id, summary, rating;
+            fields name, cover.image_id, summary, rating, first_release_date;
             where id = ${gameId};
             `;
 
@@ -42,6 +42,8 @@ const VisualizarJuego = () => {
                     const gameWithImage = data.map(game => ({
                         ...game,
                         image_url: `${Global.url_imagenes_games}${game.cover.image_id}.jpg`,
+                        // Convertir el timestamp de la fecha de lanzamiento a un formato legible
+                        release_date: new Date(game.first_release_date * 1000).toLocaleDateString('en-US'),
                     }))[0];
                     setGame(gameWithImage);
                 } else {
@@ -86,11 +88,13 @@ const VisualizarJuego = () => {
                                 <Text style={VisualizarJuegoStyle.textTitulo}>{game.name}</Text>
                                 <View style={VisualizarJuegoStyle.rating} >
                                     <Icon name="star" size={18} color="#FFC600" />
-                                    <Text>{game.rating ? game.rating.toFixed(1) : 'N/A'}</Text>
+                                    <Text> {game.rating ? game.rating.toFixed(1) : 'N/A'}</Text>
                                 </View>
                             </View>
 
                             <Text style={VisualizarJuegoStyle.textInfo}>{game.summary}</Text>
+                            {/* Mostrar la fecha de lanzamiento */}
+                            <Text style={VisualizarJuegoStyle.textInfo}>Release Date: {game.release_date}</Text>
                         </View>
 
                         <Text style={VisualizarJuegoStyle.textOpiniones}>31 opiniones</Text>
