@@ -168,144 +168,164 @@ const Search = () => {
         }
     };
 
-    const searchGame = async(var busqueda) => {
-    const url = 'https://api.igdb.com/v4/games';
-    const headers = {
-        'Client-ID': CLIENT_ID,
-        'Authorization': GAMES_TOKEN,
-        'Content-Type': 'application/json',
-    };
+    const searchGame = async (busqueda) => {
+        const url = 'https://api.igdb.com/v4/games';
+        const headers = {
+            'Client-ID': CLIENT_ID,
+            'Authorization': GAMES_TOKEN,
+            'Content-Type': 'application/json',
+        };
 
-    const body = `
+        const body = `
         search "${busqueda}"; fields name,cover.image_id;
 limit 15;
+where cover != null;
         
     `;
 
-    try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: headers,
-            body: body,
-        });
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: headers,
+                body: body,
+            });
 
-        if (response.ok) {
-            const data = await response.json();
-            const gamesWithImages = data.map(game => ({
-                ...game,
-                image_url: `${Global.url_imagenes_games}${game.cover.image_id}.jpg`,
-            }));
-            setPcGames(gamesWithImages);
+            if (response.ok) {
+                const data = await response.json();
+                const gamesWithImages = data.map(game => ({
+                    ...game,
+                    image_url: `${Global.url_imagenes_games}${game.cover.image_id}.jpg`,
+                }));
+                setSearchesGames(gamesWithImages);
+                console.log(searchedGames)
 
+            }
+        } catch (error) {
+            console.error('Error:', error);
         }
-    } catch (error) {
-        console.error('Error:', error);
-    }
-};
+    };
 
 
 
-useEffect(() => {
-    fetchPS5Games();
-    fetchXboxSeriesGames();
-    fetchSwitchGames();
-    fetchPcGames();
-}, []);
+    useEffect(() => {
+        fetchPS5Games();
+        fetchXboxSeriesGames();
+        fetchSwitchGames();
+        fetchPcGames();
+    }, []);
 
-useEffect(() => {
-    filtrar();
-}, [form.text]);
+    useEffect(() => {
+        filtrar();
+    }, [form.text]);
 
-const filtrar = () => {
-    const textBusqueda = form && form.text ? form.text.trim() : '';
-    const filtroJuego = textBusqueda === '' ? [...Array(10).fill('gta5')] : card.filter(juego => juego.toLowerCase().includes(form.text.toLowerCase()));
-    setCard(filtroJuego);
-};
+    const filtrar = () => {
+        const textBusqueda = form && form.text ? form.text.trim() : '';
+        const filtroJuego = textBusqueda === '' ? [...Array(10).fill('gta5')] : card.filter(juego => juego.toLowerCase().includes(form.text.toLowerCase()));
+        setCard(filtroJuego);
+    };
 
-return (
-    <View style={SearchStyle.containerPrincipal}>
-        <Header />
-        <View style={SearchStyle.lineTop} />
-        <ScrollView>
-            <View style={SearchStyle.container}>
-                <TouchableOpacity>
-                    <View style={SearchStyle.containerIconLupa}>
-                        <View style={SearchStyle.inputFiltro}>
-                            <TextInput
-                                style={[SearchStyle.inputText]}
-                                placeholder="Buscar Videojuego"
-                                value={form.text}
-                                onChangeText={text => changed('text', text)}
-                            />
+    return (
+        <View style={SearchStyle.containerPrincipal}>
+            <Header />
+            <View style={SearchStyle.lineTop} />
+            <ScrollView>
+                <View style={SearchStyle.container}>
+                    <TouchableOpacity onPress={() => searchGame(form.text)}>
+                        <View style={SearchStyle.containerIconLupa}>
+                            <View style={SearchStyle.inputFiltro}>
+                                <TextInput
+                                    style={[SearchStyle.inputText]}
+                                    placeholder="Buscar Videojuego"
+                                    value={form.text}
+                                    onChangeText={text => changed('text', text)}
+                                />
+                            </View>
+                            <Icon style={SearchStyle.lupaIcon} name="search" size={25} />
                         </View>
-                        <Icon style={SearchStyle.lupaIcon} name="search" size={25} />
-                    </View>
-                </TouchableOpacity>
-            </View>
-            {card.length > 0 ? (
-                <View style={SearchStyle.containerJuego}>
-                    <View style={SearchStyle.containerGeneroView}>
-                        <Text style={SearchStyle.textCategoria}>Mejores valorados de PS5</Text>
-                    </View>
-                    <ScrollView style={SearchStyle.scroll} horizontal={true} showsHorizontalScrollIndicator={false}>
-                        <View style={SearchStyle.cardJuegos}>
-                            {ps5Games.map((game, index) => (
-                                <View style={SearchStyle.juegos} key={index}>
-                                    <TouchableOpacity onPress={() => navigation.navigate("ViewGame", { gameId: game.id })}>
-                                        <Image style={SearchStyle.juegoImg} source={{ uri: game.image_url }} />
-                                    </TouchableOpacity>
-                                </View>
-                            ))}
-                        </View>
-                    </ScrollView>
-                    <View style={SearchStyle.containerGeneroView}>
-                        <Text style={SearchStyle.textCategoria}>Mejores valorados de Xbox Series</Text>
-                    </View>
-                    <ScrollView style={SearchStyle.scroll} horizontal={true} showsHorizontalScrollIndicator={false}>
-                        <View style={SearchStyle.cardJuegos}>
-                            {xboxSeriesGames.map((game, index) => (
-                                <View style={SearchStyle.juegos} key={index}>
-                                    <TouchableOpacity onPress={() => navigation.navigate("ViewGame", { gameId: game.id })}>
-                                        <Image style={SearchStyle.juegoImg} source={{ uri: game.image_url }} />
-                                    </TouchableOpacity>
-                                </View>
-                            ))}
-                        </View>
-                    </ScrollView>
-                    <View style={SearchStyle.containerGeneroView}>
-                        <Text style={SearchStyle.textCategoria}>Mejores valorados de Switch</Text>
-                    </View>
-                    <ScrollView style={SearchStyle.scroll} horizontal={true} showsHorizontalScrollIndicator={false}>
-                        <View style={SearchStyle.cardJuegos}>
-                            {switchGames.map((game, index) => (
-                                <View style={SearchStyle.juegos} key={index}>
-                                    <TouchableOpacity onPress={() => navigation.navigate("ViewGame", { gameId: game.id })}>
-                                        <Image style={SearchStyle.juegoImg} source={{ uri: game.image_url }} />
-                                    </TouchableOpacity>
-                                </View>
-                            ))}
-                        </View>
-                    </ScrollView>
-                    <View style={SearchStyle.containerGeneroView}>
-                        <Text style={SearchStyle.textCategoria}>Mejores valorados de PC</Text>
-                    </View>
-                    <ScrollView style={SearchStyle.scroll} horizontal={true} showsHorizontalScrollIndicator={false}>
-                        <View style={SearchStyle.cardJuegos}>
-                            {pcGames.map((game, index) => (
-                                <View style={SearchStyle.juegos} key={index}>
-                                    <TouchableOpacity onPress={() => navigation.navigate("ViewGame", { gameId: game.id })}>
-                                        <Image style={SearchStyle.juegoImg} source={{ uri: game.image_url }} />
-                                    </TouchableOpacity>
-                                </View>
-                            ))}
-                        </View>
-                    </ScrollView>
+                    </TouchableOpacity>
                 </View>
-            ) : <Text style={SearchStyle.noResult}>No se encontraron resultados...</Text>}
-        </ScrollView>
-        <BottomMenu />
-    </View>
-);
+                {searchedGames.length > 0 && (
+                    <View style={SearchStyle.containerJuego}>
+                        <View style={SearchStyle.containerGeneroView}>
+                            <Text style={SearchStyle.textCategoria}>Resultados de la búsqueda</Text>
+                        </View>
+                        <ScrollView style={SearchStyle.scroll} horizontal={true} showsHorizontalScrollIndicator={false}>
+                            <View style={SearchStyle.cardJuegos}>
+                                {searchedGames.map((game, index) => (
+                                    <View style={SearchStyle.juegos} key={index}>
+                                        <TouchableOpacity onPress={() => navigation.navigate("ViewGame", { gameId: game.id })}>
+                                            <Image style={SearchStyle.juegoImg} source={{ uri: game.image_url }} />
+                                        </TouchableOpacity>
+                                    </View>
+                                ))}
+                            </View>
+                        </ScrollView>
+                    </View>
+                )}
+                {card.length > 0 ? (
+                    <View style={SearchStyle.containerJuego}>
+                        <View style={SearchStyle.containerGeneroView}>
+                            <Text style={SearchStyle.textCategoria}>Mejores valorados de PS5</Text>
+                        </View>
+                        <ScrollView style={SearchStyle.scroll} horizontal={true} showsHorizontalScrollIndicator={false}>
+                            <View style={SearchStyle.cardJuegos}>
+                                {ps5Games.map((game, index) => (
+                                    <View style={SearchStyle.juegos} key={index}>
+                                        <TouchableOpacity onPress={() => navigation.navigate("ViewGame", { gameId: game.id })}>
+                                            <Image style={SearchStyle.juegoImg} source={{ uri: game.image_url }} />
+                                        </TouchableOpacity>
+                                    </View>
+                                ))}
+                            </View>
+                        </ScrollView>
+                        <View style={SearchStyle.containerGeneroView}>
+                            <Text style={SearchStyle.textCategoria}>Mejores valorados de Xbox Series</Text>
+                        </View>
+                        <ScrollView style={SearchStyle.scroll} horizontal={true} showsHorizontalScrollIndicator={false}>
+                            <View style={SearchStyle.cardJuegos}>
+                                {xboxSeriesGames.map((game, index) => (
+                                    <View style={SearchStyle.juegos} key={index}>
+                                        <TouchableOpacity onPress={() => navigation.navigate("ViewGame", { gameId: game.id })}>
+                                            <Image style={SearchStyle.juegoImg} source={{ uri: game.image_url }} />
+                                        </TouchableOpacity>
+                                    </View>
+                                ))}
+                            </View>
+                        </ScrollView>
+                        <View style={SearchStyle.containerGeneroView}>
+                            <Text style={SearchStyle.textCategoria}>Mejores valorados de Switch</Text>
+                        </View>
+                        <ScrollView style={SearchStyle.scroll} horizontal={true} showsHorizontalScrollIndicator={false}>
+                            <View style={SearchStyle.cardJuegos}>
+                                {switchGames.map((game, index) => (
+                                    <View style={SearchStyle.juegos} key={index}>
+                                        <TouchableOpacity onPress={() => navigation.navigate("ViewGame", { gameId: game.id })}>
+                                            <Image style={SearchStyle.juegoImg} source={{ uri: game.image_url }} />
+                                        </TouchableOpacity>
+                                    </View>
+                                ))}
+                            </View>
+                        </ScrollView>
+                        <View style={SearchStyle.containerGeneroView}>
+                            <Text style={SearchStyle.textCategoria}>Mejores valorados de PC</Text>
+                        </View>
+                        <ScrollView style={SearchStyle.scroll} horizontal={true} showsHorizontalScrollIndicator={false}>
+                            <View style={SearchStyle.cardJuegos}>
+                                {pcGames.map((game, index) => (
+                                    <View style={SearchStyle.juegos} key={index}>
+                                        <TouchableOpacity onPress={() => navigation.navigate("ViewGame", { gameId: game.id })}>
+                                            <Image style={SearchStyle.juegoImg} source={{ uri: game.image_url }} />
+                                        </TouchableOpacity>
+                                    </View>
+                                ))}
+                            </View>
+                        </ScrollView>
+                    </View>
+                ) : <Text style={SearchStyle.noResult}></Text>}
+            </ScrollView>
+            <BottomMenu />
+        </View>
+    );
 };
 
 export default Search;
