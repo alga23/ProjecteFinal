@@ -13,19 +13,20 @@ import { Global } from '../utils/Global'
 import useFetch from '../hooks/useFetch'
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer'
 import React, { useEffect, useState } from 'react'
-import { View, ActivityIndicator } from "react-native"
+import { View, ActivityIndicator, StyleSheet, Image, Text, TouchableOpacity } from "react-native"
 import * as SecureStore from 'expo-secure-store'
 import Profile from '../views/user/Profile';
 import FollowList from '../views/follow/FollowList';
 import Chat from '../views/chat/Chat';
-import EditProfile from '../views/user/EditProfile';
+import useAuth from '../hooks/useAuth';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator()
 
 //Log Out Item for the DrawerContainer
 function CustomDrawerContent(props) {
-    const navigation = useNavigation()
+    const navigation = useNavigation();
+    const { auth, setAuth, counters } = useAuth({});
 
     const handleLogout = async () => {
         //notifyMessage('Logout successfully.')
@@ -35,15 +36,37 @@ function CustomDrawerContent(props) {
             routes: [{ name: 'Welcome' }],
         })
         await SecureStore.deleteItemAsync('token')
-
+        await SecureStore.deleteItemAsync('user');
+        setAuth({});
     }
 
     return (
         <DrawerContentScrollView {...props}>
+            {/* Sección de la imagen */}
+            <View style={styles.header}>
+                <Image
+                    source={{ uri: auth.imagen === 'default.png' ? Global.url_default : auth.imagen }} // Aquí debes poner la ruta de tu imagen
+                    style={styles.avatar}
+                    resizeMode="cover"
+                />
+            </View>
+            <Text style={styles.nick}>{auth.nick}</Text>
+            <Text style={styles.username}>@{auth.username}</Text>
+            <View style={styles.containerFollows}>
+                <TouchableOpacity onPress={() => navigation.navigate('FollowList', {id: [auth._id, type = "following"]})}>
+                    <Text style={styles.follows}><Text style={styles.contadorFollows}>{counters.following}</Text> Siguiendo</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('FollowList', {id: [auth._id, type = "followers"]})}>
+                    <Text style={styles.follows}><Text style={styles.contadorFollows}>{counters.followers}</Text> Seguidores</Text>
+                </TouchableOpacity>
+            </View>
+            {/* Línea de separación */}
+            <View style={styles.separator} />
+            {/* Resto del contenido del Drawer */}
             <DrawerItemList {...props} />
-            <DrawerItem label="Log out " onPress={() => handleLogout()} />
+            <DrawerItem label="Log out" onPress={() => handleLogout()} />
         </DrawerContentScrollView>
-    )
+    );
 }
 
 //Drawer Container
@@ -140,3 +163,53 @@ export default function Router() {
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    header: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingTop: 10,
+        paddingLeft: 15
+    },
+    avatar: {
+        width: 60,
+        height: 60,
+        borderRadius: 50,
+        marginRight: 15,
+    },
+    nick: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginLeft: 12,
+        marginTop: 5,
+    },
+    username: {
+        fontSize: 14,
+        marginLeft: 12,
+        marginBottom: 15,
+        color: '#666666'
+    },
+    containerFollows: {
+        flexDirection: 'row',
+        gap: 10,
+        marginLeft: 10
+    },
+    follows: {
+        fontSize: 14,
+        color: '#666666'
+    },
+    contadorFollows: {
+        fontWeight: 'bold',
+        color: '#000000'
+    },
+    separator: {
+        height: 1,
+        backgroundColor: '#ccc',
+        marginVertical: 10,
+    },
+});

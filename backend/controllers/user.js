@@ -3,6 +3,7 @@ const User = require('../models/user')
 const Post = require('../models/post')
 const Follow = require('../models/follow')
 const Validators = require("../middleware/validators")
+const mongoosePaginate = require('mongoose-pagination');
 const generateToken = require("../services/jwt");
 const cloudinary = require('../cloudinary');
 
@@ -275,6 +276,41 @@ const editUser = async (req, res) => {
     }
 }
 
+const getAllUsers = async (req, res) => {
+
+    let page = 1;
+    let itemsPerPage = 15;
+
+    if (req.params.page) page = parseInt(req.params.page);
+
+    try {
+        const total = await User.countDocuments();
+        const users = await User.find()
+                        .select("_id nick username imagen")
+                        .paginate(page, itemsPerPage); // Excluye campos sensibles como el password y __v
+        
+        if (!users || users.length === 0) {
+            return res.status(404).send({
+                status: 'error',
+                message: 'No se encontraron usuarios'
+            });
+        }
+
+        res.status(200).send({
+            status: 'success',
+            page,
+            total,
+            pages: Math.ceil(total / itemsPerPage),
+            users: users
+        });
+    } catch (error) {
+        console.error('Error al recuperar los usuarios:', error);
+        res.status(500).send({
+            status: 'error',
+            message: 'Error interno del servidor'
+        });
+    }
+};
 
 
 module.exports = {
@@ -285,5 +321,6 @@ module.exports = {
     retrieveOwnUser,
     devolverContador,
     deleteUser,
-    editUser
+    editUser,
+    getAllUsers
 }

@@ -1,11 +1,12 @@
 import { Text, TouchableOpacity, View, TextInput, ScrollView, Modal, Alert } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import IconFeather from "react-native-vector-icons/Feather";
-import { ChatStyle } from '../../styles/chat/Chat';
 import { Image } from "react-native";
+import { ChatStyle } from '../../styles/chat/Chat';
 import { Global } from "../../utils/Global";
 import { useNavigation } from "@react-navigation/native";
-import moment from 'moment';
+
+import moment from 'moment-timezone';
 import io from 'socket.io-client';
 import { useEffect, useRef, useState } from "react";
 import useAuth from "../../hooks/useAuth";
@@ -20,9 +21,11 @@ const Chat = ({ route }) => {
     const [messageInput, setMessageInput] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedMessage, setSelectedMessage] = useState(null);
+    const [counterFollowers, setCounterFollowers] = useState("");
     const [image, setImage] = useState(null);
     const { fetchData } = useFetch({});
     const [userProfile, setUserProfile] = useState({});
+    const [lastDisplayedDate, setLastDisplayedDate] = useState(null);
     const navigation = useNavigation();
 
     const socket = useRef(null);
@@ -30,6 +33,7 @@ const Chat = ({ route }) => {
 
     useEffect(() => {
         getProfile();
+        contadorFollowers();
 
         socket.current = io('http://10.0.2.2:3001');
         socket.current.emit('register', auth._id, id);
@@ -67,7 +71,7 @@ const Chat = ({ route }) => {
                 usuarioReceptor: id,
                 usuarioEmisor: auth._id,
                 contenido: messageInput,
-                imagenUrl: null,
+                imagenUrl: image,
             };
 
             if (messageInput.trim()) {
@@ -84,10 +88,15 @@ const Chat = ({ route }) => {
             setMessageInput('');
             setImage(null);
 
-            setMessages(prevMessages => [...prevMessages, { ...messageData }]);
             scrollViewRef.current.scrollToEnd({ animated: false });
+            updateLastDisplayedDate();
         }
     };
+
+    const contadorFollowers = async () => {
+        const result = await fetchData(Global.url + `user/${id}/contador`, 'GET');
+        setCounterFollowers(result.followers);
+    }
 
     const getProfile = async () => {
         const result = await fetchData(Global.url + 'user/profile/' + id, 'GET');
@@ -103,7 +112,8 @@ const Chat = ({ route }) => {
     };
 
     const deleteMessage = (message) => {
-        socket.current.emit('deleteMessage', message._id);
+        console.log(message);
+        socket.current.emit('deleteMessage', message);
     }
 
     const openImagePicker = async () => {
@@ -125,6 +135,25 @@ const Chat = ({ route }) => {
         setImage(null);
     }
 
+    const getUserTimeZone = () => {
+        return Intl.DateTimeFormat().resolvedOptions().timeZone;
+    };
+
+    const updateLastDisplayedDate = () => {
+        const lastMessage = messages[messages.length - 1];
+        if (lastMessage) {
+            const lastMessageDate = moment(lastMessage.created_at).startOf('day');
+            const currentDate = moment().startOf('day');
+            if (currentDate.diff(lastMessageDate, 'days') === 0) {
+                setLastDisplayedDate('Hoy');
+            } else if (currentDate.diff(lastMessageDate, 'days') === 1) {
+                setLastDisplayedDate('Ayer');
+            } else {
+                setLastDisplayedDate(moment(lastMessage.created_at).format('DD/MM/YYYY'));
+            }
+        }
+    };
+
     return (
         <View style={ChatStyle.container}>
             <View style={ChatStyle.headerChat}>
@@ -132,37 +161,34 @@ const Chat = ({ route }) => {
                     <Icon name="long-arrow-left" size={22} />
                 </TouchableOpacity>
                 <View style={ChatStyle.containerUser}>
-                    {userProfile.imagen === "default.png" ? (
-                        <Image source={{ uri: Global.url_default }} style={ChatStyle.imagenPerfil} />
-                    ) : (
-                        <Image source={{ uri: userProfile.imagen }} style={ChatStyle.imagenPerfil} />
-                    )}
+                    <TouchableOpacity onPress={() => navigation.navigate("Profile", { profileId: id })}>
+                        <Image source={{ uri: userProfile.imagen === "default.png" ? Global.url_default : userProfile.imagen }} style={ChatStyle.imagenPerfil} />
+                    </TouchableOpacity>
                     <Text>{userProfile.nick}</Text>
                 </View>
             </View>
             <View style={ChatStyle.borderLine}></View>
 
-            <ScrollView ref={scrollViewRef}>
+            <ScrollView
+                ref={scrollViewRef}
+                contentContainerStyle={ChatStyle.scrollViewContent}
+                onContentSizeChange={() => scrollViewRef.current.scrollToEnd({ animated: true })}
+            >
                 {messages.length > 0 && (
                     <View style={ChatStyle.containerInfo}>
                         <View style={ChatStyle.containerInfoImagen}>
+                            <TouchableOpacity onPress={() => navigation.navigate("Profile", {profileId: id})}>
                             <Image
                                 source={{ uri: userProfile.imagen === "default.png" ? Global.url_default : userProfile.imagen }}
                                 style={ChatStyle.imagenInfo}
                             />
+                            </TouchableOpacity>
                             <Text style={[ChatStyle.textInfo, ChatStyle.boldText]}>{userProfile.nick}</Text>
                             <Text style={ChatStyle.textInfo}>@{userProfile.username}</Text>
-                            <Text style={ChatStyle.textInfo}>234K seguidores</Text>
+                            <Text style={ChatStyle.textInfo}>{counterFollowers} seguidores</Text>
                         </View>
                         <View style={ChatStyle.borderLineInfo}></View>
-                        <Text style={ChatStyle.dateText}>{moment(messages[messages.length - 1].created_at).calendar(null, {
-                            sameDay: '[Hoy]',
-                            nextDay: '[Mañana]',
-                            nextWeek: 'dddd',
-                            lastDay: '[Ayer]',
-                            lastWeek: '[Último] dddd',
-                            sameElse: 'DD/MM/YYYY'
-                        })}</Text>
+                        <Text style={ChatStyle.dateText}>{lastDisplayedDate}</Text>
                     </View>
                 )}
 
@@ -170,22 +196,32 @@ const Chat = ({ route }) => {
                     <TouchableOpacity
                         key={index}
                         onLongPress={() => { mensaje.usuarioEmisor === auth._id && handleLongPress(mensaje) }}
-                        style={[
+                    >
+                        <View style={[
                             mensaje.contenido ? (
                                 mensaje.usuarioEmisor === auth._id ? ChatStyle.myMessage : ChatStyle.theirMessage
                             ) : null
-                        ]}
-                    >
-                        {mensaje.imagenUrl ? (
-                            <Image source={{ uri: mensaje.imagenUrl }} style={ChatStyle.imagenMensaje} />
-                        ) : (
+                        ]}>
                             <View style={ChatStyle.messageUser}>
                                 <Text style={mensaje.usuarioEmisor === auth._id ? ChatStyle.contenidoChat : ChatStyle.otherUserTextoChat}>
                                     {mensaje.contenido}
                                 </Text>
-                                <Text style={ChatStyle.fechaChat}>{moment(mensaje.created_at).format('HH:MM')}</Text>
+                                {mensaje.contenido && (
+                                    <Text style={ChatStyle.fechaChat}>
+                                        {moment(mensaje.created_at).tz(getUserTimeZone()).format('HH:mm')}
+                                    </Text>
+                                )}
+                            </View>
+                        </View>
+                        {mensaje.imagenUrl && (
+                            <View style={ChatStyle.imagenUrlContainer}>
+                                <Image source={{ uri: mensaje.imagenUrl }} style={[ChatStyle.imagenMensaje, mensaje.usuarioEmisor === auth._id ? ChatStyle.myImagen : ChatStyle.otherImagenMensaje]} />
+                                <View style={ChatStyle.fechaChatImagen}>
+                                    {mensaje.imagenUrl && <Text style={ChatStyle.textFechaChat}>{moment(mensaje.created_at).format('HH:MM')}</Text>}
+                                </View>
                             </View>
                         )}
+
                     </TouchableOpacity>
                 ))}
 

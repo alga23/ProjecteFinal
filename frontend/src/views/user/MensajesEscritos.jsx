@@ -1,15 +1,56 @@
-import React, { useState } from 'react';
-import { View, Text, Button, Touchable, TouchableOpacity, Image, TextInput, ScrollView } from 'react-native';
-import { MensajeStyle } from '../../styles/post/MensajeStyle';
+import React, { useState, useCallback } from 'react';
+import { View, Text, TextInput, ScrollView, TouchableOpacity, Image, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Cristiano from '../../../assets/images/cristiano.png'
-import { useNavigation } from '@react-navigation/native';
-
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import useFetch from '../../hooks/useFetch';
+import { Global } from '../../utils/Global';
+import { MensajeStyle } from '../../styles/post/MensajeStyle';
 
 const MensajesEscritos = () => {
-
-    const [card, setCard] = useState([...Array(12).fill(0)]);
+    const { fetchData } = useFetch({});
+    const [users, setUsers] = useState([]);
+    const [page, setPage] = useState(1);
+    const [loading, setLoading] = useState(true);
+    const [more, setMore] = useState(true);
     const navigation = useNavigation();
+
+    const getUsers = async (nextPage) => {
+        setLoading(true);
+        const response = await fetchData(Global.url + 'user/allUsers/' + nextPage, 'GET');
+
+        if (response.status === 'success') {
+            const newUsers = nextPage === 1 ? response.users : [...users, ...response.users];
+            setUsers(newUsers);
+            setLoading(false);
+            setMore(newUsers.length < response.total);
+            setPage(nextPage);
+        } else {
+            setLoading(false);
+        }
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+
+            if (users.length === 0 || page === 1) {
+                getUsers(page);
+            }
+        }, [page])
+    );
+
+    const nextPage = () => {
+        if (more && !loading) {
+            getUsers(page + 1);
+        }
+    };
+
+    const handleScroll = (event) => {
+        const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+        const isCloseToBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 20;
+        if (isCloseToBottom && more && !loading) {
+            nextPage();
+        }
+    };
 
     return (
         <View style={MensajeStyle.ContainerPrincipal}>
@@ -21,41 +62,30 @@ const MensajesEscritos = () => {
             </View>
             <View style={MensajeStyle.line}></View>
             <View style={MensajeStyle.search}>
-            <Icon style={MensajeStyle.arrowContainer} name="search" size={25}></Icon>
-            <TextInput style={MensajeStyle.inputSearch}></TextInput>
+                <Icon style={MensajeStyle.arrowContainer} name="search" size={25}></Icon>
+                <TextInput style={MensajeStyle.inputSearch} placeholder="Buscar usuarios"></TextInput>
             </View>
             <View style={MensajeStyle.line}></View>
-            <ScrollView>
-            {card.length >= 0 && card.map((_, index) => {
-                return (
-                    <View key={index}>
-                        <View style={MensajeStyle.containerCardMessage}>
-                            <View style={MensajeStyle.containerUser}>
-
-                                <Image source={Cristiano} style={MensajeStyle.fotoUsuario}></Image>
+            <ScrollView style={MensajeStyle.scrollViewContainer} onScroll={handleScroll} >
+                {users.map(user => (
+                    <View key={user._id} style={MensajeStyle.containerCardMessage}>
+                        <View style={MensajeStyle.containerUser}>
+                            <TouchableOpacity onPress={() => navigation.navigate("Profile", { profileId: user._id })}>
+                                <Image source={{uri: user.imagen === 'default.png' ? Global.url_default : user.imagen}} style={MensajeStyle.fotoUsuario} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => navigation.navigate("Chat", { id: user._id })}>
                                 <View style={MensajeStyle.infoUsuario}>
-                                    <Text style={MensajeStyle.textName}>Carlos</Text>
-                                    <Text style={MensajeStyle.textMessage}>hola tete</Text>
+                                    <Text style={MensajeStyle.textName}>{user.nick}</Text>
+                                    <Text style={MensajeStyle.textUserName}>@{user.username}</Text>
                                 </View>
-                            </View>
-                            <View style={MensajeStyle.notifyMessage}>
-                                <Text style={MensajeStyle.timeText}>13:32</Text>
-                                <View style={MensajeStyle.notify}>
-                                    <Text style={MensajeStyle.textContador}>4</Text>
-                                </View>
-                            </View>
+                            </TouchableOpacity>
                         </View>
-                        <View style={MensajeStyle.line}></View>
                     </View>
-                )
-            })}
+                ))}
+                {loading && <ActivityIndicator size={40} color='#0074B4' style={{ marginTop: 20 }} />}
             </ScrollView>
         </View>
-
-
-
-
-
     );
 };
+
 export default MensajesEscritos;

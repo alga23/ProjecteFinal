@@ -10,6 +10,8 @@ const UserRoutes = require('./routes/user');
 const PostRoutes = require('./routes/post');
 const FollowRoutes = require('./routes/follow');
 const ComentarioRoutes = require('./routes/comentario');
+const MessageRoutes = require('./routes/message');
+
 const app = express();
 
 dotenv.config();
@@ -26,6 +28,7 @@ app.use('/api/user', UserRoutes);
 app.use('/api/post', PostRoutes);
 app.use('/api/follow', FollowRoutes);
 app.use('/api/comentario', ComentarioRoutes);
+app.use('/api/message', MessageRoutes);
 
 app.listen(port, () => {
     console.log(`Escuchando en el puerto ${port}`);

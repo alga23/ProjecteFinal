@@ -60,7 +60,7 @@ function connectChat() {
                         format: "webp"
                     })
                     imagenUrl = uploadedImagen.secure_url;
-                    console.log(imagenUrl);
+                    console.log(uploadedImagen);
                     fs.unlinkSync(imagePath);
                 }
 
@@ -74,33 +74,39 @@ function connectChat() {
                 const message = new Message(messageData);
 
                 await message.save();
- 
+                
+                io.to(userSockets[usuarioEmisor]).emit('message', message);
+
                 if (recipientSocketId) {
                     io.to(recipientSocketId).emit('message', message);
                 } else {
                     console.log(`No se encontró socket para el destinatario con ID: ${usuarioReceptor}`);
                 }
+
             } catch (error) {
                 console.log(error);
             }
         });
 
-        socket.on('deleteMessage', async(message) => {
+        socket.on('deleteMessage', async (message) => {
             try {
                 const deleteMessage = await Message.findByIdAndDelete(message._id);
 
-                if (deleteMessage) {
-                    const recipientSocketId = userSockets[deleteMessage.usuarioReceptor];
-                    const senderSockerId = userSockets[deleteMessage.usuarioEmisor];
+                const recipientSocketId = userSockets[deleteMessage.usuarioReceptor];
+                const senderSocketId = userSockets[deleteMessage.usuarioEmisor];
 
-                    if (recipientSocketId) {
-                        io.to(recipientSocketId).emit('messageDeleted', message._id);
-                    }
-                    if (senderSockerId) {
-                        io.to(senderSockerId).emit('messageDeleted', message._id);
-                    }
+                if (recipientSocketId) {
+                    io.to(recipientSocketId).emit('messageDeleted', message._id);
                 }
-            }catch(error) {
+                if (senderSocketId) {
+                    io.to(senderSocketId).emit('messageDeleted', message._id);
+                }
+
+                if (deleteMessage && deleteMessage.imagenUrl) {
+                    const publicId = extractPublicId(deleteMessage.imagenUrl);
+                    await cloudinary.uploader.destroy(publicId);
+                }
+            } catch (error) {
                 console.log(error);
             }
         });
@@ -121,3 +127,9 @@ function connectChat() {
 }
 
 module.exports = connectChat;
+
+function extractPublicId(imageUrl) {
+    const regex = /upload\/(?:v\d+\/)?([^\.]+)/;
+    const match = imageUrl.match(regex);
+    return match ? match[1] : null;
+}

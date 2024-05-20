@@ -61,6 +61,9 @@ export const MensajeStyle ={
     textName: {
         fontWeight: 'bold'
     },
+    textUserName: {
+        color: '#666666'
+    },
     textMessage: {
         fontWeight: 'bold'
     },
@@ -75,8 +78,8 @@ export const MensajeStyle ={
 
     },
     fotoUsuario:{
-        width: 60, 
-        height: 60, 
+        width: 50, 
+        height: 50, 
         borderRadius: 75, 
         overflow: 'hidden', 
         borderWidth: 2,
@@ -86,15 +89,17 @@ export const MensajeStyle ={
     },
     containerCardMessage: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
         gap: 20,
-        marginVertical: 20,
+        marginVertical: 7,
         marginHorizontal: 20
     },
     containerUser: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 20,
+        gap: 10,
+    },
+    scrollViewContainer: {
+        marginBottom: 100
     },
     infoUsuario: {
         flexDirection: 'column',
@@ -104,7 +109,6 @@ export const MensajeStyle ={
         padding: 5,
         borderRadius: 50,
         backgroundColor: '#008EDC',
-        marginLeft: 4
     },
     timeText: {
         color: '#7A7A7A',
@@ -116,5 +120,52 @@ export const MensajeStyle ={
     line: {
         borderBottomWidth: 1,
         borderColor: '#ccc'
-    }
+    },
+    contenedorMessage: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+        marginVertical: 10,
+        paddingHorizontal: 20,
+    },
+    imageContainer: {
+        marginRight: 10,
+    },
+    imagen: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+    },
+    infoUser: {
+        flex: 1,
+        justifyContent: 'center',
+    },
+    nameContainer: {
+        flexDirection: 'row',
+        marginBottom: 5,
+    },
+    nickText: {
+        fontWeight: 'bold',
+        marginRight: 5,
+    },
+    usernameText: {
+        color: '#666666',
+    },
+    createdAtText: {
+        color: '#666666'
+    },
+    deleteContainer: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        backgroundColor: 'rgba(255, 68, 68, 0.8)',
+        borderRadius: 15,
+        padding: 5,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    deleteText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
 }

@@ -8,6 +8,7 @@ export const UserDetailsContext = createContext()
 export const UserDetailsProvider = ({ children }) => {
     const [userDetails, setUserDetails] = useState(null)
     const [auth, setAuth] = useState({});
+    const [ counters, setCounters ] = useState({});
     const [loading, setLoading] = useState(true);
     const { fetchData } = useFetch({});
 
@@ -15,8 +16,8 @@ export const UserDetailsProvider = ({ children }) => {
 
         authUser();
 
-        
-    }, [userDetails]);
+
+    }, []);
 
     const authUser = async () => {
         // Sacar datos usuario identificado del localStorage
@@ -32,26 +33,34 @@ export const UserDetailsProvider = ({ children }) => {
         // que me devuelva todos los datos del usuario
         const data = await fetchData(Global.url + "user/devolverUsuarioToken", 'GET');
 
-        // Setear el estado de auth
-        setAuth(data.user);
+        const counters = await fetchData(Global.url + `user/${user}/contador`, 'GET');
+
+        if (data.status === 'success' && counters.status === 'success') {
+            setAuth(data.user);
+            setCounters(counters);
+        } else {
+            setAuth({});
+            setCounters({});
+        }
 
         setLoading(false);
     }
-
 
     const updateUserDetails = (newDetails) => {
         setUserDetails(newDetails);
     };
 
     return (
-        <UserDetailsContext.Provider 
-        value={{ 
-            userDetails, updateUserDetails,
-            auth,
-            setAuth,
-            loading,
-            authUser
-        }}>
+        <UserDetailsContext.Provider
+            value={{
+                userDetails, updateUserDetails,
+                auth,
+                setAuth,
+                loading,
+                authUser,
+                counters,
+                setCounters
+            }}>
             {children}
         </UserDetailsContext.Provider>
     )
