@@ -369,7 +369,6 @@ const retrievePost = async (req, res) => {
 
 }
 
-//method to delete post
 const deletePost = async (req, res) => {
     try {
         const publicationId = req.params.id;
@@ -379,22 +378,46 @@ const deletePost = async (req, res) => {
         if (!publication) {
             return res.status(404).send({
                 status: "error",
-                message: "No se ha podido encontrar ningun post que borrar"
-            })
+                message: "No se ha podido encontrar ninguna publicación para eliminar"
+            });
+        }
+
+        console.log(publication);
+        // Guardamos la URL de la imagen antes de eliminar la publicación
+        let imageUrlToDelete = null;
+        if (publication.file) {
+            imageUrlToDelete = publication.file;
         }
 
         await publication.deleteOne({ "_id": publicationId });
+
+        // Eliminamos la imagen de Cloudinary si existe
+        if (imageUrlToDelete) {
+            // Obtener el publicId de la URL de Cloudinary
+            const publicId = extractPublicId(imageUrlToDelete);
+            console.log("PublicId a eliminar:", publicId); // Imprimir el publicId en la consola
+            await cloudinary.uploader.destroy(publicId);
+        }
+
         return res.status(200).send({
-            status: "succes",
-            message: "publicacion borrada"
-        })
+            status: "success",
+            message: "Publicación eliminada correctamente",
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            status: "error",
+            message: "Error en el servidor al eliminar la publicación",
+        });
     }
-    catch (e) {
-        console.log(e);
-    }
-}
+};
 
-
+// Función para extraer el publicId de la URL de Cloudinary
+const extractPublicId = (imageUrl) => {
+    const regex = /upload\/(?:v\d+\/)?([^\.]+)/;
+    const match = imageUrl.match(regex);
+    return match ? match[1] : null;
+};
 
 module.exports = {
     createPost,

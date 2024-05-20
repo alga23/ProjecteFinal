@@ -3,9 +3,7 @@ import { themeColors } from "../../theme"
 export const ProfileStyle = {
     profileInfoContainer: {
         paddingHorizontal: 16,
-        paddingTop: 16,
-
-
+        marginBottom: 20
     },
     topPartContainer: {
         flexDirection: 'row',
