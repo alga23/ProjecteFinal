@@ -11,15 +11,16 @@ import useFetch from '../../hooks/useFetch'
 import * as SecureStore from 'expo-secure-store';
 import { useTranslation } from 'react-i18next';
 import i18n from '../../languages/i18n';
+import useAuth from '../../hooks/useAuth'
 
 export default function Login() {
 
     const navigation = useNavigation();
     const { form, changed } = useForm({});
     const { fetchData } = useFetch();
+    const { authUser } = useAuth({});
 
     const { t, i18n } = useTranslation();
-
 
     const handleLogin = async () => {
         const newForm = form;
@@ -31,6 +32,7 @@ export default function Login() {
             await SecureStore.setItemAsync('token', data.token);
             await SecureStore.setItemAsync('user', data.user.id);
 
+            await authUser();
             setTimeout(async () => {
                 navigation.navigate("Drawer");
             }, 1000);

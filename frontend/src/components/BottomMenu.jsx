@@ -44,7 +44,7 @@ const BottomMenu = () => {
             <View style={BottomMenuStyle.addCircle}>
                 <TouchableWithoutFeedback onPress={() => handleRouter(isBandejaRoute ? 'Bandeja_mensaje' : 'createPost')}>
                     <Animated.View style={[BottomMenuStyle.button, !isBandejaRoute && rotation]}>
-                        <AddCircleWithCross name={isBandejaRoute ? 'envelope' : 'times'} />
+                        <AddCircleWithCross isBandejaRoute={isBandejaRoute} />
                     </Animated.View>
                 </TouchableWithoutFeedback>
             </View>
@@ -66,11 +66,12 @@ const BottomMenu = () => {
     );
 };
 
-const AddCircleWithCross = ({ name, size = 70, iconSize = 30 }) => {
+const AddCircleWithCross = ({ isBandejaRoute, size = 70, iconSize = 30 }) => {
+    const iconName = isBandejaRoute ? 'envelope' : 'pencil'; // Use 'pencil' instead of 'times'
     return (
         <View style={{ position: 'relative', justifyContent: 'center', alignItems: 'center' }}>
             <FontAwesome style={BottomMenuStyle.circleColor} name='circle' size={size} />
-            <FontAwesome style={BottomMenuStyle.iconColor} name={name} size={iconSize} color='white' />
+            <FontAwesome style={BottomMenuStyle.iconColor} name={iconName} size={iconSize} color='white' />
         </View>
     );
 };
