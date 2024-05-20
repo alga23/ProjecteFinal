@@ -19,6 +19,7 @@ import Profile from '../views/user/Profile';
 import FollowList from '../views/follow/FollowList';
 import Chat from '../views/chat/Chat';
 import useAuth from '../hooks/useAuth';
+import EditProfile from '../views/user/EditProfile'
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator()
@@ -53,10 +54,10 @@ function CustomDrawerContent(props) {
             <Text style={styles.nick}>{auth.nick}</Text>
             <Text style={styles.username}>@{auth.username}</Text>
             <View style={styles.containerFollows}>
-                <TouchableOpacity onPress={() => navigation.navigate('FollowList', {id: [auth._id, type = "following"]})}>
+                <TouchableOpacity onPress={() => navigation.navigate('FollowList', { id: [auth._id, type = "following"] })}>
                     <Text style={styles.follows}><Text style={styles.contadorFollows}>{counters.following}</Text> Siguiendo</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('FollowList', {id: [auth._id, type = "followers"]})}>
+                <TouchableOpacity onPress={() => navigation.navigate('FollowList', { id: [auth._id, type = "followers"] })}>
                     <Text style={styles.follows}><Text style={styles.contadorFollows}>{counters.followers}</Text> Seguidores</Text>
                 </TouchableOpacity>
             </View>
