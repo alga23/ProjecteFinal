@@ -197,7 +197,6 @@ where cover != null;
                     image_url: `${Global.url_imagenes_games}${game.cover.image_id}.jpg`,
                 }));
                 setSearchesGames(gamesWithImages);
-                console.log(searchedGames)
 
             }
         } catch (error) {
