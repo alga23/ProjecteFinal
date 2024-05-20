@@ -22,7 +22,6 @@ export default function Login() {
 
     const { t, i18n } = useTranslation();
 
-
     const handleLogin = async () => {
         const newForm = form;
 
