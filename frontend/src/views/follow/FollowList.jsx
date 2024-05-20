@@ -87,7 +87,7 @@ const FollowList = ({ route }) => {
                     <TouchableOpacity onPress={() => navigation.goBack()}>
                         <Icon name="arrow-left" size={20} color="black" style={Follow.iconBack} />
                     </TouchableOpacity>
-                    <Text>Siguiendo</Text>
+                    <Text>{id[1] === "followers" ? 'Seguidores' : 'Siguiendo'}</Text>
                 </View>
                 <LayoutFollow
                     follows={followers}

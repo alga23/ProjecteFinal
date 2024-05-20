@@ -15,8 +15,8 @@ export const UserDetailsProvider = ({ children }) => {
 
         authUser();
 
-        
-    }, [userDetails]);
+
+    }, []);
 
     const authUser = async () => {
         // Sacar datos usuario identificado del localStorage
@@ -32,8 +32,11 @@ export const UserDetailsProvider = ({ children }) => {
         // que me devuelva todos los datos del usuario
         const data = await fetchData(Global.url + "user/devolverUsuarioToken", 'GET');
 
-        // Setear el estado de auth
-        setAuth(data.user);
+        if (data.status === 'success') {
+            setAuth(data.user);
+        } else {
+            setAuth({});
+        }
 
         setLoading(false);
     }
@@ -44,14 +47,14 @@ export const UserDetailsProvider = ({ children }) => {
     };
 
     return (
-        <UserDetailsContext.Provider 
-        value={{ 
-            userDetails, updateUserDetails,
-            auth,
-            setAuth,
-            loading,
-            authUser
-        }}>
+        <UserDetailsContext.Provider
+            value={{
+                userDetails, updateUserDetails,
+                auth,
+                setAuth,
+                loading,
+                authUser
+            }}>
             {children}
         </UserDetailsContext.Provider>
     )

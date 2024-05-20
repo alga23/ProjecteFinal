@@ -19,6 +19,7 @@ import Profile from '../views/user/Profile';
 import FollowList from '../views/follow/FollowList';
 import Chat from '../views/chat/Chat';
 import useAuth from '../hooks/useAuth';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator()
@@ -27,8 +28,8 @@ const Drawer = createDrawerNavigator()
 function CustomDrawerContent(props) {
     const navigation = useNavigation();
     const [contador, setContador] = useState({});
-    const { fetchData} = useFetch({});
-    const { auth } = useAuth({});
+    const { fetchData } = useFetch({});
+    const { auth, setAuth } = useAuth({});
 
     const handleLogout = async () => {
         //notifyMessage('Logout successfully.')
@@ -38,14 +39,15 @@ function CustomDrawerContent(props) {
             routes: [{ name: 'Welcome' }],
         })
         await SecureStore.deleteItemAsync('token')
-
+        await SecureStore.deleteItemAsync('user');
+        setAuth({});
     }
 
     useEffect(() => {
-        
+
         const contadorFollows = async () => {
             const result = await fetchData(Global.url + `user/${auth._id}/contador`, 'GET');
-            console.log(result);
+
             setContador(result);
         }
 
@@ -57,7 +59,7 @@ function CustomDrawerContent(props) {
             {/* Sección de la imagen */}
             <View style={styles.header}>
                 <Image
-                    source={{uri: auth.imagen === 'default.png' ? Global.url_default : auth.imagen}} // Aquí debes poner la ruta de tu imagen
+                    source={{ uri: auth.imagen === 'default.png' ? Global.url_default : auth.imagen }} // Aquí debes poner la ruta de tu imagen
                     style={styles.avatar}
                     resizeMode="cover"
                 />
@@ -65,8 +67,12 @@ function CustomDrawerContent(props) {
             <Text style={styles.nick}>{auth.nick}</Text>
             <Text style={styles.username}>@{auth.username}</Text>
             <View style={styles.containerFollows}>
-            <Text style={styles.follows}><Text style={styles.contadorFollows}>{contador.following}</Text> Siguiendo</Text>
-            <Text style={styles.follows}><Text style={styles.contadorFollows}>{contador.followers}</Text> Seguidores</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('FollowList', {id: [auth._id, type = "following"]})}>
+                    <Text style={styles.follows}><Text style={styles.contadorFollows}>{contador.following}</Text> Siguiendo</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('FollowList', {id: [auth._id, type = "followers"]})}>
+                    <Text style={styles.follows}><Text style={styles.contadorFollows}>{contador.followers}</Text> Seguidores</Text>
+                </TouchableOpacity>
             </View>
             {/* Línea de separación */}
             <View style={styles.separator} />

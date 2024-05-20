@@ -26,16 +26,13 @@ const Feed = () => {
 
     useFocusEffect(
         useCallback(() => {
-            feedSiguiendo(1);
-        populatePosts(1);
+            if (userId) {
+                setLoading(true);
+                Promise.all([feedSiguiendo(1), populatePosts(1)])
+                    .finally(() => setLoading(false));
+            }
         }, [userId])
     );
-
-    useEffect(() => {
-        if (!isFollowing) {
-            setSelectPage('Populares');
-        }
-    }, [isFollowing]);
 
     useEffect(() => {
         const getUserId = async () => {
@@ -46,27 +43,33 @@ const Feed = () => {
         getUserId();
     }, []);
 
+    useEffect(() => {
+        if (!isFollowing) {
+            setSelectPage('Populares');
+        }
+    }, [isFollowing]);
+
     const feedSiguiendo = async (nextPage) => {
-        setLoading(true);
         const resultPosts = await fetchData(Global.url + "post/feed/" + nextPage, 'GET');
         if (resultPosts.status === "success") {
-            let newPosts = nextPage === 1 ? resultPosts.posts : [...feed, ...resultPosts.posts];
+            const newPosts = nextPage === 1 ? resultPosts.posts : [...feed, ...resultPosts.posts];
             setFeed(newPosts);
-            setLoading(false);
-            setMore(newPosts.length < resultPosts.total);
-            setIsFollowing(newPosts.length > 0);
+            setMore(resultPosts.posts.length > 0);
+            setIsFollowing(resultPosts.posts.length > 0);
+        } else {
+            setMore(false);
         }
     };
 
     const populatePosts = async (nextPage) => {
-        setLoading(true);
         const resultsPopulates = await fetchData(Global.url + 'post/populate/' + nextPage, 'GET');
         if (resultsPopulates.status === "success") {
             const newPosts = nextPage === 1 ? resultsPopulates.populate : [...populate, ...resultsPopulates.populate];
             setPopulate(newPosts);
-            setLoading(false);
-            setMore(newPosts.length < resultsPopulates.total);
-            setIsFollowing(newPosts.length > 0);
+            setMore(resultsPopulates.populate.length > 0);
+            setIsFollowing(resultsPopulates.populate.length > 0);
+        } else {
+            setMore(false);
         }
     };
 
@@ -74,7 +77,11 @@ const Feed = () => {
         if (more && !loading) {
             setPage(prevPage => {
                 const nextPage = prevPage + 1;
-                feedSiguiendo(nextPage);
+                if (selectPage === 'Siguiendo') {
+                    feedSiguiendo(nextPage);
+                } else {
+                    populatePosts(nextPage);
+                }
                 return nextPage;
             });
         }
@@ -85,6 +92,39 @@ const Feed = () => {
         const isCloseToBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height - 20;
         if (isCloseToBottom && more && !loading) {
             nextPage();
+        }
+    };
+
+    const renderContent = () => {
+        if (loading) {
+            return <ActivityIndicator size={40} color='#0074B4' style={{ marginTop: 20 }} />;
+        }
+
+        if (selectPage === 'Siguiendo' && feed.length > 0) {
+            return feed.map((post) => (
+                <FollowFeed key={post._id}
+                    post={post}
+                    userId={userId}
+                    auth={auth}
+                />
+            ));
+        } else if (selectPage === 'Populares' && populate.length > 0) {
+            return populate.map((post) => (
+                <FollowFeed key={post._id}
+                    post={post}
+                    userId={userId}
+                    auth={auth}
+                />
+            ));
+        } else {
+            return (
+                <View style={FeedStyle.containerNoPosts}>
+                    <Text style={FeedStyle.noPosts}>No hay publicaciones de usuarios que sigas</Text>
+                    <TouchableOpacity style={FeedStyle.followBottom} activeOpacity={0.6} onPress={() => navigation.navigate('Search')}>
+                        <Text style={FeedStyle.followButtonText}>Sigue a usuarios</Text>
+                    </TouchableOpacity>
+                </View>
+            );
         }
     };
 
@@ -103,33 +143,7 @@ const Feed = () => {
             <View style={FeedStyle.line} />
             <View style={[FeedStyle.mainLine, selectPage === 'Siguiendo' ? FeedStyle.lineSelectSiguiendo : FeedStyle.lineSelectPopulares]} />
             <ScrollView style={FeedStyle.scroll} onScroll={handleScroll}>
-                {selectPage === 'Siguiendo' && feed && feed.map((post) => {
-                    return (
-                        <FollowFeed key={post._id}
-                            post={post}
-                            userId={userId}
-                            auth={auth}
-                        />
-                    );
-                })}
-                {selectPage === 'Populares' && populate && populate.map((post) => {
-                    return (
-                        <FollowFeed key={post._id}
-                            post={post}
-                            userId={userId}
-                            auth={auth}
-                        />
-                    );
-                })}
-                {!loading && selectPage === 'Siguiendo' && feed.length === 0 && (
-                    <View style={FeedStyle.containerNoPosts}>
-                        <Text style={FeedStyle.noPosts}>No hay publicaciónes de usuarios que sigas</Text>
-                        <TouchableOpacity style={FeedStyle.followBottom} activeOpacity={0.6} onPress={() => navigation.navigate('Search')}>
-                            <Text style={FeedStyle.followButtonText}>Sigue a usuarios</Text>
-                        </TouchableOpacity>
-                    </View>
-                )}
-                {loading && <ActivityIndicator size={40} color='#0074B4' style={{ marginTop: 20 }} />}
+                {renderContent()}
             </ScrollView>
             <BottomMenu />
         </View>
