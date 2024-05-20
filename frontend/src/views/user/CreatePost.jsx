@@ -108,7 +108,7 @@ const Posts = () => {
                 25,
                 50,
             );
-            navigate.navigate('Feed');
+            navigate.navigate('Feed', {newPost: data.post});
             setText('');
             setImage(null);
             setCharCount(0);
