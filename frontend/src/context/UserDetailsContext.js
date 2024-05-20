@@ -8,6 +8,7 @@ export const UserDetailsContext = createContext()
 export const UserDetailsProvider = ({ children }) => {
     const [userDetails, setUserDetails] = useState(null)
     const [auth, setAuth] = useState({});
+    const [ counters, setCounters ] = useState({});
     const [loading, setLoading] = useState(true);
     const { fetchData } = useFetch({});
 
@@ -32,15 +33,18 @@ export const UserDetailsProvider = ({ children }) => {
         // que me devuelva todos los datos del usuario
         const data = await fetchData(Global.url + "user/devolverUsuarioToken", 'GET');
 
-        if (data.status === 'success') {
+        const counters = await fetchData(Global.url + `user/${user}/contador`, 'GET');
+
+        if (data.status === 'success' && counters.status === 'success') {
             setAuth(data.user);
+            setCounters(counters);
         } else {
             setAuth({});
+            setCounters({});
         }
 
         setLoading(false);
     }
-
 
     const updateUserDetails = (newDetails) => {
         setUserDetails(newDetails);
@@ -53,7 +57,9 @@ export const UserDetailsProvider = ({ children }) => {
                 auth,
                 setAuth,
                 loading,
-                authUser
+                authUser,
+                counters,
+                setCounters
             }}>
             {children}
         </UserDetailsContext.Provider>

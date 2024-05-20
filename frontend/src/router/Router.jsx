@@ -13,13 +13,12 @@ import { Global } from '../utils/Global'
 import useFetch from '../hooks/useFetch'
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList, DrawerItem } from '@react-navigation/drawer'
 import React, { useEffect, useState } from 'react'
-import { View, ActivityIndicator, StyleSheet, Image, Text } from "react-native"
+import { View, ActivityIndicator, StyleSheet, Image, Text, TouchableOpacity } from "react-native"
 import * as SecureStore from 'expo-secure-store'
 import Profile from '../views/user/Profile';
 import FollowList from '../views/follow/FollowList';
 import Chat from '../views/chat/Chat';
 import useAuth from '../hooks/useAuth';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator()
@@ -27,9 +26,7 @@ const Drawer = createDrawerNavigator()
 //Log Out Item for the DrawerContainer
 function CustomDrawerContent(props) {
     const navigation = useNavigation();
-    const [contador, setContador] = useState({});
-    const { fetchData } = useFetch({});
-    const { auth, setAuth } = useAuth({});
+    const { auth, setAuth, counters } = useAuth({});
 
     const handleLogout = async () => {
         //notifyMessage('Logout successfully.')
@@ -42,17 +39,6 @@ function CustomDrawerContent(props) {
         await SecureStore.deleteItemAsync('user');
         setAuth({});
     }
-
-    useEffect(() => {
-
-        const contadorFollows = async () => {
-            const result = await fetchData(Global.url + `user/${auth._id}/contador`, 'GET');
-
-            setContador(result);
-        }
-
-        contadorFollows();
-    }, []);
 
     return (
         <DrawerContentScrollView {...props}>
@@ -68,10 +54,10 @@ function CustomDrawerContent(props) {
             <Text style={styles.username}>@{auth.username}</Text>
             <View style={styles.containerFollows}>
                 <TouchableOpacity onPress={() => navigation.navigate('FollowList', {id: [auth._id, type = "following"]})}>
-                    <Text style={styles.follows}><Text style={styles.contadorFollows}>{contador.following}</Text> Siguiendo</Text>
+                    <Text style={styles.follows}><Text style={styles.contadorFollows}>{counters.following}</Text> Siguiendo</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => navigation.navigate('FollowList', {id: [auth._id, type = "followers"]})}>
-                    <Text style={styles.follows}><Text style={styles.contadorFollows}>{contador.followers}</Text> Seguidores</Text>
+                    <Text style={styles.follows}><Text style={styles.contadorFollows}>{counters.followers}</Text> Seguidores</Text>
                 </TouchableOpacity>
             </View>
             {/* Línea de separación */}
