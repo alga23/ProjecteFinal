@@ -18,6 +18,7 @@ import * as SecureStore from 'expo-secure-store'
 import Profile from '../views/user/Profile';
 import FollowList from '../views/follow/FollowList';
 import Chat from '../views/chat/Chat';
+import EditProfile from '../views/user/EditProfile';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator()
@@ -133,6 +134,7 @@ export default function Router() {
                     <Stack.Screen name='ViewGame' options={{ headerShown: false }} component={VisualizarJuego} />
                     <Stack.Screen name='FollowList' options={{ headerShown: false }} component={FollowList} />
                     <Stack.Screen name='Chat' options={{ headerShown: false }} component={Chat} />
+                    <Stack.Screen name='Edit' options={{ headerShown: false }} component={EditProfile} />
                 </Stack.Navigator>
             )}
         </View>

@@ -1,34 +1,31 @@
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ProfileStyle } from '../../styles/user/ProfileStyle'
 import { TouchableOpacity } from "react-native";
-import { View, Image, Text, ActivityIndicator, FlatList } from "react-native";
+import { View, Image, Text, ActivityIndicator } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { useNavigation, useFocusEffect, useRoute } from '@react-navigation/native'
+import { useNavigation, useFocusEffect } from '@react-navigation/native'
 import useFetch from '../../hooks/useFetch'
 import React, { useState } from 'react'
 import { Global } from '../../utils/Global'
 import useAuth from "../../hooks/useAuth";
-import FollowFeed from "../post/FollowFeed";
 import { useTranslation } from 'react-i18next';
-import i18n from '../../languages/i18n';
 
 export default function Profile({ route }) {
 
     const { auth } = useAuth({})
-    const isOwnProfile = resolvedProfileId === auth._id
-
+    const [isFollowing, setIsFollowing] = useState(false)
     const [isLoadingProfile, setIsLoadingProfile] = useState(true)
     const [active, setActive] = useState("publicaciones")
     const { profileId } = route.params ?? { profileId: null }
     const resolvedProfileId = profileId ?? auth._id
     const [profileDetails, setProfileDetails] = useState(null)
-
     const [profileContador, setProfileContador] = useState(null)
     const [profilePosts, setProfilePosts] = useState(null)
     const { fetchData } = useFetch();
     const navigation = useNavigation();
+    const { t } = useTranslation();
 
-    const { t, i18n } = useTranslation();
+    const isOwnProfile = resolvedProfileId === auth._id;
 
     const LoadingIndicator = () => (
         <View style={{ flex: 1, marginTop: 60 }}>
@@ -41,38 +38,47 @@ export default function Profile({ route }) {
             const responseProfileDetails = await fetchData(Global.url + "user/profile/" + resolvedProfileId, "GET");
             if (responseProfileDetails.status === "success") {
                 const user = await responseProfileDetails.user;
-
                 setProfileDetails(user);
             } else {
-                console.log('Error getting user details.');
+                throw new Error('Error getting user details.')
             }
             const responseContador = await fetchData(Global.url + "user/" + resolvedProfileId + "/contador", "GET");
             if (responseContador.status === "success") {
-
                 setProfileContador(responseContador);
             } else {
-                console.log('Error getting counter details.');
+                throw new Error('Error getting counter details.')
             }
-            const responsePosts = await fetchData(Global.url + "post/user/" + resolvedProfileId, "GET")
+            const responsePosts = await fetchData(Global.url + "post/user/" + resolvedProfileId, "GET");
             if (responsePosts.status === "success") {
                 setProfilePosts(responsePosts.publications);
-
             } else {
-                console.log('Error getting posts from user.');
+                throw new Error('Error getting posts from user.')
+            }
+            if (!isOwnProfile) {
+                const responseFollowing = await fetchData(Global.url + "follow/following/" + auth._id)
+                if (responseFollowing.status === "success") {
+                    setIsFollowing(responseFollowing.user_following.includes(resolvedProfileId));
+                } else {
+                    throw new Error('Error getting followers from user.')
+                }
             }
         } catch (error) {
             console.log("Error: " + error);
         } finally {
             setIsLoadingProfile(false)
-            console.log(responsePosts)
         }
     };
+
+    const handleButton = async () => {
+        if (isOwnProfile) {
+            navigation.navigate("Edit");
+        }
+    }
 
     useFocusEffect(
         React.useCallback(() => {
             setIsLoadingProfile(true)
             fetchProfileData()
-
         }, [profileId])
     )
 
@@ -98,7 +104,6 @@ export default function Profile({ route }) {
                                     style={ProfileStyle.imageProfile} />
                             )
                             }
-
                         </View>
                         <View style={ProfileStyle.topPartRightPart}>
                             <View style={ProfileStyle.namesContainer}>
@@ -106,8 +111,11 @@ export default function Profile({ route }) {
                                 <Text style={ProfileStyle.usernameText}>@{profileDetails.username}</Text>
                             </View>
                             <View style={ProfileStyle.followButtonContainer}>
-                                <TouchableOpacity style={ProfileStyle.followButton}>
-                                    <Text style={ProfileStyle.followButtonText}>Seguir</Text>
+                                <TouchableOpacity style={ProfileStyle.followButton}
+                                    onPress={() => handleButton()}>
+                                    <Text style={ProfileStyle.followButtonText}>
+                                        {isOwnProfile ? "Editar" : (isFollowing ? "Siguiendo" : "Seguir")}
+                                    </Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -115,20 +123,22 @@ export default function Profile({ route }) {
                     <View style={ProfileStyle.bottomPartContainer}>
                         <View style={ProfileStyle.followersRowContainer}>
                             <View style={ProfileStyle.followersContainer}>
-                                <TouchableOpacity onPress={() => handlePress('FollowList', [profileDetails._id, type = "followers"])}>
+                                <TouchableOpacity onPress={() => handlePress('FollowList', [profileDetails._id, "followers"])}>
                                     <Text style={{ fontSize: 16 }}>
-                                        <Text style={{ fontWeight: 'bold' }}>{profileContador.followers}</Text>{t('seguidores')}
+                                        <Text style={{ fontWeight: 'bold' }}>{profileContador.followers}</Text> {t('seguidores')}
                                     </Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity onPress={() => handlePress('FollowList', [profileDetails._id, type = "following"])}>
+                                <TouchableOpacity onPress={() => handlePress('FollowList', [profileDetails._id, "following"])}>
                                     <Text style={{ marginLeft: 15, fontSize: 16 }}>
-                                        <Text style={{ fontWeight: 'bold' }}>{profileContador.following}</Text>{t('siguiendo')}
+                                        <Text style={{ fontWeight: 'bold' }}>{profileContador.following}</Text> {t('siguiendo')}
                                     </Text>
                                 </TouchableOpacity>
                             </View>
-                            <TouchableOpacity onPress={() => handlePress('Chat', profileDetails._id)}>
-                                <Icon name="mail-outline" size={26} />
-                            </TouchableOpacity>
+                            {!isOwnProfile && (
+                                <TouchableOpacity onPress={() => handlePress('Chat', profileDetails._id)}>
+                                    <Icon name="mail-outline" size={26} />
+                                </TouchableOpacity>
+                            )}
                         </View>
                         <View style={ProfileStyle.descriptionContainer}>
                             <Text style={{ fontSize: 16 }}>{profileDetails.biografia}</Text>
@@ -147,13 +157,13 @@ export default function Profile({ route }) {
                             <View style={ProfileStyle.bottomElementsContainer}>
                                 <View style={ProfileStyle.bottomElements1}>
                                     <TouchableOpacity onPress={() => setActive("publicaciones")}>
-                                        <Text style={[active == "publicaciones" ? ProfileStyle.bottomTextFocused : ProfileStyle.bottomTextUnfocused]}>{profileContador.posts} {t('publicaciones')}</Text>
+                                        <Text style={[active === "publicaciones" ? ProfileStyle.bottomTextFocused : ProfileStyle.bottomTextUnfocused]}>{profileContador.posts} {t('publicaciones')}</Text>
                                     </TouchableOpacity>
-                                    {active == "publicaciones" && (<View style={ProfileStyle.elementActive} />)}
+                                    {active === "publicaciones" && (<View style={ProfileStyle.elementActive} />)}
                                 </View>
                                 <TouchableOpacity onPress={() => setActive("likes")}>
-                                    <Text style={[active == "likes" ? ProfileStyle.bottomTextFocused : ProfileStyle.bottomTextUnfocused]}>{profileContador.likes} {t('meGusta')}</Text>
-                                    {active == "likes" && (<View style={ProfileStyle.elementActive} />)}
+                                    <Text style={[active === "likes" ? ProfileStyle.bottomTextFocused : ProfileStyle.bottomTextUnfocused]}>{profileContador.likes} {t('meGusta')}</Text>
+                                    {active === "likes" && (<View style={ProfileStyle.elementActive} />)}
                                 </TouchableOpacity>
                             </View>
                         </View>
