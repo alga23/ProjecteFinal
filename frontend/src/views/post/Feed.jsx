@@ -20,34 +20,29 @@ const Feed = () => {
     const [userId, setUserId] = useState(null);
     const [loading, setLoading] = useState(true);
     const { auth } = useAuth({});
-    const [isFollowing, setIsFollowing] = useState(true);
+    const [initialLoad, setInitialLoad] = useState(true);
 
     const navigation = useNavigation();
-
-    useFocusEffect(
-        useCallback(() => {
-            if (userId) {
-                setLoading(true);
-                Promise.all([feedSiguiendo(1), populatePosts(1)])
-                    .finally(() => setLoading(false));
-            }
-        }, [userId])
-    );
 
     useEffect(() => {
         const getUserId = async () => {
             const storedUserId = await SecureStore.getItemAsync('user');
             setUserId(storedUserId);
+            setInitialLoad(false); // Set the initial load to false after getting the userId
         };
 
         getUserId();
     }, []);
 
-    useEffect(() => {
-        if (!isFollowing) {
-            setSelectPage('Populares');
-        }
-    }, [isFollowing]);
+    useFocusEffect(
+        useCallback(() => {
+            if (userId && initialLoad) {
+                setLoading(true);
+                Promise.all([feedSiguiendo(1), populatePosts(1)])
+                    .finally(() => setLoading(false));
+            }
+        }, [userId, initialLoad])
+    );
 
     const feedSiguiendo = async (nextPage) => {
         const resultPosts = await fetchData(Global.url + "post/feed/" + nextPage, 'GET');
@@ -55,7 +50,6 @@ const Feed = () => {
             const newPosts = nextPage === 1 ? resultPosts.posts : [...feed, ...resultPosts.posts];
             setFeed(newPosts);
             setMore(resultPosts.posts.length > 0);
-            setIsFollowing(resultPosts.posts.length > 0);
         } else {
             setMore(false);
         }
@@ -67,7 +61,6 @@ const Feed = () => {
             const newPosts = nextPage === 1 ? resultsPopulates.populate : [...populate, ...resultsPopulates.populate];
             setPopulate(newPosts);
             setMore(resultsPopulates.populate.length > 0);
-            setIsFollowing(resultsPopulates.populate.length > 0);
         } else {
             setMore(false);
         }
@@ -96,7 +89,7 @@ const Feed = () => {
     };
 
     const renderContent = () => {
-        if (loading) {
+        if (loading && initialLoad) {
             return <ActivityIndicator size={40} color='#0074B4' style={{ marginTop: 20 }} />;
         }
 
