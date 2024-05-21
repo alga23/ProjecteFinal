@@ -179,7 +179,7 @@ const Search = () => {
         const body = `
         search "${busqueda}"; fields name,cover.image_id;
 limit 15;
-where cover != null;
+where cover != null & version_parent = null;
         
     `;
 
