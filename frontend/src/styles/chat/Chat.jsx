@@ -104,13 +104,30 @@ export const ChatStyle = {
         marginTop: 6,
         alignSelf: 'flex-end',
     },
+    fechaChatImagen: {
+        position: 'absolute',
+        bottom: 15,
+        right: 18,
+    },
+    textFechaChat: {
+        color: '#fff'
+    },
+    imagenUrlContainer: {
+        position: 'relative',
+        marginTop: -25
+    },
     imagenMensaje: {
         width: 225,
         height: 225,
-        borderRadius: 20,
-        alignSelf: 'flex-end',
+        borderRadius: 15,
         marginRight: 10,
-        marginTop: 8,
+        marginBottom: 10,
+    },
+    otherImagenMensaje: {
+        alignSelf: 'flex-start'
+    },
+    myImagen: {   
+        alignSelf: 'flex-end',
     },
     enterMessage: {
         position: 'absolute',
@@ -181,6 +198,10 @@ export const ChatStyle = {
         color: "#666",
         marginBottom: 10,
         textAlign: "center"
+    },
+    scrollViewContent: {
+        flexGrow: 1,
+        justifyContent: 'flex-end',
     },
     containerInfo: {
         marginTop: 270

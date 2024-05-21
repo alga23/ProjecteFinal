@@ -1,13 +1,15 @@
-const { Schema, model} = require('mongoose');
+const { Schema, model, Types} = require('mongoose');
 
 const MessageSchema = Schema({
 
     usuarioEmisor: {
-        type: String,
+        type: Types.ObjectId,
+        ref: 'User',
         required: true
     },
     usuarioReceptor: {
-        type: String,
+        type: Types.ObjectId,
+        ref: 'User',
         required: true
     },
     contenido: {
