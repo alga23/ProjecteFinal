@@ -48,7 +48,7 @@ const Feed = () => {
     const fetchPosts = async (nextPage) => {
         const endpoint = selectPage === 'Siguiendo' ? 'post/feed/' : 'post/populate/';
         const result = await fetchData(Global.url + endpoint + nextPage, 'GET');
-
+    
         if (result.status === "success") {
             if (selectPage === 'Siguiendo') {
                 const newPosts = nextPage === 1 ? result.posts : [...feed, ...result.posts];
@@ -62,8 +62,8 @@ const Feed = () => {
         } else {
             setMore(false);
         }
-
-        setLoading(false);
+    
+        setLoading(false); // Aquí debemos marcar la carga como finalizada
     };
 
     const nextPage = () => {
@@ -93,9 +93,13 @@ const Feed = () => {
                 image: auth.image === "default.png" ? Global.url_default : auth.image
             }
         };
-
-        setFeed(prevFeed => [completeNewPost, ...prevFeed]);
-    }, [auth]);
+    
+        if (selectPage === 'Siguiendo') {
+            setFeed(prevFeed => [completeNewPost, ...prevFeed]);
+        } else {
+            setPopulate(prevPopulate => [completeNewPost, ...prevPopulate]);
+        }
+    }, [auth, selectPage]);
 
     useEffect(() => {
         if (route.params && route.params.newPost) {
@@ -107,6 +111,13 @@ const Feed = () => {
     const onDeletePost = useCallback((postId) => {
         setFeed(prevFeed => prevFeed.filter(post => post._id !== postId));
     }, []);
+
+    const handleRefresh = useCallback(() => {
+        setLoading(true);
+        setPage(1); // Reiniciamos la página a 1 después de refrescar
+        setCurrentPage(1);
+        fetchPosts(1);
+    }, [selectPage]);
 
     const renderContent = () => {
         if (loading && initialLoad) {
@@ -133,7 +144,7 @@ const Feed = () => {
                 style={FeedStyle.scroll}
                 onScroll={handleScroll}
                 scrollEventThrottle={16}
-                refreshControl={<RefreshControl refreshing={loading && !initialLoad} onRefresh={fetchPosts.bind(null, 1)} />}
+                refreshControl={<RefreshControl refreshing={loading && !initialLoad} onRefresh={handleRefresh} />}
             >
             {currentFeed.map(post => (
                 <FollowFeed key={post._id} post={post} userId={userId} auth={auth} onDeletePost={onDeletePost} />
