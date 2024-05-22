@@ -55,6 +55,33 @@ export const EditProfileStyle = {
         height: 100,
         maxHeight: 100,
         textAlignVertical: 'top'
-
-    }
+    },
+    modalBackground: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContainer: {
+        width: 300,
+        backgroundColor: 'white',
+        borderRadius: 10,
+        padding: 10,
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.8,
+        shadowRadius: 2,
+    },
+    modalButton: {
+        marginVertical: 5,
+        paddingVertical: 8,
+        paddingHorizontal: 10,
+        backgroundColor: themeColors.primary,
+        borderRadius: 5,
+    },
+    modalButtonText: {
+        color: 'black',
+        fontSize: 16,
+    },
 }

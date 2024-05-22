@@ -6,26 +6,29 @@ import useFetch from '../../hooks/useFetch';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ProfileStyle } from '../../styles/user/ProfileStyle';
 import useAuth from '../../hooks/useAuth';
+import * as SecureStore from 'expo-secure-store';
 import FollowFeed from '../post/FollowFeed';
 import { useTranslation } from 'react-i18next';
 import { Global } from '../../utils/Global';
 
 export default function Profile({ route }) {
     const { auth } = useAuth({});
-    const isOwnProfile = resolvedProfileId === auth._id;
-
+    const [isFollowing, setIsFollowing] = useState(false);
     const [isLoadingProfile, setIsLoadingProfile] = useState(true);
-    const [active, setActive] = useState('publicaciones');
+    const [active, setActive] = useState("publicaciones");
     const { profileId } = route.params ?? { profileId: null };
     const resolvedProfileId = profileId ?? auth._id;
     const [profileDetails, setProfileDetails] = useState(null);
-
     const [profileContador, setProfileContador] = useState(null);
-    const [profilePosts, setProfilePosts] = useState([]);
+    const [profileLikedPosts, setProfileLikedPosts] = useState(null);
+    const [profilePosts, setProfilePosts] = useState(null);
+    const [userId, setUserId] = useState(null);
     const { fetchData } = useFetch();
+    
     const navigation = useNavigation();
-
     const { t } = useTranslation();
+
+    const isOwnProfile = resolvedProfileId === auth._id;
 
     const LoadingIndicator = () => (
         <View style={{ flex: 1, marginTop: 60 }}>
@@ -33,35 +36,14 @@ export default function Profile({ route }) {
         </View>
     );
 
-    const fetchProfileData = async () => {
-        try {
-            const responseProfileDetails = await fetchData(Global.url + 'user/profile/' + resolvedProfileId, 'GET');
-            if (responseProfileDetails.status === 'success') {
-                const user = responseProfileDetails.user;
-                setProfileDetails(user);
-            } else {
-                console.log('Error getting user details.');
-            }
-            
-            const responseContador = await fetchData(Global.url + 'user/' + resolvedProfileId + '/contador', 'GET');
-            if (responseContador.status === 'success') {
-                setProfileContador(responseContador);
-            } else {
-                console.log('Error getting counter details.');
-            }
-            
-            const responsePosts = await fetchData(Global.url + 'post/user/' + resolvedProfileId, 'GET');
-            if (responsePosts.status === 'success') {
-                setProfilePosts(responsePosts.publications);
-            } else {
-                console.log('Error getting posts from user.');
-            }
-        } catch (error) {
-            console.log('Error: ' + error);
-        } finally {
-            setIsLoadingProfile(false);
-        }
-    };
+    useEffect(() => {
+        const getUserId = async () => {
+            const storedUserId = await SecureStore.getItemAsync('user');
+            setUserId(storedUserId);
+        };
+
+        getUserId();
+    }, []);
 
     useFocusEffect(
         useCallback(() => {
@@ -74,25 +56,113 @@ export default function Profile({ route }) {
         fetchProfileData();
     }, [profileId]);
 
+    const fetchProfileData = async () => {
+        try {
+            // Fetch profile details
+            const responseProfileDetails = await fetchData(Global.url + "user/profile/" + resolvedProfileId, "GET");
+            if (responseProfileDetails.status === "success") {
+                const user = responseProfileDetails.user;
+                setProfileDetails(user);
+            } else {
+                throw new Error('Error getting user details.');
+            }
+
+            // Fetch profile counter
+            const responseContador = await fetchData(Global.url + "user/" + resolvedProfileId + "/contador", "GET");
+            if (responseContador.status === "success") {
+                setProfileContador(responseContador);
+            } else {
+                throw new Error('Error getting counter details.');
+            }
+
+            // Fetch profile posts
+            const responsePosts = await fetchData(Global.url + "post/user/" + resolvedProfileId, "GET");
+            if (responsePosts.status === "success") {
+                setProfilePosts(responsePosts.publications);
+            } else {
+                throw new Error('Error getting posts from user.');
+            }
+
+            // Fetch liked posts by the user
+            const responseLikedPosts = await fetchData(Global.url + "post/liked/" + resolvedProfileId, "GET");
+            if (responseLikedPosts.status === "success") {
+                setProfileLikedPosts(responseLikedPosts.likedPosts);
+            } else {
+                throw new Error('Error getting liked posts.');
+            }
+
+            // Check if not own profile, then fetch following status
+            if (!isOwnProfile) {
+                const responseFollowing = await fetchData(Global.url + "follow/following/" + auth._id);
+                if (responseFollowing.status === "success") {
+                    setIsFollowing(responseFollowing.user_following.includes(resolvedProfileId));
+                } else {
+                    throw new Error('Error getting followers from user.');
+                }
+            }
+        } catch (error) {
+            console.log("Error: " + error);
+        } finally {
+            setIsLoadingProfile(false);
+        }
+    };
+
+    const handleButton = () => {
+        if (isOwnProfile) {
+            navigation.navigate("Edit");
+        }
+    };
+
     const handlePress = (route, id) => {
         navigation.navigate(route, { id: id });
     };
 
-    // Función para eliminar un post del feed
+    // Function to delete a post from the feed
     const onDeletePost = useCallback((postId) => {
         setProfilePosts(prevFeed => prevFeed.filter(post => post._id !== postId));
     }, []);
 
+    const onDeleteLikedPost = useCallback(async (postId) => {
+        try {
+            const response = await fetchData(Global.url + "post/unlike/" + postId, "DELETE");
+            if (response.status === "success") {
+                // Remove the post from liked posts
+                setProfileLikedPosts(prevLikedFeed => prevLikedFeed.filter(post => post._id !== postId));
+                // Update the like counter
+                setProfileContador(prevContador => ({
+                    ...prevContador,
+                    likes: prevContador.likes - 1
+                }));
+            } else {
+                throw new Error('Error unliking post.');
+            }
+        } catch (error) {
+            console.log("Error: " + error);
+        }
+    }, []);
+
     const renderProfilePosts = () => {
-        return profilePosts.map(post => (
-            <FollowFeed
-                key={post._id}
-                post={post}
-                userId={resolvedProfileId}
-                auth={auth}
-                onDeletePost={onDeletePost}
-            />
-        ));
+        if (active === 'publicaciones') {
+            return profilePosts.map(post => (
+                <FollowFeed
+                    key={post._id}
+                    post={post}
+                    userId={userId}
+                    auth={auth}
+                    onDeletePost={onDeletePost}
+                />
+            ));
+        } else if (active === 'likes') {
+            return profileLikedPosts.map(post => (
+                <FollowFeed
+                    key={post._id}
+                    post={post}
+                    userId={userId}
+                    auth={auth}
+                    onDeletePost={onDeleteLikedPost}
+                />
+            ));
+        }
     };
 
     return (
@@ -115,8 +185,10 @@ export default function Profile({ route }) {
                                 <Text style={ProfileStyle.usernameText}>@{profileDetails.username}</Text>
                             </View>
                             <View style={ProfileStyle.followButtonContainer}>
-                                <TouchableOpacity style={ProfileStyle.followButton}>
-                                    <Text style={ProfileStyle.followButtonText}>Seguir</Text>
+                                <TouchableOpacity style={ProfileStyle.followButton} onPress={handleButton}>
+                                    <Text style={ProfileStyle.followButtonText}>
+                                        {isOwnProfile ? "Editar" : (isFollowing ? "Siguiendo" : "Seguir")}
+                                    </Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -126,18 +198,20 @@ export default function Profile({ route }) {
                             <View style={ProfileStyle.followersContainer}>
                                 <TouchableOpacity onPress={() => handlePress('FollowList', [profileDetails._id, 'followers'])}>
                                     <Text style={{ fontSize: 16 }}>
-                                        <Text style={{ fontWeight: 'bold' }}>{profileContador.followers}</Text>{t('seguidores')}
+                                        <Text style={{ fontWeight: 'bold' }}>{profileContador.followers}</Text> {t('seguidores')}
                                     </Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => handlePress('FollowList', [profileDetails._id, 'following'])}>
                                     <Text style={{ marginLeft: 15, fontSize: 16 }}>
-                                        <Text style={{ fontWeight: 'bold' }}>{profileContador.following}</Text>{t('siguiendo')}
+                                        <Text style={{ fontWeight: 'bold' }}>{profileContador.following}</Text> {t('siguiendo')}
                                     </Text>
                                 </TouchableOpacity>
                             </View>
-                            <TouchableOpacity onPress={() => handlePress('Chat', profileDetails._id)}>
-                                <Icon name="mail-outline" size={26} />
-                            </TouchableOpacity>
+                            {!isOwnProfile && (
+                                <TouchableOpacity onPress={() => handlePress('Chat', profileDetails._id)}>
+                                    <Icon name="mail-outline" size={26} />
+                                </TouchableOpacity>
+                            )}
                         </View>
                         <View style={ProfileStyle.descriptionContainer}>
                             <Text style={{ fontSize: 16 }}>{profileDetails.biografia}</Text>
@@ -147,7 +221,8 @@ export default function Profile({ route }) {
                                 <TouchableOpacity style={ProfileStyle.gamertagButtonLeft}>
                                     <Image
                                         source={require('../../../assets/icons/brand_icons/ps_logo.png')}
-                                        style={ProfileStyle.gamertagImage} />
+                                        style={ProfileStyle.gamertagImage}
+                                    />
                                     <Text style={ProfileStyle.gamertagText}> Pablito51</Text>
                                 </TouchableOpacity>
                             </View>

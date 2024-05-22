@@ -138,7 +138,6 @@ const upload = async (req, res) => {
 
 
     } catch (error) {
-        console.log(error);
         return res.status(500).send({
             status: "error",
             message: "Error en el servidor al actualizar una imagen de un post"
@@ -155,7 +154,6 @@ const feedFollows = async (req, res) => {
         // Servicio para obtener un array de ids de usuarios que sigues y los que te siguen
         const follows = await followService.followindUserIds(userId);
 
-        console.log(follows);
         // Pagina actual
         let page = 1;
         if (req.params.page) page = req.params.page;
@@ -187,7 +185,6 @@ const feedFollows = async (req, res) => {
         })
 
     } catch (error) {
-        console.log(error);
         return res.status(500).send({
             status: "error",
             message: "Error en el servidor: ", error
@@ -221,8 +218,6 @@ const populatePost = async (req, res) => {
             populate
         })
     }catch(error) {
-        console.log(error);
-
         return res.status(500).send({
             status: "error",
             message: "Error en el servidor: ", error
@@ -354,7 +349,6 @@ const retrievePost = async (req, res) => {
     try {
         const post = await Post.findById(req.params.postId).populate("user_id")
         if (!post) {
-            console.log("No se ha encontrado el post")
             res.status(400).send("No se ha encontrado el post")
         }
         res.status(200).json({
@@ -363,7 +357,6 @@ const retrievePost = async (req, res) => {
         })
 
     } catch (error) {
-        console.log("There was an error: " + error)
         res.status(500).send("There was an error: " + error)
     }
 
@@ -382,7 +375,6 @@ const deletePost = async (req, res) => {
             });
         }
 
-        console.log(publication);
         // Guardamos la URL de la imagen antes de eliminar la publicación
         let imageUrlToDelete = null;
         if (publication.file) {
@@ -395,7 +387,6 @@ const deletePost = async (req, res) => {
         if (imageUrlToDelete) {
             // Obtener el publicId de la URL de Cloudinary
             const publicId = extractPublicId(imageUrlToDelete);
-            console.log("PublicId a eliminar:", publicId); // Imprimir el publicId en la consola
             await cloudinary.uploader.destroy(publicId);
         }
 
@@ -404,11 +395,34 @@ const deletePost = async (req, res) => {
             message: "Publicación eliminada correctamente",
         });
     } catch (error) {
-        console.log(error);
         return res.status(500).send({
             status: "error",
             message: "Error en el servidor al eliminar la publicación",
         });
+    }
+};
+
+const getLikedPosts = async (req, res) => {
+    try {
+        if (!req.params.userId) {
+            return res.status(400).send({ error: 'No se ha proporcionado usuario' });
+        }
+
+        const userId = req.params.userId;
+
+        // Buscar todos los posts donde el usuario ha dado like
+        const likedPosts = await Post.find({ likes_users_id: userId })
+            .populate('user_id') // Opcional: para obtener los detalles del usuario que hizo el post
+            .exec();
+
+        res.status(200).send({
+            status: "success",
+            likedPosts: likedPosts
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ error: 'Error interno del servidor' });
     }
 };
 
@@ -430,6 +444,6 @@ module.exports = {
     respondPost,
     retrievePost,
     deletePost,
-    populatePost
-
+    populatePost,
+    getLikedPosts
 }
