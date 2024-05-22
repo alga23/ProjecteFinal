@@ -8,6 +8,7 @@ import Registro from '../views/user/Registro';
 import Mensajes from '../views/user/Mensajes';
 import MensajesEscritos from '../views/user/MensajesEscritos';
 import CreatePost from '../views/user/CreatePost';
+import EditProfile from '../views/user/EditProfile';
 import { useNavigation } from '@react-navigation/native'
 import { Global } from '../utils/Global'
 import useFetch from '../hooks/useFetch'
@@ -44,19 +45,21 @@ function CustomDrawerContent(props) {
         <DrawerContentScrollView {...props}>
             {/* Sección de la imagen */}
             <View style={styles.header}>
-                <Image
-                    source={{ uri: auth.imagen === 'default.png' ? Global.url_default : auth.imagen }} // Aquí debes poner la ruta de tu imagen
-                    style={styles.avatar}
-                    resizeMode="cover"
-                />
+                <TouchableOpacity onPress={() => navigation.navigate('Profile', {profileId: auth._id})}>
+                    <Image
+                        source={{ uri: auth.imagen === 'default.png' ? Global.url_default : auth.imagen }} // Aquí debes poner la ruta de tu imagen
+                        style={styles.avatar}
+                        resizeMode="cover"
+                    />
+                </TouchableOpacity>
             </View>
             <Text style={styles.nick}>{auth.nick}</Text>
             <Text style={styles.username}>@{auth.username}</Text>
             <View style={styles.containerFollows}>
-                <TouchableOpacity onPress={() => navigation.navigate('FollowList', {id: [auth._id, type = "following"]})}>
+                <TouchableOpacity onPress={() => navigation.navigate('FollowList', { id: [auth._id, type = "following"] })}>
                     <Text style={styles.follows}><Text style={styles.contadorFollows}>{counters.following}</Text> Siguiendo</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => navigation.navigate('FollowList', {id: [auth._id, type = "followers"]})}>
+                <TouchableOpacity onPress={() => navigation.navigate('FollowList', { id: [auth._id, type = "followers"] })}>
                     <Text style={styles.follows}><Text style={styles.contadorFollows}>{counters.followers}</Text> Seguidores</Text>
                 </TouchableOpacity>
             </View>
@@ -157,6 +160,7 @@ export default function Router() {
                     <Stack.Screen name='ViewGame' options={{ headerShown: false }} component={VisualizarJuego} />
                     <Stack.Screen name='FollowList' options={{ headerShown: false }} component={FollowList} />
                     <Stack.Screen name='Chat' options={{ headerShown: false }} component={Chat} />
+                    <Stack.Screen name='Edit' options={{ headerShown: false }} component={EditProfile} />
                 </Stack.Navigator>
             )}
         </View>

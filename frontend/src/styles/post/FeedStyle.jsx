@@ -37,14 +37,24 @@ export const FeedStyle = {
     },
     infoUsuario: {
         flexDirection: 'row',
-        gap: 15,
-        alignItems: 'center'
+        alignItems: 'center',
     },
     infoNick: {
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+    },
+    containerUserName: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginLeft: 10,
+        color: '#cccccc'
     },
     infoUsername: {
-        flex: .5
+        flex: .6
+    },
+    puntoSeparacion: {
+        fontSize: 14, 
+        fontWeight: 'bold',
+        marginLeft: 5,
     },
     containerIcons: {
         flexDirection: 'row',

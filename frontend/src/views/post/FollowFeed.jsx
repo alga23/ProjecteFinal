@@ -57,7 +57,7 @@ const FollowFeed = React.memo(({ post, userId, auth, onDeletePost }) => {
     };
 
     const handleLongPress = () => {
-        if(auth._id === post.user_id._id) {
+        if (auth._id === post.user_id._id) {
             Alert.alert(
                 "Eliminar Post",
                 "¿Estás seguro de que deseas eliminar este post?",
@@ -82,9 +82,38 @@ const FollowFeed = React.memo(({ post, userId, auth, onDeletePost }) => {
         }
     };
 
+    const formatTimeAgo = (createdAt) => {
+        const now = new Date();
+        const created = new Date(createdAt);
+
+        const seconds = Math.floor((now - created) / 1000);
+        let interval = Math.floor(seconds / 31536000);
+
+        if (interval > 1) {
+            return `${interval}y`;
+        }
+        interval = Math.floor(seconds / 2592000);
+        if (interval > 1) {
+            return `${interval}m`;
+        }
+        interval = Math.floor(seconds / 86400);
+        if (interval > 1) {
+            return `${interval}d`;
+        }
+        interval = Math.floor(seconds / 3600);
+        if (interval > 1) {
+            return `${interval}h`;
+        }
+        interval = Math.floor(seconds / 60);
+        if (interval > 1) {
+            return `${interval}m`;
+        }
+        return `${Math.floor(seconds)}s`;
+    };
+
     return (
         <TouchableOpacity style={FeedStyle.cardPost} key={post._id} onLongPress={handleLongPress}>
-            <TouchableOpacity onPress={() => navigation.navigate('Profile', {profileId: post.user_id._id})}>
+            <TouchableOpacity onPress={() => navigation.navigate('Profile', { profileId: post.user_id._id })}>
                 <Image
                     style={FeedStyle.imageUsuario}
                     source={post.user_id.imagen === 'default.png' ? perfil : { uri: post.user_id.imagen }}
@@ -93,10 +122,13 @@ const FollowFeed = React.memo(({ post, userId, auth, onDeletePost }) => {
             <View style={FeedStyle.postInfo}>
                 <View style={FeedStyle.infoUsuario}>
                     <Text style={FeedStyle.infoNick}>{post.user_id.nick}</Text>
-                    <Text style={FeedStyle.infoUsername} numberOfLines={1} ellipsizeMode="tail">
-                        @{post.user_id.username}
-                    </Text>
-                    <Text>{moment(post.createdAt).fromNow()}</Text>
+                    <View style={FeedStyle.containerUserName}>
+                        <Text style={FeedStyle.infoUsername} numberOfLines={1} ellipsizeMode="tail">
+                            @{post.user_id.username}
+                        </Text>
+                        <Text style={FeedStyle.puntoSeparacion}> · </Text>
+                        <Text>{formatTimeAgo(post.createdAt)}</Text>
+                    </View>
                 </View>
                 <Text>{post.content}</Text>
                 {post.file && <Image style={FeedStyle.imagenPost} source={{ uri: post.file }} />}
