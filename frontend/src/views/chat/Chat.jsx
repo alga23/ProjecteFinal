@@ -35,7 +35,7 @@ const Chat = ({ route }) => {
         getProfile();
         contadorFollowers();
 
-        socket.current = io('http://192.168.60.7:3001');
+        socket.current = io('http://10.0.2.2:3001');
 
         socket.current.emit('register', auth._id, id);
         socket.current.on('loadMessages', (loadedMessages) => {
@@ -178,11 +178,11 @@ const Chat = ({ route }) => {
                 {messages.length > 0 && (
                     <View style={ChatStyle.containerInfo}>
                         <View style={ChatStyle.containerInfoImagen}>
-                            <TouchableOpacity onPress={() => navigation.navigate("Profile", {profileId: id})}>
-                            <Image
-                                source={{ uri: userProfile.imagen === "default.png" ? Global.url_default : userProfile.imagen }}
-                                style={ChatStyle.imagenInfo}
-                            />
+                            <TouchableOpacity onPress={() => navigation.navigate("Profile", { profileId: id })}>
+                                <Image
+                                    source={{ uri: userProfile.imagen === "default.png" ? Global.url_default : userProfile.imagen }}
+                                    style={ChatStyle.imagenInfo}
+                                />
                             </TouchableOpacity>
                             <Text style={[ChatStyle.textInfo, ChatStyle.boldText]}>{userProfile.nick}</Text>
                             <Text style={ChatStyle.textInfo}>@{userProfile.username}</Text>

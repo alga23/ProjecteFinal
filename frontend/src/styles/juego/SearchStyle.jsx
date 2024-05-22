@@ -7,7 +7,8 @@ export const SearchStyle = {
         backgroundColor: '#fff'
     },
     container: {
-        marginHorizontal: 30
+        marginHorizontal: 30,
+        marginBottom: 10
     },
     lineTop: {
         borderTopWidth: 1,

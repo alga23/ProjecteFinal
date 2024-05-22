@@ -20,7 +20,6 @@ import Profile from '../views/user/Profile';
 import FollowList from '../views/follow/FollowList';
 import Chat from '../views/chat/Chat';
 import useAuth from '../hooks/useAuth';
-import EditProfile from '../views/user/EditProfile'
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator()
@@ -46,7 +45,7 @@ function CustomDrawerContent(props) {
         <DrawerContentScrollView {...props}>
             {/* Sección de la imagen */}
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.navigate('Profile', {profileId: auth._id})}>
+                <TouchableOpacity onPress={() => navigation.navigate('Profile', { profileId: auth._id })}>
                     <Image
                         source={{ uri: auth.imagen === 'default.png' ? Global.url_default : auth.imagen }} // Aquí debes poner la ruta de tu imagen
                         style={styles.avatar}
