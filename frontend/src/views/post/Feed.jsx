@@ -1,13 +1,13 @@
-import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator, RefreshControl } from 'react-native';
 import Header from '../../components/Header';
 import { FeedStyle } from '../../styles/post/FeedStyle';
-import { useCallback, useEffect, useState } from 'react';
 import BottomMenu from '../../components/BottomMenu';
 import useFetch from '../../hooks/useFetch';
 import { Global } from '../../utils/Global';
 import * as SecureStore from 'expo-secure-store';
 import FollowFeed from './FollowFeed';
-import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
 import useAuth from '../../hooks/useAuth';
 
 const Feed = () => {
@@ -21,14 +21,16 @@ const Feed = () => {
     const [loading, setLoading] = useState(true);
     const { auth } = useAuth({});
     const [initialLoad, setInitialLoad] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
 
     const navigation = useNavigation();
+    const route = useRoute();
 
     useEffect(() => {
         const getUserId = async () => {
             const storedUserId = await SecureStore.getItemAsync('user');
             setUserId(storedUserId);
-            setInitialLoad(false); // Set the initial load to false after getting the userId
+            setInitialLoad(false);
         };
 
         getUserId();
@@ -36,47 +38,40 @@ const Feed = () => {
 
     useFocusEffect(
         useCallback(() => {
-            if (userId && initialLoad) {
+            if (userId && !initialLoad) {
                 setLoading(true);
-                Promise.all([feedSiguiendo(1), populatePosts(1)])
-                    .finally(() => setLoading(false));
+                fetchPosts(currentPage);
             }
-        }, [userId, initialLoad])
+        }, [userId, initialLoad, currentPage, selectPage])
     );
 
-    const feedSiguiendo = async (nextPage) => {
-        const resultPosts = await fetchData(Global.url + "post/feed/" + nextPage, 'GET');
-        if (resultPosts.status === "success") {
-            const newPosts = nextPage === 1 ? resultPosts.posts : [...feed, ...resultPosts.posts];
-            setFeed(newPosts);
-            setMore(resultPosts.posts.length > 0);
+    const fetchPosts = async (nextPage) => {
+        const endpoint = selectPage === 'Siguiendo' ? 'post/feed/' : 'post/populate/';
+        const result = await fetchData(Global.url + endpoint + nextPage, 'GET');
+    
+        if (result.status === "success") {
+            if (selectPage === 'Siguiendo') {
+                const newPosts = nextPage === 1 ? result.posts : [...feed, ...result.posts];
+                setFeed(newPosts);
+                setMore(result.posts.length > 0);
+            } else {
+                const newPosts = nextPage === 1 ? result.populate : [...populate, ...result.populate];
+                setPopulate(newPosts);
+                setMore(result.populate.length > 0);
+            }
         } else {
             setMore(false);
         }
-    };
-
-    const populatePosts = async (nextPage) => {
-        const resultsPopulates = await fetchData(Global.url + 'post/populate/' + nextPage, 'GET');
-        if (resultsPopulates.status === "success") {
-            const newPosts = nextPage === 1 ? resultsPopulates.populate : [...populate, ...resultsPopulates.populate];
-            setPopulate(newPosts);
-            setMore(resultsPopulates.populate.length > 0);
-        } else {
-            setMore(false);
-        }
+    
+        setLoading(false); // Aquí debemos marcar la carga como finalizada
     };
 
     const nextPage = () => {
         if (more && !loading) {
-            setPage(prevPage => {
-                const nextPage = prevPage + 1;
-                if (selectPage === 'Siguiendo') {
-                    feedSiguiendo(nextPage);
-                } else {
-                    populatePosts(nextPage);
-                }
-                return nextPage;
-            });
+            const nextPage = page + 1;
+            setPage(nextPage);
+            setCurrentPage(nextPage);
+            fetchPosts(nextPage);
         }
     };
 
@@ -88,37 +83,75 @@ const Feed = () => {
         }
     };
 
+    const handleNewPost = useCallback((newPost) => {
+        const completeNewPost = {
+            ...newPost,
+            user: {
+                _id: auth._id,
+                username: auth.username,
+                nick: auth.nick,
+                image: auth.image === "default.png" ? Global.url_default : auth.image
+            }
+        };
+    
+        if (selectPage === 'Siguiendo') {
+            setFeed(prevFeed => [completeNewPost, ...prevFeed]);
+        } else {
+            setPopulate(prevPopulate => [completeNewPost, ...prevPopulate]);
+        }
+    }, [auth, selectPage]);
+
+    useEffect(() => {
+        if (route.params && route.params.newPost) {
+            handleNewPost(route.params.newPost);
+        }
+    }, [route.params, handleNewPost]);
+
+    // Función para eliminar un post del feed
+    const onDeletePost = useCallback((postId) => {
+        setFeed(prevFeed => prevFeed.filter(post => post._id !== postId));
+    }, []);
+
+    const handleRefresh = useCallback(() => {
+        setLoading(true);
+        setPage(1); // Reiniciamos la página a 1 después de refrescar
+        setCurrentPage(1);
+        fetchPosts(1);
+    }, [selectPage]);
+
     const renderContent = () => {
         if (loading && initialLoad) {
             return <ActivityIndicator size={40} color='#0074B4' style={{ marginTop: 20 }} />;
         }
 
-        if (selectPage === 'Siguiendo' && feed.length > 0) {
-            return feed.map((post) => (
-                <FollowFeed key={post._id}
-                    post={post}
-                    userId={userId}
-                    auth={auth}
-                />
-            ));
-        } else if (selectPage === 'Populares' && populate.length > 0) {
-            return populate.map((post) => (
-                <FollowFeed key={post._id}
-                    post={post}
-                    userId={userId}
-                    auth={auth}
-                />
-            ));
-        } else {
+        const currentFeed = selectPage === 'Siguiendo' ? feed : populate;
+
+        if (!loading && currentFeed.length === 0) {
             return (
                 <View style={FeedStyle.containerNoPosts}>
-                    <Text style={FeedStyle.noPosts}>No hay publicaciones de usuarios que sigas</Text>
-                    <TouchableOpacity style={FeedStyle.followBottom} activeOpacity={0.6} onPress={() => navigation.navigate('Search')}>
-                        <Text style={FeedStyle.followButtonText}>Sigue a usuarios</Text>
-                    </TouchableOpacity>
+                    <Text style={FeedStyle.noPosts}>No hay publicaciones disponibles</Text>
+                    {selectPage === 'Siguiendo' && (
+                        <TouchableOpacity style={FeedStyle.followBottom} activeOpacity={0.6} onPress={() => navigation.navigate('Search')}>
+                            <Text style={FeedStyle.followButtonText}>Sigue a usuarios</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
             );
         }
+
+        return (
+            <ScrollView
+                style={FeedStyle.scroll}
+                onScroll={handleScroll}
+                scrollEventThrottle={16}
+                refreshControl={<RefreshControl refreshing={loading && !initialLoad} onRefresh={handleRefresh} />}
+            >
+            {currentFeed.map(post => (
+                <FollowFeed key={post._id} post={post} userId={userId} auth={auth} onDeletePost={onDeletePost} />
+            ))}
+                {loading && <ActivityIndicator size={40} color='#0074B4' style={{ marginTop: 20 }} />}
+            </ScrollView>
+        );
     };
 
     return (
@@ -126,18 +159,16 @@ const Feed = () => {
             <Header />
             <View style={FeedStyle.lineTop} />
             <View style={FeedStyle.container}>
-                <TouchableOpacity onPress={() => setSelectPage('Siguiendo')}>
+                <TouchableOpacity onPress={() => { setSelectPage('Siguiendo'); setPage(1); setCurrentPage(1); setLoading(true); fetchPosts(1); }}>
                     <Text style={[FeedStyle.text, selectPage === 'Siguiendo' && FeedStyle.textSiguiendo]}>Siguiendo</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => setSelectPage('Populares')}>
+                <TouchableOpacity onPress={() => { setSelectPage('Populares'); setPage(1); setCurrentPage(1); setLoading(true); fetchPosts(1); }}>
                     <Text style={[FeedStyle.text, selectPage === 'Populares' && FeedStyle.textPopulares]}>Populares</Text>
                 </TouchableOpacity>
             </View>
             <View style={FeedStyle.line} />
             <View style={[FeedStyle.mainLine, selectPage === 'Siguiendo' ? FeedStyle.lineSelectSiguiendo : FeedStyle.lineSelectPopulares]} />
-            <ScrollView style={FeedStyle.scroll} onScroll={handleScroll}>
-                {renderContent()}
-            </ScrollView>
+            {renderContent()}
             <BottomMenu />
         </View>
     );

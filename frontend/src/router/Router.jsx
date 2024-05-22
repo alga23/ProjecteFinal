@@ -8,6 +8,7 @@ import Registro from '../views/user/Registro';
 import Mensajes from '../views/user/Mensajes';
 import MensajesEscritos from '../views/user/MensajesEscritos';
 import CreatePost from '../views/user/CreatePost';
+import EditProfile from '../views/user/EditProfile';
 import { useNavigation } from '@react-navigation/native'
 import { Global } from '../utils/Global'
 import useFetch from '../hooks/useFetch'
@@ -45,11 +46,13 @@ function CustomDrawerContent(props) {
         <DrawerContentScrollView {...props}>
             {/* Sección de la imagen */}
             <View style={styles.header}>
-                <Image
-                    source={{ uri: auth.imagen === 'default.png' ? Global.url_default : auth.imagen }} // Aquí debes poner la ruta de tu imagen
-                    style={styles.avatar}
-                    resizeMode="cover"
-                />
+                <TouchableOpacity onPress={() => navigation.navigate('Profile', {profileId: auth._id})}>
+                    <Image
+                        source={{ uri: auth.imagen === 'default.png' ? Global.url_default : auth.imagen }} // Aquí debes poner la ruta de tu imagen
+                        style={styles.avatar}
+                        resizeMode="cover"
+                    />
+                </TouchableOpacity>
             </View>
             <Text style={styles.nick}>{auth.nick}</Text>
             <Text style={styles.username}>@{auth.username}</Text>

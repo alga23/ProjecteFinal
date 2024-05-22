@@ -138,7 +138,6 @@ const upload = async (req, res) => {
 
 
     } catch (error) {
-        console.log(error);
         return res.status(500).send({
             status: "error",
             message: "Error en el servidor al actualizar una imagen de un post"
@@ -155,7 +154,6 @@ const feedFollows = async (req, res) => {
         // Servicio para obtener un array de ids de usuarios que sigues y los que te siguen
         const follows = await followService.followindUserIds(userId);
 
-        console.log(follows);
         // Pagina actual
         let page = 1;
         if (req.params.page) page = req.params.page;
@@ -187,7 +185,6 @@ const feedFollows = async (req, res) => {
         })
 
     } catch (error) {
-        console.log(error);
         return res.status(500).send({
             status: "error",
             message: "Error en el servidor: ", error
@@ -221,8 +218,6 @@ const populatePost = async (req, res) => {
             populate
         })
     }catch(error) {
-        console.log(error);
-
         return res.status(500).send({
             status: "error",
             message: "Error en el servidor: ", error
@@ -354,7 +349,6 @@ const retrievePost = async (req, res) => {
     try {
         const post = await Post.findById(req.params.postId).populate("user_id")
         if (!post) {
-            console.log("No se ha encontrado el post")
             res.status(400).send("No se ha encontrado el post")
         }
         res.status(200).json({
@@ -363,13 +357,11 @@ const retrievePost = async (req, res) => {
         })
 
     } catch (error) {
-        console.log("There was an error: " + error)
         res.status(500).send("There was an error: " + error)
     }
 
 }
 
-//method to delete post
 const deletePost = async (req, res) => {
     try {
         const publicationId = req.params.id;
@@ -379,22 +371,67 @@ const deletePost = async (req, res) => {
         if (!publication) {
             return res.status(404).send({
                 status: "error",
-                message: "No se ha podido encontrar ningun post que borrar"
-            })
+                message: "No se ha podido encontrar ninguna publicación para eliminar"
+            });
+        }
+
+        // Guardamos la URL de la imagen antes de eliminar la publicación
+        let imageUrlToDelete = null;
+        if (publication.file) {
+            imageUrlToDelete = publication.file;
         }
 
         await publication.deleteOne({ "_id": publicationId });
+
+        // Eliminamos la imagen de Cloudinary si existe
+        if (imageUrlToDelete) {
+            // Obtener el publicId de la URL de Cloudinary
+            const publicId = extractPublicId(imageUrlToDelete);
+            await cloudinary.uploader.destroy(publicId);
+        }
+
         return res.status(200).send({
-            status: "succes",
-            message: "publicacion borrada"
-        })
+            status: "success",
+            message: "Publicación eliminada correctamente",
+        });
+    } catch (error) {
+        return res.status(500).send({
+            status: "error",
+            message: "Error en el servidor al eliminar la publicación",
+        });
     }
-    catch (e) {
-        console.log(e);
+};
+
+const getLikedPosts = async (req, res) => {
+    try {
+        if (!req.params.userId) {
+            return res.status(400).send({ error: 'No se ha proporcionado usuario' });
+        }
+
+        const userId = req.params.userId;
+
+        // Buscar todos los posts donde el usuario ha dado like
+        const likedPosts = await Post.find({ likes_users_id: userId })
+            .populate('user_id') // Opcional: para obtener los detalles del usuario que hizo el post
+            .exec();
+
+        res.status(200).send({
+            status: "success",
+            likedPosts: likedPosts
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({ error: 'Error interno del servidor' });
     }
-}
+};
 
-
+// Función para extraer el publicId de la URL de Cloudinary
+const extractPublicId = (imageUrl) => {
+    const regex = /upload\/(?:v\d+\/)?([^\.]+)/;
+    const match = imageUrl.match(regex);
+    return match ? match[1] : null;
+};
 
 module.exports = {
     createPost,
@@ -407,6 +444,6 @@ module.exports = {
     respondPost,
     retrievePost,
     deletePost,
-    populatePost
-
+    populatePost,
+    getLikedPosts
 }

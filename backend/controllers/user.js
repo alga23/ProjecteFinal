@@ -185,21 +185,26 @@ const devolverContador = async (req, res) => {
         const followers = await Follow.countDocuments({ follower: req.params.id })
         const posts = await Post.countDocuments({ user_id: req.params.id })
         const user = await User.findOne({ _id: req.params.id })
-        const likes = user.fav_posts_id.length
+
+        // Buscar todos los posts donde el usuario ha dado like
+        const likedPosts = await Post.find({ likes_users_id: req.params.id })
+            .populate('user_id') // Opcional: para obtener los detalles del usuario que hizo el post
+            .exec();
 
         res.status(200).send({
             status: "success",
             following: following,
             followers: followers,
             posts: posts,
-            likes: likes
-
+            likes: likedPosts.length, // Número de posts que le ha dado like el usuario
         })
 
     } catch (error) {
+        console.log(error);
         res.status(500).send({ error: 'Error interno del servidor' })
     }
 }
+
 
 //borrar usuario
 const deleteUser = async (req, res) => {
