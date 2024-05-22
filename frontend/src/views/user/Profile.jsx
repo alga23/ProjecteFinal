@@ -106,10 +106,26 @@ export default function Profile({ route }) {
             setIsLoadingProfile(false);
         }
     };
-
-    const handleButton = () => {
+    const handleButton = async () => {
         if (isOwnProfile) {
             navigation.navigate("Edit");
+        } else {
+            const body = { follower: resolvedProfileId };
+            try {
+                const response = await fetchData(Global.url + "follow/save", "POST", body);
+                if (response.status === 'success') {
+                    if (isFollowing) {
+                        setIsFollowing(false)
+                    } else {
+                        setIsFollowing(true)
+                    }
+                } else {
+                    console.error('Error en la solicitud');
+                    console.log(body)
+                }
+            } catch (error) {
+                console.error('Error en la solicitud:', error);
+            }
         }
     };
 

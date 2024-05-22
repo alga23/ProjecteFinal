@@ -23,26 +23,31 @@ const Registro = () => {
     const handlerRegister = async () => {
         const newForm = form;
 
-        const user = await fetchData(Global.url + "user/registro", "POST", newForm);
+        try {
+            const user = await fetchData(Global.url + "user/registro", "POST", newForm);
 
-        if (user.status === "success") {
-            navigation.navigate("Login");
-            ToastAndroid.showWithGravityAndOffset(
-                user.message,
-                ToastAndroid.LONG,
-                ToastAndroid.BOTTOM,
-                25,
-                50,
-            );
-        } else {
-            ToastAndroid.showWithGravityAndOffset(
-                user.message,
-                ToastAndroid.LONG,
-                ToastAndroid.BOTTOM,
-                25,
-                50,
-            );
+            if (user.status === "success") {
+                navigation.navigate("Login");
+                ToastAndroid.showWithGravityAndOffset(
+                    user.message,
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM,
+                    25,
+                    50,
+                );
+            } else {
+                ToastAndroid.showWithGravityAndOffset(
+                    user.error,
+                    ToastAndroid.LONG,
+                    ToastAndroid.BOTTOM,
+                    25,
+                    50,
+                );
+            }
+        } catch {
+            console.log("Error")
         }
+
     }
 
     return (

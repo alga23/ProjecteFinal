@@ -48,7 +48,7 @@ const Feed = () => {
     const fetchPosts = async (nextPage) => {
         const endpoint = selectPage === 'Siguiendo' ? 'post/feed/' : 'post/populate/';
         const result = await fetchData(Global.url + endpoint + nextPage, 'GET');
-    
+
         if (result.status === "success") {
             if (selectPage === 'Siguiendo') {
                 const newPosts = nextPage === 1 ? result.posts : [...feed, ...result.posts];
@@ -62,7 +62,7 @@ const Feed = () => {
         } else {
             setMore(false);
         }
-    
+
         setLoading(false); // Aquí debemos marcar la carga como finalizada
     };
 
@@ -93,7 +93,7 @@ const Feed = () => {
                 image: auth.image === "default.png" ? Global.url_default : auth.image
             }
         };
-    
+
         if (selectPage === 'Siguiendo') {
             setFeed(prevFeed => [completeNewPost, ...prevFeed]);
         } else {
@@ -146,16 +146,16 @@ const Feed = () => {
                 scrollEventThrottle={16}
                 refreshControl={<RefreshControl refreshing={loading && !initialLoad} onRefresh={handleRefresh} />}
             >
-            {currentFeed.map(post => (
-                <FollowFeed key={post._id} post={post} userId={userId} auth={auth} onDeletePost={onDeletePost} />
-            ))}
+                {currentFeed.map(post => (
+                    <FollowFeed key={post._id} post={post} userId={userId} auth={auth} onDeletePost={onDeletePost} />
+                ))}
                 {loading && <ActivityIndicator size={40} color='#0074B4' style={{ marginTop: 20 }} />}
             </ScrollView>
         );
     };
 
     return (
-        <View style={FeedStyle.containerPrincipal}>
+        <View style={{ flex: 1 }}>
             <Header />
             <View style={FeedStyle.lineTop} />
             <View style={FeedStyle.container}>
@@ -168,8 +168,10 @@ const Feed = () => {
             </View>
             <View style={FeedStyle.line} />
             <View style={[FeedStyle.mainLine, selectPage === 'Siguiendo' ? FeedStyle.lineSelectSiguiendo : FeedStyle.lineSelectPopulares]} />
-            {renderContent()}
-            <BottomMenu />
+            <View style={{ flex: 1, justifyContent: 'space-between' }}>
+                {renderContent()}
+                <BottomMenu />
+            </View>
         </View>
     );
 };
