@@ -48,14 +48,15 @@ export const VisualizarJuegoStyle = {
     textRating: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+
     },
     rating: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 5
     },
     textTitulo: {
         fontSize: 25,
+        flexShrink: 1,
     },
     containerEtiquetas: {
         flexDirection: 'row',

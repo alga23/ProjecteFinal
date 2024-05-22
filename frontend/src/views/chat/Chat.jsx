@@ -36,6 +36,7 @@ const Chat = ({ route }) => {
         contadorFollowers();
 
         socket.current = io('http://192.168.60.7:3001');
+
         socket.current.emit('register', auth._id, id);
         socket.current.on('loadMessages', (loadedMessages) => {
             const filteredMessages = loadedMessages.filter(message => (

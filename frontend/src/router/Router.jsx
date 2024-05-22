@@ -20,6 +20,7 @@ import Profile from '../views/user/Profile';
 import FollowList from '../views/follow/FollowList';
 import Chat from '../views/chat/Chat';
 import useAuth from '../hooks/useAuth';
+import EditProfile from '../views/user/EditProfile'
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator()

@@ -12,6 +12,7 @@
     "@react-navigation/drawer": "^6.6.15",
     "@react-navigation/native": "^6.1.14",
     "@react-navigation/native-stack": "^6.9.25",
+    "dotenv": "^16.4.5",
     "expo": "~51.0.5",
     "expo-image-picker": "~15.0.4",
     "expo-localization": "^15.0.3",
@@ -26,6 +27,7 @@
     "react": "18.2.0",
     "react-i18next": "^14.1.1",
     "react-native": "0.74.1",
+    "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-heroicons": "^4.0.0",
     "react-native-localize": "^3.1.0",
@@ -41,7 +43,8 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@react-native-community/eslint-config": "^3.2.0",
-    "eslint": "^8.57.0"
+    "eslint": "^8.57.0",
+    "react-native-dotenv": "^3.4.11"
   },
   "private": true
 }

@@ -24,7 +24,7 @@ export default function Profile({ route }) {
     const [profilePosts, setProfilePosts] = useState(null);
     const [userId, setUserId] = useState(null);
     const { fetchData } = useFetch();
-    
+
     const navigation = useNavigation();
     const { t } = useTranslation();
 
@@ -252,3 +252,4 @@ export default function Profile({ route }) {
         </SafeAreaView>
     );
 }
+
